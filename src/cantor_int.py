@@ -35,25 +35,31 @@ class Int(int):
         return self.aux() - self.right() - 1
 
     def cantor_inv(self):
-        return self.left(), self.right()
+        tmp = self.aux()
+        r = self - ((tmp - 1) * tmp / 2 + 1)
+        l = tmp - r - 1
+        return l, r
 
     def cantor(x, y):
         """ The standard Cantor's function """
-        return (x+y+1)*(x+y)/2+y+1
+        return (x+y+1)*(x+y)//2+y+1
 
     def int_to_couple(s):
-        """ The couple (a1, (a2, ... (an, (0, 0)))) from an Int"""
-        res = s.left(), s.right()
-        return res if res == (0, 0) else (res[0], res[1].int_to_couple())
+        """ The couple (a1, (a2, ... (an, 0))) from an Int"""
+        res = Int(s).cantor_inv()
+        return res if res[1] == 0 else (res[0], Int(res[1]).int_to_couple())
+
+    def couple_to_int(s):
+        return Int.cantor(s[0], Int.couple_to_int(s[1])) if s[1] != 0 else Int.cantor(*s)
 
     def int_to_str(self) -> str:
         """ 
         Gives a str repr of the couple of Cantor in the form we've seen in class : \n
-        (a1, (a2, ... (an, (0, 0)))) → <a1, <a2, ... <an, <0, 0>>>>
+        (a1, (a2, ... (an, 0))) → <a1, <a2, ... <an, 0>>>
         """
         def aux(x, s='', e=''):
-            if x == (0, 0):
-                return f"{s}, <0, 0>{e}"
+            if x[1] == 0:
+                return f"{s}, <{x[0]}, 0>{e}"
             return aux(x[1], f"{s + ', ' if s != '' else ''}<{x[0]}", e + '>')
         return aux(self.int_to_couple())
 
@@ -65,4 +71,9 @@ if __name__ == '__main__':
         # Test that the f(f_inv(X)) == X
         assert(I == Int.cantor(*Int.cantor_inv(I)))
         print(i, l, r, l.cantor(r))
+
     print(Int(32).int_to_str())
+
+    assert(35 == Int.couple_to_int(Int.int_to_couple(Int(35))))
+    c = (2, (5, (4, (0, (0, 0)))))
+    assert(c == Int.int_to_couple(Int.couple_to_int(c)))
