@@ -1,7 +1,6 @@
 import tkinter as tk
 
 from tkinter.scrolledtext import ScrolledText
-# from PySide6.QtWidgets import QMainWindow, QPlainTextEdit, QPushButton, QVBoxLayout, QWidget
 
 
 class Texte(ScrolledText):
@@ -21,30 +20,6 @@ class Texte(ScrolledText):
         self.clean()
         self.add_text(txt)
 
-# class MainWindow(tk.PanedWindow):
-
-#     def __init__(self):
-#         super().__init__()
-#         self.setWindowTitle("RAM_language_interpreter")
-#         self.btn = QPushButton("Execute")
-#         self.btn.pressed.connect(self.start_process)
-#         self.text = QPlainTextEdit()
-#         # self.text.setReadOnly(True)
-
-#         l = QVBoxLayout()
-#         l.addWidget(self.btn)
-#         l.addWidget(self.text)
-
-#         w = QWidget()
-#         w.setLayout(l)
-
-#         self.setCentralWidget(w)
-
-#     def start_process(self):
-#         # We'll run our process here.
-#         print(self.text.getPaintContext())
-#         pass
-
 
 if __name__ == '__main__':
     root = tk.Tk()
@@ -56,16 +31,3 @@ if __name__ == '__main__':
     Texte(root)
 
     root.mainloop()
-
-    # app = QApplication(sys.argv)
-    # # my_icon = QIcon()
-    # # my_icon.addFile('ressources/img/ramen.png')
-    # #
-    # # app.setWindowIcon(my_icon)
-    # app.setWindowIcon(QIcon("ressources/img/ramen.png"))
-    # app.setDesktopFileName("RAM_language_interpreter")
-    #
-    # w = MainWindow()
-    # w.show()
-    #
-    # sys.exit(app.exec())
