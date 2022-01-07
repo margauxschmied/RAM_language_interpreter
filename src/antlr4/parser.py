@@ -1,8 +1,8 @@
 import sys
 from antlr4 import *
-from dist.MyGrammerLexer import MyGrammerLexer
-from dist.MyGrammerParser import MyGrammerParser
-from dist.MyGrammerVisitor import MyGrammerVisitor
+from dist.MyGrammarLexer import MyGrammarLexer
+from dist.MyGrammarParser import MyGrammarParser
+from dist.MyGrammarVisitor import MyGrammarVisitor
 
 # https://faun.pub/introduction-to-antlr-python-af8a3c603d23
 
@@ -14,7 +14,7 @@ def get_username():
     return getpwuid(getuid())[0]
 
 
-class MyVisitor(MyGrammerVisitor):
+class MyVisitor(MyGrammarVisitor):
     def visitCoucou(self, ctx):
         print(ctx.r1.text)
 
@@ -32,10 +32,10 @@ R0 = R0 - 1"""
     )
     print(data)
     # lexer
-    lexer = MyGrammerLexer(data)
+    lexer = MyGrammarLexer(data)
     stream = CommonTokenStream(lexer)
     # parser
-    parser = MyGrammerParser(stream)
+    parser = MyGrammarParser(stream)
     tree = parser.program()
     # evaluator
     visitor = MyVisitor()
