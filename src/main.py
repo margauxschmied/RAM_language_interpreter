@@ -6,7 +6,7 @@ class Texte(tk.Text):
     def __init__(self, parent):
         # self = tk.Text(root)
 
-        self = ScrolledText(parent, width=20, height=10, bg="lightgrey", wrap="none")
+        self = ScrolledText(parent, width=20, height=10, wrap="none")
 
 
         self.grid(row=0, column=0, sticky="nsew")
