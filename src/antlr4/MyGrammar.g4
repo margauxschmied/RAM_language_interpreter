@@ -1,4 +1,4 @@
-grammar MyGrammer;
+grammar MyGrammar;
 
 program : code EOF;
 
