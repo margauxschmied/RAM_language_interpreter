@@ -18,7 +18,7 @@ if __name__ == '__main__':
     root = tk.Tk()
     root.title("RAM_language_interpreter")
 
-    root.iconphoto(False, tk.PhotoImage(file='img/ramen.png'))
+    root.iconphoto(False, tk.PhotoImage(file='../ressources/img/ramen.png'))
     root.geometry("640x480")
 
     Texte(root)
