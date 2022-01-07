@@ -10,7 +10,7 @@ def int_to_RAM(n: int):
         current = Int(cantor_couple[0])
         if current % 3 < 2:
             res.append(
-                'R{} = R{} {} 1'.format(current.left(), current.right(), ['+', '-'][current % 3 == 1]))
+                'R{} = R{} {} 1'.format(current.left(), current.left(), ['+', '-'][current % 3 == 1]))
         else:
             k = current.left()
             op = current.right().left()
@@ -22,7 +22,8 @@ def int_to_RAM(n: int):
 
 
 if __name__ == '__main__':
-    for i in range(1, 42):
-        print(i)
-        print(int_to_RAM(i))
-        print()
+    # for i in range(1, 42):
+    #     print(i)
+    #     print(int_to_RAM(i))
+    #     print()
+    print(int_to_RAM(100254825))
