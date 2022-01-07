@@ -1,0 +1,14 @@
+# Calc N * 2 
+
+R0 = R0 + 1
+
+R8 = R8 + 1
+R8 = R8 + 1
+R0 = R0 - 1
+if R0 != 0 then gotob 3
+
+R1 = R1 + 1
+R8 = R8 - 1
+if R8 != 0 then gotob 2
+
+R1 = R1 - 1
