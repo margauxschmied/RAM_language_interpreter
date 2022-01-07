@@ -2,16 +2,23 @@ import tkinter as tk
 
 from tkinter.scrolledtext import ScrolledText
 
-class Texte(tk.Text):
+
+class Texte(ScrolledText):
     def __init__(self, parent):
-        # self = tk.Text(root)
-
-        self = ScrolledText(parent, width=20, height=10, wrap="none")
-
-
-        self.grid(row=0, column=0, sticky="nsew")
-        self.insert(tk.END, 'This is an example text.')
+        super().__init__(parent, width=20, height=10,
+                         bg="lightgrey", wrap='word')
         self.pack(expand=True, fill='both')
+        self.add_text('This is an exemple text')
+
+    def add_text(self, txt: str):
+        self.insert(tk.END, txt)
+
+    def clean(self):
+        self.delete(0, tk.END)
+
+    def add_clean(self, txt: str):
+        self.clean()
+        self.add_text(txt)
 
 
 if __name__ == '__main__':
@@ -24,4 +31,3 @@ if __name__ == '__main__':
     Texte(root)
 
     root.mainloop()
-
