@@ -29,7 +29,6 @@ class main_class:
     def initiate(self):
         self.createMenu(self, root)
         self.createNotebook(root)
-        self.text_editor.pack(expand=True, fill='both')
 
     def createMenu(self, x, parent):
         self.menu_bar = tk.Menu(parent)
@@ -77,63 +76,76 @@ class main_class:
 
         parent.config(menu=self.menu_bar)
 
+    def createTab(self, tab_name):
+        self.titles.append(tab_name)
+        self.tabs.append(tk.Frame())
+        self.frames.append(tk.Frame(self.notebook))
+        self.text_editors.append(Texte(self.frames[-1]))
+
+        self.notebook.add(self.frames[-1], text=self.titles[-1])
+        self.text_editors[-1].pack(expand=True, fill='both')
+        self.text_editors[-1].clean()
+
     def new_file(self):
         self.acc += 1
-        self.titles.append('Untitled'+str(self.acc))
-        self.tab2 = tk.Frame()
-        self.frame2 = tk.Frame(self.notebook)
-        self.text_editor2 = Texte(self.frame2)
-        self.notebook.add(self.frame2, text=self.titles[1])
-        self.text_editor2.pack(expand=True, fill='both')
-        self.text_editor2.clean()
+        title = 'Untitled'+str(self.acc)
+        self.createTab(title)
+        self.filenames.append((title, True))
 
     def open_file(self):
-        self.filename = filedialog.askopenfilename(
+        filenam = filedialog.askopenfilename(
             title="Select File",
             filetypes=(("Text files",
                         "*.txt*"),
                        ("All files",
                         "*.*")))
-        if self.filename != '':
-            self.read_file(self.filename)
+        if filenam != '':
+            self.createTab(self.path_to_filename(filenam))
+            self.read_file(filenam, len(self.text_editors) - 1)
+            self.filenames.append((filenam, False))
 
-    def read_file(self, path):
+    def read_file(self, path, tab_num):
         f = open(path, "r")
-        self.text_editor.add_clean(f.read())
+        self.text_editors[tab_num].add_clean(f.read())
         f.close()
 
     def save_file(self):
-        try:
-            self.filename
-        except AttributeError:
+        tab_num = self.notebook.index(self.notebook.select())
+        if self.filenames[tab_num][1]:
             file = filedialog.asksaveasfile(
                 defaultextension='.txt', filetypes=(("Text files",
                                                     "*.txt*"),
                                                     ("All files",
                                                     "*.*")),
-                initialfile='RAM.txt')
+                initialfile='RAM'+str(self.acc)+'.txt')
             if file != None:
-                self.filename = file.name
+                self.filenames[tab_num] = (file.name, False)
             else:
-                self.filename = ''
+                return
 
-        program_text = self.text_editor.get('1.0', tk.END)
-        if self.filename != '':
-            f = open(self.filename, "w")
-            f.write(program_text)
-            f.close
-            self.notebook.tab(0, text=self.filename.split('/')[-1])
+        program_text = self.text_editors[tab_num].get('1.0', tk.END)
+        f = open(self.filenames[tab_num][0], "w")
+        f.write(program_text)
+        f.close
+        self.notebook.tab(
+            tab_num, text=self.path_to_filename(self.filenames[tab_num][0]))
+
+    def path_to_filename(self, path):
+        return path.split('/')[-1]
 
     def createNotebook(self, parent):
         self.acc = 1
+        self.filenames = []
         self.notebook = ttk.Notebook(parent)
-        self.tab = tk.Frame()
-        self.frame = tk.Frame(self.notebook)
-        self.text_editor = Texte(self.frame)
+        self.tabs = [tk.Frame()]
+        self.frames = [tk.Frame(self.notebook)]
+        self.text_editors = [Texte(self.frames[0])]
         self.titles = ["Untitled"+str(self.acc)]
-        self.notebook.add(self.frame, text=self.titles[0])
+        self.filenames.append((self.titles[0], True))
+        self.notebook.add(self.frames[0], text=self.titles[0])
 
         self.notebook.pack(fill=tk.BOTH, expand=1)
+        self.text_editors[0].pack(expand=True, fill='both')
 
 
 def main(root):
