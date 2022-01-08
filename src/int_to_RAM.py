@@ -21,11 +21,11 @@ def int_to_RAM(n: int):
                 'R{} = R{} {} 1'.format(current.left(), current.left(), ['+', '-'][current % 3 == 1]))
         else:
             current = current / 3
-            k = current.left()
-            op = current.right().left()
+            type_saut = current.left()
+            k = current.right().left()
             saut = current.right().right()
             inst = ('F', 'B')
-            res.append(f'if R{k}!=0 THEN GOTO{inst[op%2==0]} {saut}')
+            res.append(f'if R{k}!=0 THEN GOTO{inst[type_saut==1]} {saut}')
         cantor_couple = cantor_couple[1]
     return '\n'.join(res)
 
@@ -35,4 +35,4 @@ if __name__ == '__main__':
     #     print(i)
     #     print(int_to_RAM(i))
     #     print()
-    print(int_to_RAM(100254825))
+    print(int_to_RAM(1002500214825))
