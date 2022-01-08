@@ -114,9 +114,11 @@ class main_class:
         scrollbar['command'] = self.on_scrollbar
         text_editor['yscrollcommand'] = self.on_textscroll
 
-    def update_line(self, event=None):
+    def update_line(self, event=None, correct_line_count=True):
         number_lines = str(
             self.get_current_text_editor().index(tk.END)).split('.')[0]
+        if not correct_line_count:
+            number_lines = str(int(number_lines) - 1)
 
         line_numbers_string = "\n".join(str(i+1).rjust(len(number_lines))
                                         for i in range(int(number_lines)))
@@ -207,7 +209,8 @@ class main_class:
 
         self.notebook.pack(fill=tk.BOTH, expand=1)
 
-        self.notebook.bind("<<NotebookTabChanged>>", self.update_line)
+        self.notebook.bind("<<NotebookTabChanged>>",
+                           lambda e: self.update_line(e, False))
 
     def create_line_number(self, parent):
         self.line_number = tk.Canvas(
