@@ -36,13 +36,16 @@ class main_class:
 
         # The 'File' contextual menu
         self.menu_file = tk.Menu(self.menu_bar, tearoff=0)
-        self.menu_file.add_command(label="New", command=lambda: print("New"))
+        self.menu_file.add_command(
+            label="New", command=lambda: self.new_file())
         self.menu_file.add_command(
             label="Open", command=lambda: self.open_file())
-        self.menu_file.add_command(label="Save", command=lambda: print("Save"))
+        self.menu_file.add_command(
+            label="Save", command=lambda: self.save_file())
 
         self.menu_file.add_separator()
-        self.menu_file.add_command(label="Exit", command=lambda: print("Exit"))
+        self.menu_file.add_command(
+            label="Exit", command=lambda: root.destroy())
         self.menu_bar.add_cascade(label="File", menu=self.menu_file)
 
         # The 'Run' contextual menu
@@ -74,18 +77,44 @@ class main_class:
 
         parent.config(menu=self.menu_bar)
 
+    def new_file(self):
+        self.text_editor.clean()
+
     def open_file(self):
-        filename = filedialog.askopenfilename(
+        self.filename = filedialog.askopenfilename(
             title="Select File",
             filetypes=(("Text files",
                         "*.txt*"),
                        ("All files",
                         "*.*")))
-        self.read_file(filename)
+        if self.filename != '':
+            self.read_file(self.filename)
 
     def read_file(self, path):
         f = open(path, "r")
         self.text_editor.add_clean(f.read())
+        f.close()
+
+    def save_file(self):
+        try:
+            self.filename
+        except AttributeError:
+            file = filedialog.asksaveasfile(
+                defaultextension='.txt', filetypes=(("Text files",
+                                                    "*.txt*"),
+                                                    ("All files",
+                                                    "*.*")),
+                initialfile='RAM.txt')
+            if file != None:
+                self.filename = file.name
+            else:
+                self.filename = ''
+
+        program_text = self.text_editor.get('1.0', tk.END)
+        if self.filename != '':
+            f = open(self.filename, "w")
+            f.write(program_text)
+            f.close
 
 
 def main(root):
