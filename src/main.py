@@ -97,7 +97,7 @@ class main_class:
 
         line_number.pack(side=tk.LEFT, fill=tk.BOTH)
         text_editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        text_editor.bind('<Return>', self.update_line)
+        text_editor.bind('<Return>', lambda e: self.update_line(e))
         text_editor.bind('<BackSpace>', lambda e: self.update_line(e))
 
         line_number.insert(1.0, '1')
@@ -111,28 +111,28 @@ class main_class:
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.scrollbars.append(scrollbar)
 
-        # Changing the settings to make the scrolling work
         scrollbar['command'] = self.on_scrollbar
         text_editor['yscrollcommand'] = self.on_textscroll
 
     def update_line(self, event=None):
-        number_lines = str(self.text_editors[-1].index(tk.END)).split('.')[0]
+        number_lines = str(
+            self.get_current_text_editor().index(tk.END)).split('.')[0]
 
         line_numbers_string = "\n".join(str(i+1).rjust(len(number_lines))
                                         for i in range(int(number_lines)))
         width = len(str(number_lines))
 
-        self.line_numbers[-1].configure(state='normal', width=width)
-        self.line_numbers[-1].delete(1.0, tk.END)
-        self.line_numbers[-1].insert(1.0, line_numbers_string)
-        self.line_numbers[-1].configure(state='disabled')
+        self.get_current_line_number().configure(state='normal', width=width)
+        self.get_current_line_number().delete(1.0, tk.END)
+        self.get_current_line_number().insert(1.0, line_numbers_string)
+        self.get_current_line_number().configure(state='disabled')
 
     def on_scrollbar(self, *args):
-        self.text_editors[-1].yview(*args)
-        self.line_numbers[-1].yview(*args)
+        self.get_current_text_editor().yview(*args)
+        self.get_current_line_number().yview(*args)
 
     def on_textscroll(self, *args):
-        self.scrollbars[-1].set(*args)
+        self.get_current_scrollbar().set(*args)
         self.on_scrollbar('moveto', args[0])
 
     def get_current_tab(self):
@@ -140,6 +140,15 @@ class main_class:
 
     def get_current_tabname(self):
         return self.notebook.tab(self.notebook.select(), 'text')
+
+    def get_current_text_editor(self):
+        return self.text_editors[int(self.get_current_tab())]
+
+    def get_current_line_number(self):
+        return self.line_numbers[int(self.get_current_tab())]
+
+    def get_current_scrollbar(self):
+        return self.scrollbars[int(self.get_current_tab())]
 
     def new_file(self):
         self.acc += 1
@@ -197,6 +206,8 @@ class main_class:
         self.create_intern_shortcut(self.text_editors[0])
 
         self.notebook.pack(fill=tk.BOTH, expand=1)
+
+        self.notebook.bind("<<NotebookTabChanged>>", self.update_line)
 
     def create_line_number(self, parent):
         self.line_number = tk.Canvas(
