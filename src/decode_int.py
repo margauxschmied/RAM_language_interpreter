@@ -1,4 +1,4 @@
-from typing import List, cast
+from typing import List
 from cantor_int import Int
 
 
@@ -30,19 +30,34 @@ def decode_int_instr(n: int):
 
 
 def decode_int_program(n):
+    """
+        If n is an int it is converted to the Cantor's couple
+        Else n is on the form <a1, ... <an, 0>>>
+        The program transform every instr to a RAM instr 
+        thanks to decode_int_instr function
+    """
     if type(n) == int:
         n = Int(n).int_to_couple()
     program = []
-    while n[1] != 0:
+    while True:
         program.append(decode_int_instr(n[0]))
         n = n[1]
+        if n == 0:
+            break
     return "\n".join(program)
 
 
 if __name__ == '__main__':
     for i in range(21):
         try:
-            print(f"Decoding program {i} :")
+            print(f"Decoding instruction {i} :")
             print(decode_int_instr(i))
         except:
             print(f"Can't decode {i}")
+    print("-"*40)
+    for i in range(100):
+        try:
+            print(f"Decoding program {i} :")
+            print(decode_int_program(i))
+        except Exception as e:
+            print(f"Can't decode {i} because there is {e}")

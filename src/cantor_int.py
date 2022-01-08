@@ -1,4 +1,3 @@
-
 class Int(int):
     """
     This class aims to represent an int with the propreties 
@@ -20,12 +19,20 @@ class Int(int):
 
     def aux(self):
         """ Aux. function to calculate left and right part """
+        def aux(m, M, s):
+            if s < 3:
+                return s
+            res = m + (M-m)//2
+            diff = s - res * (res + 1) // 2
+            diff_down = s - res * (res - 1) // 2
+            if diff <= 0 and diff_down > 0:
+                return res
+            elif diff <= 0:
+                return aux(m, res, s)
+            return aux(res, M, s)
         if self == 0:
             raise Exception("Can't decode 0")
-        res, diff = Int(0), self
-        while diff != 0:
-            diff = self - (res * (res := res + 1) / 2)
-        return res - 1
+        return Int(aux(0, self, self))
 
     def right(self):
         """ Give the right part of a Int, from Cantor formula """
