@@ -1,14 +1,14 @@
+from functools import total_ordering
 from tkinter import filedialog, ttk
 import tkinter as tk
 
 from tkinter.scrolledtext import ScrolledText
 
 
-class Texte(ScrolledText):
+class Texte(tk.Text):
     def __init__(self, parent):
         super().__init__(parent, width=20, height=10,
                          bg="lightgrey", wrap='word')
-        self.add_text('This is an exemple text')
 
     def add_text(self, txt: str):
         self.insert(tk.END, txt)
@@ -27,6 +27,14 @@ class main_class:
         self.initiate()
 
     def initiate(self):
+        self.acc = 1
+        self.filenames = []
+        self.frames = []
+        self.scrollbars = []
+        self.text_editors = []
+        self.line_numbers = []
+        self.titles = []
+
         self.create_menu(self, root)
         self.create_notebook(root)
         self.create_extern_shortcut(root)
@@ -79,15 +87,53 @@ class main_class:
 
     def create_tab(self, tab_name):
         self.titles.append(tab_name)
-        self.tabs.append(tk.Frame())
         self.frames.append(tk.Frame(self.notebook))
         text_editor = Texte(self.frames[-1])
+        line_number = Texte(self.frames[-1])
+        line_number.config(bg='white')
+        self.line_numbers.append(line_number)
         self.create_intern_shortcut(text_editor)
         self.text_editors.append(text_editor)
 
+        line_number.pack(side=tk.LEFT, fill=tk.BOTH)
+        text_editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        text_editor.bind('<Return>', self.update_line)
+        text_editor.bind('<BackSpace>', lambda e: self.update_line(e))
+
+        line_number.insert(1.0, '1')
+        line_number.configure(width=1)
+        line_number.configure(state='disabled')
+        text_editor.clean()
+
         self.notebook.add(self.frames[-1], text=self.titles[-1])
-        self.text_editors[-1].pack(expand=True, fill='both')
-        self.text_editors[-1].clean()
+
+        scrollbar = tk.Scrollbar(self.frames[-1])
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.scrollbars.append(scrollbar)
+
+        # Changing the settings to make the scrolling work
+        scrollbar['command'] = self.on_scrollbar
+        text_editor['yscrollcommand'] = self.on_textscroll
+
+    def update_line(self, event=None):
+        number_lines = str(self.text_editors[-1].index(tk.END)).split('.')[0]
+
+        line_numbers_string = "\n".join(str(i+1).rjust(len(number_lines))
+                                        for i in range(int(number_lines)))
+        width = len(str(number_lines))
+
+        self.line_numbers[-1].configure(state='normal', width=width)
+        self.line_numbers[-1].delete(1.0, tk.END)
+        self.line_numbers[-1].insert(1.0, line_numbers_string)
+        self.line_numbers[-1].configure(state='disabled')
+
+    def on_scrollbar(self, *args):
+        self.text_editors[-1].yview(*args)
+        self.line_numbers[-1].yview(*args)
+
+    def on_textscroll(self, *args):
+        self.scrollbars[-1].set(*args)
+        self.on_scrollbar('moveto', args[0])
 
     def get_current_tab(self):
         return self.notebook.index(self.notebook.select())
@@ -143,20 +189,19 @@ class main_class:
         return path.split('/')[-1]
 
     def create_notebook(self, parent):
-        self.acc = 1
-        self.filenames = []
+
         self.notebook = ttk.Notebook(parent)
-        self.tabs = [tk.Frame()]
-        self.frames = [tk.Frame(self.notebook)]
-        self.text_editors = [Texte(self.frames[0])]
-        self.titles = ["Untitled"+str(self.acc)]
-        self.filenames.append((self.titles[0], True))
-        self.notebook.add(self.frames[0], text=self.titles[0])
+        self.create_tab("Untitled"+str(self.acc))
+        self.filenames.append((self.titles[-1], True))
 
         self.create_intern_shortcut(self.text_editors[0])
 
         self.notebook.pack(fill=tk.BOTH, expand=1)
-        self.text_editors[0].pack(expand=True, fill='both')
+
+    def create_line_number(self, parent):
+        self.line_number = tk.Canvas(
+            parent, width=40, bg='#555555', highlightbackground='#555555', highlightthickness=0)
+        self.line_number.pack(side=tk.LEFT, fill=tk.Y)
 
     def create_extern_shortcut(self, element):
         element.bind('<Control-s>', lambda e: self.save_file())
