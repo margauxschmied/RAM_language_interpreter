@@ -45,7 +45,7 @@ class Int(int):
         return (x+y+1)*(x+y)//2+y+1
 
     def int_to_couple(s):
-        """ The couple (a1, (a2, ... (an, 0))) from an Int"""
+        """ The couple (a1, (a2, ... (an, 0))) from an Int """
         res = Int(s).cantor_inv()
         return res if res[1] == 0 else (res[0], Int(res[1]).int_to_couple())
 

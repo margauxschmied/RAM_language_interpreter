@@ -14,7 +14,7 @@ class Interpreter(dict):
 
     def __init__(self, instr_list: List[Instruction], start_value=0) -> None:
         self.instr_list = instr_list
-        self.current_instr = Int(0)
+        self.current_instr = Int(1)
         self.end = False
         self[0] = Int(start_value)
 
@@ -23,10 +23,10 @@ class Interpreter(dict):
 
     def treat_one_instr(self):
         il, ci = self.instr_list, self.current_instr
-        try:
-            None if self.end else il[ci].calc_instr(self)
-        except IndexError:
+        if ci == 0 or ci - 1 >= len(il):
             self.end = True
+        else:
+            il[ci-1].calc_instr(self)
 
     def treat_all_instr(self):
         while not self.end:
