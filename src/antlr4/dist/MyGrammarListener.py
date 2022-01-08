@@ -26,21 +26,21 @@ class MyGrammarListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by MyGrammarParser#coucou.
-    def enterCoucou(self, ctx:MyGrammarParser.CoucouContext):
+    # Enter a parse tree produced by MyGrammarParser#ZeroUn.
+    def enterZeroUn(self, ctx:MyGrammarParser.ZeroUnContext):
         pass
 
-    # Exit a parse tree produced by MyGrammarParser#coucou.
-    def exitCoucou(self, ctx:MyGrammarParser.CoucouContext):
+    # Exit a parse tree produced by MyGrammarParser#ZeroUn.
+    def exitZeroUn(self, ctx:MyGrammarParser.ZeroUnContext):
         pass
 
 
-    # Enter a parse tree produced by MyGrammarParser#pomme.
-    def enterPomme(self, ctx:MyGrammarParser.PommeContext):
+    # Enter a parse tree produced by MyGrammarParser#DeuxTrois.
+    def enterDeuxTrois(self, ctx:MyGrammarParser.DeuxTroisContext):
         pass
 
-    # Exit a parse tree produced by MyGrammarParser#pomme.
-    def exitPomme(self, ctx:MyGrammarParser.PommeContext):
+    # Exit a parse tree produced by MyGrammarParser#DeuxTrois.
+    def exitDeuxTrois(self, ctx:MyGrammarParser.DeuxTroisContext):
         pass
 
 

@@ -25,9 +25,9 @@ class MyVisitor(MyGrammarVisitor):
 if __name__ == "__main__":
     # while 1:
     data = InputStream(
-        """R86 = R86 + 0
+        """R2 = R2 + 1
 R2 = R2 - 1
-if R2!=0 THEN GOTOB 0
+if R2!=2 THEN GOTOB 0
 R0 = R0 - 1"""
     )
     print(data)

@@ -12,19 +12,19 @@ else:
 def serializedATN():
     with StringIO() as buf:
         buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\17")
-        buf.write("(\4\2\t\2\4\3\t\3\4\4\t\4\3\2\3\2\3\2\3\3\3\3\3\3\3\3")
+        buf.write(")\4\2\t\2\4\3\t\3\4\4\t\4\3\2\3\2\3\2\3\3\3\3\3\3\3\3")
         buf.write("\3\3\3\3\3\3\3\3\5\3\24\n\3\3\4\3\4\3\4\3\4\3\4\3\4\3")
-        buf.write("\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4&\n\4\3\4\2")
-        buf.write("\2\5\2\4\6\2\5\3\2\5\6\3\2\7\b\3\2\f\r\2&\2\b\3\2\2\2")
-        buf.write("\4\23\3\2\2\2\6%\3\2\2\2\b\t\5\4\3\2\t\n\7\2\2\3\n\3\3")
-        buf.write("\2\2\2\13\f\5\6\4\2\f\r\7\16\2\2\r\16\5\2\2\2\16\17\b")
-        buf.write("\3\1\2\17\24\3\2\2\2\20\21\5\6\4\2\21\22\b\3\1\2\22\24")
-        buf.write("\3\2\2\2\23\13\3\2\2\2\23\20\3\2\2\2\24\5\3\2\2\2\25\26")
-        buf.write("\7\3\2\2\26\27\7\n\2\2\27\30\7\4\2\2\30\31\7\3\2\2\31")
-        buf.write("\32\7\n\2\2\32\33\t\2\2\2\33\34\7\n\2\2\34&\b\4\1\2\35")
-        buf.write("\36\t\3\2\2\36\37\7\3\2\2\37 \7\n\2\2 !\7\t\2\2!\"\7\n")
-        buf.write("\2\2\"#\7\13\2\2#$\t\4\2\2$&\7\n\2\2%\25\3\2\2\2%\35\3")
-        buf.write("\2\2\2&\7\3\2\2\2\4\23%")
+        buf.write("\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4\'\n\4\3")
+        buf.write("\4\2\2\5\2\4\6\2\5\3\2\5\6\3\2\7\b\3\2\f\r\2\'\2\b\3\2")
+        buf.write("\2\2\4\23\3\2\2\2\6&\3\2\2\2\b\t\5\4\3\2\t\n\7\2\2\3\n")
+        buf.write("\3\3\2\2\2\13\f\5\6\4\2\f\r\7\16\2\2\r\16\5\2\2\2\16\17")
+        buf.write("\b\3\1\2\17\24\3\2\2\2\20\21\5\6\4\2\21\22\b\3\1\2\22")
+        buf.write("\24\3\2\2\2\23\13\3\2\2\2\23\20\3\2\2\2\24\5\3\2\2\2\25")
+        buf.write("\26\7\3\2\2\26\27\7\n\2\2\27\30\7\4\2\2\30\31\7\3\2\2")
+        buf.write("\31\32\7\n\2\2\32\33\t\2\2\2\33\34\7\n\2\2\34\'\b\4\1")
+        buf.write("\2\35\36\t\3\2\2\36\37\7\3\2\2\37 \7\n\2\2 !\7\t\2\2!")
+        buf.write("\"\7\n\2\2\"#\7\13\2\2#$\t\4\2\2$%\7\n\2\2%\'\b\4\1\2")
+        buf.write("&\25\3\2\2\2&\35\3\2\2\2\'\7\3\2\2\2\4\23&")
         return buf.getvalue()
 
 
@@ -219,7 +219,7 @@ class MyGrammarParser ( Parser ):
 
 
 
-    class CoucouContext(ExprContext):
+    class ZeroUnContext(ExprContext):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a MyGrammarParser.ExprContext
             super().__init__(parser)
@@ -236,21 +236,21 @@ class MyGrammarParser ( Parser ):
                 return self.getToken(MyGrammarParser.INT, i)
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCoucou" ):
-                listener.enterCoucou(self)
+            if hasattr( listener, "enterZeroUn" ):
+                listener.enterZeroUn(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCoucou" ):
-                listener.exitCoucou(self)
+            if hasattr( listener, "exitZeroUn" ):
+                listener.exitZeroUn(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitCoucou" ):
-                return visitor.visitCoucou(self)
+            if hasattr( visitor, "visitZeroUn" ):
+                return visitor.visitZeroUn(self)
             else:
                 return visitor.visitChildren(self)
 
 
-    class PommeContext(ExprContext):
+    class DeuxTroisContext(ExprContext):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a MyGrammarParser.ExprContext
             super().__init__(parser)
@@ -273,16 +273,16 @@ class MyGrammarParser ( Parser ):
             return self.getToken(MyGrammarParser.GOTOF, 0)
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterPomme" ):
-                listener.enterPomme(self)
+            if hasattr( listener, "enterDeuxTrois" ):
+                listener.enterDeuxTrois(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitPomme" ):
-                listener.exitPomme(self)
+            if hasattr( listener, "exitDeuxTrois" ):
+                listener.exitDeuxTrois(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitPomme" ):
-                return visitor.visitPomme(self)
+            if hasattr( visitor, "visitDeuxTrois" ):
+                return visitor.visitDeuxTrois(self)
             else:
                 return visitor.visitChildren(self)
 
@@ -294,11 +294,11 @@ class MyGrammarParser ( Parser ):
         self.enterRule(localctx, 4, self.RULE_expr)
         self._la = 0 # Token type
         try:
-            self.state = 35
+            self.state = 36
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [MyGrammarParser.T__0]:
-                localctx = MyGrammarParser.CoucouContext(self, localctx)
+                localctx = MyGrammarParser.ZeroUnContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
                 self.state = 19
                 self.match(MyGrammarParser.T__0)
@@ -321,9 +321,14 @@ class MyGrammarParser ( Parser ):
                 self.state = 25
                 localctx.un = self.match(MyGrammarParser.INT)
 
+                if (None if localctx.r1 is None else localctx.r1.text) != (None if localctx.r2 is None else localctx.r2.text):
+                    raise ValueError("line "+str((0 if localctx.r1 is None else localctx.r1.line))+": R"+(None if localctx.r1 is None else localctx.r1.text)+" != "+"R"+(None if localctx.r2 is None else localctx.r2.text))
+                if (None if localctx.un is None else localctx.un.text) != '1':
+                    raise ValueError("line "+str((0 if localctx.un is None else localctx.un.line))+": "+(None if localctx.un is None else localctx.un.text)+" != 1")
+                                                                     
                 pass
             elif token in [MyGrammarParser.T__4, MyGrammarParser.T__5]:
-                localctx = MyGrammarParser.PommeContext(self, localctx)
+                localctx = MyGrammarParser.DeuxTroisContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 27
                 _la = self._input.LA(1)
@@ -352,6 +357,10 @@ class MyGrammarParser ( Parser ):
                     self.consume()
                 self.state = 34
                 localctx.n = self.match(MyGrammarParser.INT)
+
+                if (None if localctx.zero is None else localctx.zero.text) != '0':
+                    raise ValueError("line "+str((0 if localctx.zero is None else localctx.zero.line))+": "+(None if localctx.zero is None else localctx.zero.text)+" != 0")
+
                 pass
             else:
                 raise NoViableAltException(self)

@@ -19,13 +19,13 @@ class MyGrammarVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by MyGrammarParser#coucou.
-    def visitCoucou(self, ctx:MyGrammarParser.CoucouContext):
+    # Visit a parse tree produced by MyGrammarParser#ZeroUn.
+    def visitZeroUn(self, ctx:MyGrammarParser.ZeroUnContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by MyGrammarParser#pomme.
-    def visitPomme(self, ctx:MyGrammarParser.PommeContext):
+    # Visit a parse tree produced by MyGrammarParser#DeuxTrois.
+    def visitDeuxTrois(self, ctx:MyGrammarParser.DeuxTroisContext):
         return self.visitChildren(ctx)
 
 
