@@ -92,6 +92,9 @@ class main_class:
     def get_current_tab(self):
         return self.notebook.index(self.notebook.select())
 
+    def get_current_tabname(self):
+        return self.notebook.tab(self.notebook.select(), 'text')
+
     def new_file(self):
         self.acc += 1
         title = 'Untitled'+str(self.acc)
@@ -163,14 +166,15 @@ class main_class:
 
     def execute_line(self):
         line_index = self.text_editors[self.get_current_tab()].index('insert')
-        print("Execution of line : ", line_index.split('.')[0])
+        line_number = line_index.split('.')[0]
+        print('Execution ', '(line ', line_index.split('.')[0], ', file ', self.get_current_tabname(), '): ', self.text_editors[self.get_current_tab()].get(
+            line_number + '.0', line_number + '.end'), sep='')
+
         return 'break'
 
 
 def main(root):
-    #text_editor = Texte(root)
     main_class(root)
-    #text_editor.pack(expand=True, fill='both')
 
 
 if __name__ == '__main__':
