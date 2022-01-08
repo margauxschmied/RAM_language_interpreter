@@ -7,8 +7,8 @@ def decode_int_instr(n: int):
         Gödelisation :
         - ADD = Rk = Rk + 1 (n = 3 * k)
         - SUB = Rk = Rk - 1 (n = 3 * k + 1)
-        - IFF = IF Rk != 0 THEN GOTOF n (n = 3 <0, <k, <n, 0>>> + 2)
-        - IFB = IF Rk != 0 THEN GOTOB n (n = 3 <1, <k, <n, 0>>> + 2)
+        - IFF = IF Rk != 0 THEN GOTOF n (n = 3 <k, <0, <n, 0>>> + 2)
+        - IFB = IF Rk != 0 THEN GOTOB n (n = 3 <k, <1, <n, 0>>> + 2)
     """
     res: List[str] = []
     n = Int(n)
