@@ -27,10 +27,11 @@ class main_class:
         self.initiate()
 
     def initiate(self):
-        self.createMenu(self, root)
-        self.createNotebook(root)
+        self.create_menu(self, root)
+        self.create_notebook(root)
+        self.create_extern_shortcut(root)
 
-    def createMenu(self, x, parent):
+    def create_menu(self, x, parent):
         self.menu_bar = tk.Menu(parent)
 
         # The 'File' contextual menu
@@ -76,20 +77,25 @@ class main_class:
 
         parent.config(menu=self.menu_bar)
 
-    def createTab(self, tab_name):
+    def create_tab(self, tab_name):
         self.titles.append(tab_name)
         self.tabs.append(tk.Frame())
         self.frames.append(tk.Frame(self.notebook))
-        self.text_editors.append(Texte(self.frames[-1]))
+        text_editor = Texte(self.frames[-1])
+        self.create_intern_shortcut(text_editor)
+        self.text_editors.append(text_editor)
 
         self.notebook.add(self.frames[-1], text=self.titles[-1])
         self.text_editors[-1].pack(expand=True, fill='both')
         self.text_editors[-1].clean()
 
+    def get_current_tab(self):
+        return self.notebook.index(self.notebook.select())
+
     def new_file(self):
         self.acc += 1
         title = 'Untitled'+str(self.acc)
-        self.createTab(title)
+        self.create_tab(title)
         self.filenames.append((title, True))
 
     def open_file(self):
@@ -100,7 +106,7 @@ class main_class:
                        ("All files",
                         "*.*")))
         if filenam != '':
-            self.createTab(self.path_to_filename(filenam))
+            self.create_tab(self.path_to_filename(filenam))
             self.read_file(filenam, len(self.text_editors) - 1)
             self.filenames.append((filenam, False))
 
@@ -117,7 +123,7 @@ class main_class:
                                                     "*.txt*"),
                                                     ("All files",
                                                     "*.*")),
-                initialfile='RAM'+str(self.acc)+'.txt')
+                initialfile=self.notebook.tab(self.notebook.select(), "text") + '.txt')
             if file != None:
                 self.filenames[tab_num] = (file.name, False)
             else:
@@ -133,7 +139,7 @@ class main_class:
     def path_to_filename(self, path):
         return path.split('/')[-1]
 
-    def createNotebook(self, parent):
+    def create_notebook(self, parent):
         self.acc = 1
         self.filenames = []
         self.notebook = ttk.Notebook(parent)
@@ -144,8 +150,21 @@ class main_class:
         self.filenames.append((self.titles[0], True))
         self.notebook.add(self.frames[0], text=self.titles[0])
 
+        self.create_intern_shortcut(self.text_editors[0])
+
         self.notebook.pack(fill=tk.BOTH, expand=1)
         self.text_editors[0].pack(expand=True, fill='both')
+
+    def create_extern_shortcut(self, element):
+        element.bind('<Control-s>', lambda e: self.save_file())
+
+    def create_intern_shortcut(self, element):
+        element.bind('<Control-Return>', lambda e: self.execute_line())
+
+    def execute_line(self):
+        line_index = self.text_editors[self.get_current_tab()].index('insert')
+        print("Execution of line : ", line_index.split('.')[0])
+        return 'break'
 
 
 def main(root):
