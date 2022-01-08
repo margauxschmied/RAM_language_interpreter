@@ -20,6 +20,8 @@ class Int(int):
 
     def aux(self):
         """ Aux. function to calculate left and right part """
+        if self == 0:
+            raise Exception("Can't decode 0")
         res, diff = Int(0), self
         while diff != 0:
             diff = self - (res * (res := res + 1) / 2)
