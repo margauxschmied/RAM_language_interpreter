@@ -1,8 +1,5 @@
-from functools import total_ordering
 from tkinter import filedialog, ttk
 import tkinter as tk
-
-from tkinter.scrolledtext import ScrolledText
 
 
 class Texte(tk.Text):
@@ -22,11 +19,23 @@ class Texte(tk.Text):
 
 
 class main_class:
+    """ This class aims to manage all frames. Here we create the menu bar, the file tabs or the shortcuts. """
+
     def __init__(self, root) -> None:
         self.root = root
         self.initiate()
 
     def initiate(self):
+        """ We create useful variables :
+                acc : newly-created files' counter
+                filenames : couple's list of this kind (filenames, Boolean) which
+                            filenames is the path and Boolean represent if the file correspoding has already been saved
+                frames : list which contain text_editor
+                text_editors : text_editor's list in which we write our code/program
+                line_numbers : displayer's list of line number by according  the respecting text_editor
+                titles : tabname's list
+        """
+
         self.acc = 1
         self.filenames = []
         self.frames = []
@@ -40,6 +49,8 @@ class main_class:
         self.create_extern_shortcut(root)
 
     def create_menu(self, x, parent):
+        """ Function wich creates the bar menu. """
+
         self.menu_bar = tk.Menu(parent)
 
         # The 'File' contextual menu
@@ -86,6 +97,8 @@ class main_class:
         parent.config(menu=self.menu_bar)
 
     def create_tab(self, tab_name):
+        """ We create a new tab when : we open a file, we create new file. """
+
         self.titles.append(tab_name)
         self.frames.append(tk.Frame(self.notebook))
         text_editor = Texte(self.frames[-1])
@@ -115,6 +128,8 @@ class main_class:
         text_editor['yscrollcommand'] = self.on_textscroll
 
     def update_line(self, event=None, correct_line_count=True):
+        """ Update line number function's according to the current tab (selected one). """
+
         number_lines = str(
             self.get_current_text_editor().index(tk.END)).split('.')[0]
         if not correct_line_count:
@@ -130,10 +145,14 @@ class main_class:
         self.get_current_line_number().configure(state='disabled')
 
     def on_scrollbar(self, *args):
+        """ The scrollbar affect both the text_editor AND the line number widgets. """
+
         self.get_current_text_editor().yview(*args)
         self.get_current_line_number().yview(*args)
 
     def on_textscroll(self, *args):
+        """ Simultaneous scrolling of line number line when we scroll on the text_editor with mousewheel. """
+
         self.get_current_scrollbar().set(*args)
         self.on_scrollbar('moveto', args[0])
 
@@ -153,12 +172,16 @@ class main_class:
         return self.scrollbars[int(self.get_current_tab())]
 
     def new_file(self):
+        """ Default name of newly-created file is Untitled+[acc] """
+
         self.acc += 1
         title = 'Untitled'+str(self.acc)
         self.create_tab(title)
         self.filenames.append((title, True))
 
     def open_file(self):
+        """ We ask user to choose file by file browser, then we read it and create corresponding tab. """
+
         filenam = filedialog.askopenfilename(
             title="Select File",
             filetypes=(("Text files",
@@ -171,11 +194,15 @@ class main_class:
             self.filenames.append((filenam, False))
 
     def read_file(self, path, tab_num):
+        """ Writing of file's content into text_editor. """
+
         f = open(path, "r")
         self.text_editors[tab_num].add_clean(f.read())
         f.close()
 
     def save_file(self):
+        """ We ask user to choose a filename if he saves the file for the first time. """
+
         tab_num = self.notebook.index(self.notebook.select())
         if self.filenames[tab_num][1]:
             file = filedialog.asksaveasfile(
@@ -200,6 +227,7 @@ class main_class:
         return path.split('/')[-1]
 
     def create_notebook(self, parent):
+        """ Creation of tab's container. """
 
         self.notebook = ttk.Notebook(parent)
         self.create_tab("Untitled"+str(self.acc))
@@ -217,6 +245,11 @@ class main_class:
             parent, width=40, bg='#555555', highlightbackground='#555555', highlightthickness=0)
         self.line_number.pack(side=tk.LEFT, fill=tk.Y)
 
+    """
+        Difference between extern and intern shorcut : first one is binding on the window whereas the intern
+        is inside the text_editor
+    """
+
     def create_extern_shortcut(self, element):
         element.bind('<Control-s>', lambda e: self.save_file())
 
@@ -224,6 +257,8 @@ class main_class:
         element.bind('<Control-Return>', lambda e: self.execute_line())
 
     def execute_line(self):
+        """ The selected line is where the insertion cursor is. """
+
         line_index = self.text_editors[self.get_current_tab()].index('insert')
         line_number = line_index.split('.')[0]
         print('Execution ', '(line ', line_index.split('.')[0], ', file ', self.get_current_tabname(), '): ', self.text_editors[self.get_current_tab()].get(
