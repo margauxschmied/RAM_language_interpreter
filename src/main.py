@@ -1,5 +1,7 @@
 from tkinter import filedialog, ttk
+from tkinter.scrolledtext import ScrolledText
 import tkinter as tk
+import sys as sys
 
 
 class Texte(tk.Text):
@@ -44,11 +46,13 @@ class main_class:
         self.line_numbers = []
         self.titles = []
 
-        self.create_menu(self, root)
-        self.create_notebook(root)
-        self.create_extern_shortcut(root)
+        self.create_menu(self.root)
+        self.create_panel(self.root)
+        self.create_notebook(self.root)
+        self.create_output_terminal(self.root)
+        self.create_extern_shortcut(self.root)
 
-    def create_menu(self, x, parent):
+    def create_menu(self, parent):
         """ Function wich creates the bar menu. """
 
         self.menu_bar = tk.Menu(parent)
@@ -70,9 +74,9 @@ class main_class:
         # The 'Run' contextual menu
         self.menu_run = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_run.add_command(
-            label="Run 1 instruction", command=lambda: print("1"))
+            label="Run 1 instruction", command=lambda: self.pretty_print("1"))
         self.menu_run.add_command(
-            label="Run file", command=lambda: print("Whole file"))
+            label="Run file", command=lambda: self.pretty_print("Whole file"))
         self.menu_bar.add_cascade(label="Run", menu=self.menu_run)
 
         # The 'Stop' button
@@ -81,16 +85,16 @@ class main_class:
             label="Stop execution", command=lambda: print("Stopped"))
         self.menu_bar.add_cascade(label="Stop", menu=self.menu_stop)"""
         self.menu_bar.add_command(
-            label="Stop", command=lambda: print("Stopped"))
+            label="Stop", command=lambda: self.pretty_print("Stopped"))
 
         # The 'Help' contextual menu
         self.menu_help = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_help.add_command(
-            label="User manual", command=lambda: print("test"))
+            label="User manual", command=lambda: self.pretty_print("test"))
         self.menu_help.add_command(
-            label="RAM instructions", command=lambda: print("test2"))
+            label="RAM instructions", command=lambda: self.pretty_print("test2"))
         self.menu_help.add_command(
-            label="About", command=lambda: print("test3"))
+            label="About", command=lambda: self.pretty_print("test3"))
 
         self.menu_bar.add_cascade(label="Help", menu=self.menu_help)
 
@@ -178,6 +182,7 @@ class main_class:
         title = 'Untitled'+str(self.acc)
         self.create_tab(title)
         self.filenames.append((title, True))
+        self.notebook.select(self.notebook.index('end')-1)
 
     def open_file(self):
         """ We ask user to choose file by file browser, then we read it and create corresponding tab. """
@@ -192,6 +197,7 @@ class main_class:
             self.create_tab(self.path_to_filename(filenam))
             self.read_file(filenam, len(self.text_editors) - 1)
             self.filenames.append((filenam, False))
+            self.notebook.select(self.notebook.index('end')-1)
 
     def read_file(self, path, tab_num):
         """ Writing of file's content into text_editor. """
@@ -236,6 +242,7 @@ class main_class:
         self.create_intern_shortcut(self.text_editors[0])
 
         self.notebook.pack(fill=tk.BOTH, expand=1)
+        self.panel.add(self.notebook)
 
         self.notebook.bind("<<NotebookTabChanged>>",
                            lambda e: self.update_line(e, False))
@@ -261,10 +268,25 @@ class main_class:
 
         line_index = self.text_editors[self.get_current_tab()].index('insert')
         line_number = line_index.split('.')[0]
-        print('Execution ', '(line ', line_index.split('.')[0], ', file ', self.get_current_tabname(), '): ', self.text_editors[self.get_current_tab()].get(
-            line_number + '.0', line_number + '.end'), sep='')
+        res = 'Execution (line ' + line_index.split('.')[0] + ', file ' + self.get_current_tabname(
+        ) + '): ' + self.text_editors[self.get_current_tab()].get(line_number + '.0', line_number + '.end')
+        self.pretty_print(res)
 
         return 'break'
+
+    def create_output_terminal(self, parent):
+        self.output = ScrolledText(
+            parent, bg="lightgrey", wrap='word')
+        self.output.pack(fill=tk.X, expand=1)
+        self.panel.add(self.output)
+
+    def create_panel(self, parent):
+        self.panel = tk.PanedWindow(parent, orient=tk.VERTICAL)
+        self.panel.pack(fill=tk.BOTH, expand=True)
+
+    def pretty_print(self, s):
+        self.output.insert('end', s)
+        self.output.insert('end', '\n')
 
 
 def main(root):
