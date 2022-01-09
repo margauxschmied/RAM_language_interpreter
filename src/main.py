@@ -1,3 +1,4 @@
+from tkinter import messagebox
 from tkinter import filedialog, ttk
 from tkinter.scrolledtext import ScrolledText
 import tkinter as tk
@@ -259,6 +260,8 @@ class main_class:
 
     def create_extern_shortcut(self, element):
         element.bind('<Control-s>', lambda e: self.save_file())
+        element.bind('<Escape>', lambda e: self.show_message(
+            "Do you want to quit?"))
 
     def create_intern_shortcut(self, element):
         element.bind('<Control-Return>', lambda e: self.execute_line())
@@ -276,13 +279,18 @@ class main_class:
 
     def create_output_terminal(self, parent):
         self.output = ScrolledText(
-            parent, bg="lightgrey", wrap='word')
+            parent, bg="white", wrap='word')
         self.output.pack(fill=tk.X, expand=1)
         self.panel.add(self.output)
 
     def create_panel(self, parent):
         self.panel = tk.PanedWindow(parent, orient=tk.VERTICAL)
         self.panel.pack(fill=tk.BOTH, expand=True)
+
+    def show_message(self, s):
+        res = messagebox.askokcancel("Quit", s)
+        if res:
+            self.root.destroy()
 
     def pretty_print(self, s):
         self.output.insert('end', s)
