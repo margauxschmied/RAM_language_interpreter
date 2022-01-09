@@ -47,6 +47,9 @@ class main_class:
         self.line_numbers = []
         self.titles = []
 
+        self.choice1 = tk.IntVar(value=1)
+        self.choice2 = tk.IntVar(value=1)
+
         self.create_menu(self.root)
         self.create_panel(self.root)
         self.create_notebook(self.root)
@@ -61,9 +64,9 @@ class main_class:
         # The 'File' contextual menu
         self.menu_file = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_file.add_command(
-            label="New", command=lambda: self.new_file())
+            label="New File", command=lambda: self.new_file())
         self.menu_file.add_command(
-            label="Open", command=lambda: self.open_file())
+            label="Open File", command=lambda: self.open_file())
         self.menu_file.add_command(
             label="Save", command=lambda: self.save_file())
 
@@ -75,9 +78,9 @@ class main_class:
         # The 'Run' contextual menu
         self.menu_run = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_run.add_command(
-            label="Run 1 instruction", command=lambda: self.pretty_print("1"))
+            label="Run Selected Line", command=self.execute_line)
         self.menu_run.add_command(
-            label="Run file", command=lambda: self.pretty_print("Whole file"))
+            label="Run File", command=self.execute_file)
         self.menu_bar.add_cascade(label="Run", menu=self.menu_run)
 
         # The 'Stop' button
@@ -86,20 +89,52 @@ class main_class:
             label="Stop execution", command=lambda: print("Stopped"))
         self.menu_bar.add_cascade(label="Stop", menu=self.menu_stop)"""
         self.menu_bar.add_command(
-            label="Stop", command=lambda: self.pretty_print("Stopped"))
+            label="Stop", command=lambda: self.pretty_print("TODO: Stop\n", 'blue'))
+
+        # The 'Option' button
+        self.menu_bar.add_command(
+            label="Options", command=self.open_option)
 
         # The 'Help' contextual menu
         self.menu_help = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_help.add_command(
-            label="User manual", command=lambda: self.pretty_print("test"))
+            label="User manual", command=lambda: self.pretty_print("TODO: User Manual\n", 'blue'))
         self.menu_help.add_command(
-            label="RAM instructions", command=lambda: self.pretty_print("test2"))
+            label="RAM instructions", command=lambda: self.pretty_print("TODO: RAM\n", 'blue'))
         self.menu_help.add_command(
-            label="About", command=lambda: self.pretty_print("test3"))
+            label="About", command=lambda: self.pretty_print("TODO: About\n", 'blue'))
 
         self.menu_bar.add_cascade(label="Help", menu=self.menu_help)
 
         parent.config(menu=self.menu_bar)
+
+    def manage_line_numbers(self, b):
+        for l, t in zip(self.line_numbers, self.text_editors):
+            if b == 1:
+                t.pack_forget()
+                l.pack(side=tk.LEFT, fill=tk.BOTH)
+                t.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+            else:
+                l.pack_forget()
+
+    def open_option(self):
+        new_window = tk.Toplevel(self.panel)
+
+        new_window.title("Options")
+        new_window.grab_set()
+        new_window.focus()
+        new_window.geometry("300x80")
+        new_window.resizable(False, False)
+        check1 = tk.Checkbutton(new_window, text='Show Line Numbers',
+                                variable=self.choice1, onvalue=1, offvalue=0, command=lambda: self.manage_line_numbers(self.choice1.get()))
+        check1.grid(column=0, row=0, sticky='W')
+        check2 = tk.Checkbutton(
+            new_window, text='Automaticaly Go to Next Line', variable=self.choice2, onvalue=1, offvalue=0)
+        check2.grid(column=0, row=1, sticky='W')
+
+        valid = tk.Button(new_window, text="OK",
+                          command=lambda: new_window.destroy())
+        valid.grid(column=0, row=2, sticky='E')
 
     def create_tab(self, tab_name):
         """ We create a new tab when : we open a file, we create new file. """
@@ -248,11 +283,6 @@ class main_class:
         self.notebook.bind("<<NotebookTabChanged>>",
                            lambda e: self.update_line(e, False))
 
-    def create_line_number(self, parent):
-        self.line_number = tk.Canvas(
-            parent, width=40, bg='#555555', highlightbackground='#555555', highlightthickness=0)
-        self.line_number.pack(side=tk.LEFT, fill=tk.Y)
-
     """
         Difference between extern and intern shorcut : first one is binding on the window whereas the intern
         is inside the text_editor
@@ -269,18 +299,36 @@ class main_class:
     def execute_line(self):
         """ The selected line is where the insertion cursor is. """
 
-        line_index = self.text_editors[self.get_current_tab()].index('insert')
+        line_index = self.get_current_text_editor().index('insert')
         line_number = line_index.split('.')[0]
         res = 'Execution (line ' + line_index.split('.')[0] + ', file ' + self.get_current_tabname(
-        ) + '): ' + self.text_editors[self.get_current_tab()].get(line_number + '.0', line_number + '.end')
+        ) + '): '
+        self.pretty_print("TODO: Run line\n", 'blue')
         self.pretty_print(res)
+        self.pretty_print(self.text_editors[self.get_current_tab()].get(
+            line_number + '.0', line_number + '.end') + '\n', 'gray')
+
+        if self.choice2.get() == 1:
+            self.get_current_text_editor().mark_set(
+                "insert", str(int(line_number) + 1) + '.end')
 
         return 'break'
+
+    def execute_file(self):
+        program = self.get_current_text_editor().get('1.0', 'end')
+        res = 'Execution (' + self.get_current_tabname() + ')\n'
+        self.pretty_print("TODO: Run file\n", 'blue')
+        self.pretty_print(res)
 
     def create_output_terminal(self, parent):
         self.output = ScrolledText(
             parent, bg="white", wrap='word')
         self.output.pack(fill=tk.X, expand=1)
+        self.output.configure(state='disabled')
+        self.output.tag_config('blue', foreground="blue")
+        self.output.tag_config('gray', foreground="gray30")
+        self.output.tag_config('black', foreground="black")
+
         self.panel.add(self.output)
 
     def create_panel(self, parent):
@@ -292,9 +340,11 @@ class main_class:
         if res:
             self.root.destroy()
 
-    def pretty_print(self, s):
-        self.output.insert('end', s)
-        self.output.insert('end', '\n')
+    def pretty_print(self, s, fg='black'):
+        self.output.configure(state='normal')
+        self.output.insert('end', s, fg)
+        self.output.yview_moveto(1)
+        self.output.configure(state='disabled')
 
 
 def main(root):
