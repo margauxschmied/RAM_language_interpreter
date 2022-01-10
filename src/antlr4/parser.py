@@ -1,13 +1,15 @@
 import sys
 
+
 import antlr4
 from antlr4 import *
-from dist.MyGrammarLexer import MyGrammarLexer
-from dist.MyGrammarParser import MyGrammarParser
-from dist.MyGrammarVisitor import MyGrammarVisitor
 
 
 # https://faun.pub/introduction-to-antlr-python-af8a3c603d23
+from src.antlr4.dist.MyGrammarLexer import MyGrammarLexer
+from src.antlr4.dist.MyGrammarParser import MyGrammarParser
+from src.antlr4.dist.MyGrammarVisitor import MyGrammarVisitor
+
 
 class MyVisitor(MyGrammarVisitor):
 
