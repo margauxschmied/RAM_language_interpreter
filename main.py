@@ -2,13 +2,11 @@ from tkinter import messagebox
 from tkinter import filedialog, ttk
 from tkinter.scrolledtext import ScrolledText
 import tkinter as tk
-import sys as sys
 
 from antlr4 import *
 from src.antlr4.dist.MyGrammarLexer import MyGrammarLexer
 from src.antlr4.dist.MyGrammarParser import MyGrammarParser
-from src.antlr4.dist.MyGrammarVisitor import MyGrammarVisitor
-from src.antlr4.parser import MyVisitor
+from src.parser import MyVisitor
 
 
 class Texte(tk.Text):
