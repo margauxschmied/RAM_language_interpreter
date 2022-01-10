@@ -1,11 +1,11 @@
-from cantor_int import Int
+from src.cantor_int import Int
 
 
 class Instruction:
     def __init__(self, num_instr: int, register: int, n=None, next=None):
-        self.numInstr = num_instr
-        self.register = register
-        self.n = n
+        self.numInstr = Int(num_instr)
+        self.register = Int(register)
+        self.n = Int(n) if n is not None else None
         self.next = next
         self.instr = [self.add_instr,
                       self.sub_instr,

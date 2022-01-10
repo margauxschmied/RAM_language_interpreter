@@ -1,5 +1,6 @@
 from typing import List
-from cantor_int import Int
+from src.instruction import Instruction
+from src.cantor_int import Int
 
 
 def decode_int_instr(n: int):
@@ -41,6 +42,8 @@ def decode_int_program(inp):
         The program transform every instr to a RAM instr 
         thanks to decode_int_instr function
     """
+    if type(inp) == list and type(inp[0]) == Instruction:
+        return "\n".join(map(decode_int_instr, map(Instruction.encode_instr, inp)))
     n = Int(inp).int_to_couple() if type(inp) == int else inp
     program = []
     while True:

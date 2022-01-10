@@ -6,9 +6,10 @@ import tkinter as tk
 from antlr4 import InputStream, CommonTokenStream
 from src.antlr4.dist.MyGrammarLexer import MyGrammarLexer
 from src.antlr4.dist.MyGrammarParser import MyGrammarParser
+from src.instruction import Instruction
 from src.parser import MyVisitor, listInstruction
 from src.decode_int import decode_int_instr, decode_int_program
-from src.interpreter import Instruction
+from src.interpreter import Interpreter
 
 
 class Texte(tk.Text):
@@ -367,11 +368,17 @@ if __name__ == '__main__':
     #
     # root.mainloop()
 
-    program = 10558896545
+    N = 100
+    i = Interpreter(
+        [Instruction(0, 0),
+         Instruction(1, 0),
+         Instruction(0, 1),
+         Instruction(2, 0, 2)], N)
 
-    program_decoded = decode_int_program(program)
+    print(f"\n  Starting instructions \n{i.instr_list}")
+    program_decoded = decode_int_program(i.instr_list)
 
-    print(program_decoded)
+    print(f"\n  Instruction in RAM \n{program_decoded}")
 
     data = InputStream(program_decoded)
 
@@ -388,4 +395,12 @@ if __name__ == '__main__':
     output = visitor.visit(tree)
 
     l_inst = listInstruction(tree)
-    print(l_inst)
+
+    print(f"\n  List instr after parsing \n{l_inst}")
+
+    print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
+
+    # interpreter
+    interp = Interpreter(l_inst, N)
+    interp.treat_all_instr()
+    print("\n  Program output =", interp.get_otput())
