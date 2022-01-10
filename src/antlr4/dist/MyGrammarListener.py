@@ -5,15 +5,18 @@ if __name__ is not None and "." in __name__:
 else:
     from MyGrammarParser import MyGrammarParser
 
+from src.instruction import Instruction
+
+
 # This class defines a complete listener for a parse tree produced by MyGrammarParser.
 class MyGrammarListener(ParseTreeListener):
 
-    # Enter a parse tree produced by MyGrammarParser#program.
-    def enterProgram(self, ctx:MyGrammarParser.ProgramContext):
+    # Enter a parse tree produced by MyGrammarParser#MakeList.
+    def enterMakeList(self, ctx:MyGrammarParser.MakeListContext):
         pass
 
-    # Exit a parse tree produced by MyGrammarParser#program.
-    def exitProgram(self, ctx:MyGrammarParser.ProgramContext):
+    # Exit a parse tree produced by MyGrammarParser#MakeList.
+    def exitMakeList(self, ctx:MyGrammarParser.MakeListContext):
         pass
 
 
@@ -26,21 +29,12 @@ class MyGrammarListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by MyGrammarParser#ZeroUn.
-    def enterZeroUn(self, ctx:MyGrammarParser.ZeroUnContext):
+    # Enter a parse tree produced by MyGrammarParser#expr.
+    def enterExpr(self, ctx:MyGrammarParser.ExprContext):
         pass
 
-    # Exit a parse tree produced by MyGrammarParser#ZeroUn.
-    def exitZeroUn(self, ctx:MyGrammarParser.ZeroUnContext):
-        pass
-
-
-    # Enter a parse tree produced by MyGrammarParser#DeuxTrois.
-    def enterDeuxTrois(self, ctx:MyGrammarParser.DeuxTroisContext):
-        pass
-
-    # Exit a parse tree produced by MyGrammarParser#DeuxTrois.
-    def exitDeuxTrois(self, ctx:MyGrammarParser.DeuxTroisContext):
+    # Exit a parse tree produced by MyGrammarParser#expr.
+    def exitExpr(self, ctx:MyGrammarParser.ExprContext):
         pass
 
 

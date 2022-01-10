@@ -8,6 +8,9 @@ else:
     from typing.io import TextIO
 
 
+from src.instruction import Instruction
+
+
 
 def serializedATN():
     with StringIO() as buf:

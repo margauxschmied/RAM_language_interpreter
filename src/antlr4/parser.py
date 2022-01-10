@@ -1,36 +1,50 @@
 import sys
+
+import antlr4
 from antlr4 import *
 from dist.MyGrammarLexer import MyGrammarLexer
 from dist.MyGrammarParser import MyGrammarParser
 from dist.MyGrammarVisitor import MyGrammarVisitor
 
+
 # https://faun.pub/introduction-to-antlr-python-af8a3c603d23
 
-
-def get_username():
-    from pwd import getpwuid
-    from os import getuid
-
-    return getpwuid(getuid())[0]
-
-
 class MyVisitor(MyGrammarVisitor):
-    def visitCoucou(self, ctx):
-        print(ctx.r1.text)
 
-    def visitParenExpr(self, ctx):
-        return self.visit(ctx.expr())
+    def visitMakeList(self, ctx):
+        current_instruction = ctx.instruction
+        instructions = [current_instruction]
+
+        while current_instruction is not None and current_instruction.getNext() is not None:
+            current_instruction = current_instruction.getNext()
+            instructions.append(current_instruction)
+
+        return instructions
+
+
+def listInstruction(expr):
+    instructions = []
+    current_instruction = None
+    for child in expr.getChildren():
+        if not isinstance(child, TerminalNode):
+            current_instruction = child.instruction
+            instructions.append(current_instruction)
+
+    while current_instruction is not None and current_instruction.getNext() is not None:
+        current_instruction = current_instruction.getNext()
+        instructions.append(current_instruction)
+
+    return instructions
 
 
 if __name__ == "__main__":
-    # while 1:
     data = InputStream(
-        """R2 = R2 + 1
+         """R2 = R2 + 1
 R2 = R2 - 1
-if R2!=2 THEN GOTOB 0
+if R2!=0 THEN GOTOB 0
 R0 = R0 - 1"""
     )
-    print(data)
+    # print(data)
     # lexer
     lexer = MyGrammarLexer(data)
     stream = CommonTokenStream(lexer)
@@ -40,4 +54,6 @@ R0 = R0 - 1"""
     # evaluator
     visitor = MyVisitor()
     output = visitor.visit(tree)
+    # listInstruction(tree)
     print(output)
+

@@ -5,12 +5,15 @@ if __name__ is not None and "." in __name__:
 else:
     from MyGrammarParser import MyGrammarParser
 
+from src.instruction import Instruction
+
+
 # This class defines a complete generic visitor for a parse tree produced by MyGrammarParser.
 
 class MyGrammarVisitor(ParseTreeVisitor):
 
-    # Visit a parse tree produced by MyGrammarParser#program.
-    def visitProgram(self, ctx:MyGrammarParser.ProgramContext):
+    # Visit a parse tree produced by MyGrammarParser#MakeList.
+    def visitMakeList(self, ctx:MyGrammarParser.MakeListContext):
         return self.visitChildren(ctx)
 
 
@@ -19,13 +22,8 @@ class MyGrammarVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by MyGrammarParser#ZeroUn.
-    def visitZeroUn(self, ctx:MyGrammarParser.ZeroUnContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by MyGrammarParser#DeuxTrois.
-    def visitDeuxTrois(self, ctx:MyGrammarParser.DeuxTroisContext):
+    # Visit a parse tree produced by MyGrammarParser#expr.
+    def visitExpr(self, ctx:MyGrammarParser.ExprContext):
         return self.visitChildren(ctx)
 
 
