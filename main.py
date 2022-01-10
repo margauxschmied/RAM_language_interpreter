@@ -6,6 +6,7 @@ import tkinter as tk
 from antlr4 import InputStream, CommonTokenStream
 from src.antlr4.dist.MyGrammarLexer import MyGrammarLexer
 from src.antlr4.dist.MyGrammarParser import MyGrammarParser
+from src.cantor_int import Int
 from src.instruction import Instruction
 from src.parser import MyVisitor, listInstruction
 from src.decode_int import decode_int_instr, decode_int_program
@@ -371,11 +372,24 @@ if __name__ == '__main__':
     N = 100
     i = Interpreter(
         [Instruction(0, 0),
+
+         Instruction(0, 2),
+         Instruction(0, 2),
          Instruction(1, 0),
+         Instruction(2, 0, 3),
+         Instruction(1, 2),
+
+         Instruction(1, 2),
          Instruction(0, 1),
-         Instruction(2, 0, 2)], N)
+         Instruction(2, 2, 2),
+         Instruction(1, 1)], N)
 
     print(f"\n  Starting instructions \n{i.instr_list}")
+
+    program_int = i.encode_list_instr()
+
+    print(f"\n  Program int \n{program_int}")
+
     program_decoded = decode_int_program(i.instr_list)
 
     print(f"\n  Instruction in RAM \n{program_decoded}")

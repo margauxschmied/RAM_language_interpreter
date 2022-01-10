@@ -35,12 +35,20 @@ def decode_int_instr(n: int):
     return '\n'.join(res)
 
 
-def decode_int_program(inp):
+def decode_int_program(inp) -> str:
     """
-        If n is an int it is converted to the Cantor's couple
-        Else n is on the form <a1, ... <an, 0>>>
-        The program transform every instr to a RAM instr 
-        thanks to decode_int_instr function
+        Function trasforming a program to a str of RAM instruction
+
+        It takes as parameters:
+            - an int -> the int is at first translated in Cantor's couple <a1, <a2 ..., <an, 0>>>
+            - a Cantor's couple
+            - a list of Instruction (from instruction.py file)
+
+        Exemple :
+        decode_int_program(1) = 
+        decode_int_program((0,0)) = 
+        decode_int_program([Instruction(0,1)]) = 
+        `R0 = R0 + 1`
     """
     if type(inp) == list and type(inp[0]) == Instruction:
         return "\n".join(map(decode_int_instr, map(Instruction.encode_instr, inp)))
