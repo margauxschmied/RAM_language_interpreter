@@ -7,13 +7,13 @@ def decode_int_instr(n: int):
         Gödelisation :
         - ADD = Rk = Rk + 1 (n = 3 * k)
         - SUB = Rk = Rk - 1 (n = 3 * k + 1)
-        - IFF = IF Rk != 0 THEN GOTOF n (n = 3 <k, <0, <n, 0>>> + 2)
         - IFB = IF Rk != 0 THEN GOTOB n (n = 3 <k, <1, <n, 0>>> + 2)
+        - IFF = IF Rk != 0 THEN GOTOF n (n = 3 <k, <0, <n, 0>>> + 2)
     """
     res: List[str] = []
     n = Int(n)
     if n % 3 < 2:
-        current = n / 3
+        current = Int(n) / 3
         res.append(
             'R{} = R{} {} 1'.format(current, current, ['+', '-'][n % 3 == 1]))
     else:
@@ -29,8 +29,8 @@ def decode_int_instr(n: int):
             rpart = current.right()
             type_saut = rpart.left()
             saut = rpart.right()
-        inst = ('F', 'B')
-        res.append(f'if R{k}!=0 THEN GOTO{inst[type_saut!=1]} {saut}')
+        saut_letter = 'F' if type_saut != 1 else 'B'
+        res.append(f'if R{k}!=0 THEN GOTO{saut_letter} {saut}')
     return '\n'.join(res)
 
 

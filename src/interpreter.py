@@ -1,5 +1,6 @@
 from typing import List
 from cantor_int import Int
+from decode_int import decode_int_instr, decode_int_program
 from instruction import Instruction
 
 
@@ -38,6 +39,14 @@ class Interpreter(dict):
     def init_zero(self, value):
         self[0] = value
 
+    def encode_list_instr(self):
+        t = self.instr_list[::-1]
+        res = (t.pop(0).encode_instr(), 0)
+        while len(t) != 0:
+            res = (t.pop(0).encode_instr(), res)
+        print(res)
+        return Int.couple_to_int(res)
+
     def __getitem__(self, k) -> Int:
         if k not in dict(self):
             self.__setitem__(k, Int(0))
@@ -58,21 +67,24 @@ if __name__ == '__main__':
     i = Interpreter(
         [Instruction(1, 0),
          Instruction(0, 1),
-         Instruction(2, 0, -2)], N)
+         Instruction(2, 0, 2)], N)
     i.treat_all_instr()
     print(i.get_otput())
 
     """
         Ram program returing sigma(N)
     """
-    N = 5
+    N = 1
     i = Interpreter(
         [Instruction(0, 0),
          Instruction(1, 0),
          Instruction(0, 1),
-         Instruction(2, 0, -2)], 5)
+         Instruction(2, 0, 2)], N)
     i.treat_all_instr()
     print(i.get_otput())
+
+    print(i.encode_list_instr())
+    print(decode_int_program(11752168540519528658296634913990))
 
     """
         Ram program returning N * 2
@@ -84,13 +96,15 @@ if __name__ == '__main__':
          Instruction(0, 8),
          Instruction(0, 8),
          Instruction(1, 0),
-         Instruction(2, 0, -3),
+         Instruction(2, 0, 3),
          Instruction(1, 8),
 
          Instruction(1, 8),
          Instruction(0, 1),
-         Instruction(2, 8, -2),
+         Instruction(2, 8, 2),
          Instruction(1, 1)], N
     )
     i.treat_all_instr()
     print(i.get_otput())
+
+    # print(decode_int_program(123))

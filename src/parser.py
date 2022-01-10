@@ -1,8 +1,4 @@
-import sys
-
-
-import antlr4
-from antlr4 import *
+from antlr4 import InputStream, CommonTokenStream, TerminalNode
 
 
 # https://faun.pub/introduction-to-antlr-python-af8a3c603d23
@@ -41,7 +37,7 @@ def listInstruction(expr):
 
 if __name__ == "__main__":
     data = InputStream(
-         """R2 = R2 + 1
+        """R2 = R2 + 1
 R2 = R2 - 1
 if R2!=0 THEN GOTOB 0
 R0 = R0 - 1"""
@@ -58,4 +54,3 @@ R0 = R0 - 1"""
     output = visitor.visit(tree)
     # listInstruction(tree)
     print(output)
-

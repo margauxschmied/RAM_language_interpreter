@@ -3,10 +3,12 @@ from tkinter import filedialog, ttk
 from tkinter.scrolledtext import ScrolledText
 import tkinter as tk
 
-from antlr4 import *
+from antlr4 import InputStream, CommonTokenStream
 from src.antlr4.dist.MyGrammarLexer import MyGrammarLexer
 from src.antlr4.dist.MyGrammarParser import MyGrammarParser
-from src.parser import MyVisitor
+from src.parser import MyVisitor, listInstruction
+from src.decode_int import decode_int_instr, decode_int_program
+from src.interpreter import Instruction
 
 
 class Texte(tk.Text):
@@ -76,7 +78,7 @@ class main_class:
 
         self.menu_file.add_separator()
         self.menu_file.add_command(
-            label="Exit", command=lambda: root.destroy())
+            label="Exit", command=lambda: self.root.destroy())
         self.menu_bar.add_cascade(label="File", menu=self.menu_file)
 
         # The 'Run' contextual menu
@@ -365,22 +367,25 @@ if __name__ == '__main__':
     #
     # root.mainloop()
 
-    data = InputStream(
-        """R2 = R2 + 1
-R2 = R2 - 1
-if R2!=0 THEN GOTOB 0
-R0 = R0 - 1"""
-    )
-    # print(data)
+    program = 10558896545
+
+    program_decoded = decode_int_program(program)
+
+    print(program_decoded)
+
+    data = InputStream(program_decoded)
+
     # lexer
     lexer = MyGrammarLexer(data)
     stream = CommonTokenStream(lexer)
+
     # parser
     parser = MyGrammarParser(stream)
     tree = parser.program()
+
     # evaluator
     visitor = MyVisitor()
     output = visitor.visit(tree)
-    # listInstruction(tree)
-    print(output)
 
+    l_inst = listInstruction(tree)
+    print(l_inst)

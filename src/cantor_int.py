@@ -1,3 +1,7 @@
+import sys
+sys.setrecursionlimit(10000)
+
+
 class Int(int):
     """
     This class aims to represent an int with the propreties 
@@ -59,7 +63,7 @@ class Int(int):
         return res if res[1] == 0 else (res[0], Int(res[1]).int_to_couple())
 
     def couple_to_int(s):
-        return Int.cantor(s[0], Int.couple_to_int(s[1])) if s[1] != 0 else Int.cantor(*s)
+        return Int.cantor(s[0], Int.couple_to_int(s[1])) if type(s[1]) != int else Int.cantor(*s)
 
     def int_to_str(self) -> str:
         """ 
