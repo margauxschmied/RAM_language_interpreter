@@ -1,6 +1,10 @@
 from typing import List
-from src.instruction import Instruction
-from src.cantor_int import Int
+try:
+    from src.instruction import Instruction
+    from src.cantor_int import Int
+except:
+    from instruction import Instruction
+    from cantor_int import Int
 
 
 def decode_int_instr(n: int):

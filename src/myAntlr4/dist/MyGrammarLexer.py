@@ -8,8 +8,13 @@ else:
     from typing.io import TextIO
 
 
-from src.instruction import Instruction
-
+try:
+    from src.instruction import Instruction
+except:
+    try:
+        from ...instruction import Instruction
+    except:
+        from instruction import Instruction
 
 
 def serializedATN():
@@ -55,7 +60,7 @@ class MyGrammarLexer(Lexer):
 
     atn = ATNDeserializer().deserialize(serializedATN())
 
-    decisionsToDFA = [ DFA(ds, i) for i, ds in enumerate(atn.decisionToState) ]
+    decisionsToDFA = [DFA(ds, i) for i, ds in enumerate(atn.decisionToState)]
 
     T__0 = 1
     T__1 = 2
@@ -71,26 +76,25 @@ class MyGrammarLexer(Lexer):
     NEWLINE = 12
     WHITESPACE = 13
 
-    channelNames = [ u"DEFAULT_TOKEN_CHANNEL", u"HIDDEN" ]
+    channelNames = [u"DEFAULT_TOKEN_CHANNEL", u"HIDDEN"]
 
-    modeNames = [ "DEFAULT_MODE" ]
+    modeNames = ["DEFAULT_MODE"]
 
-    literalNames = [ "<INVALID>",
-            "'R'", "'='", "'+'", "'-'", "'IF'", "'if'", "'!='" ]
+    literalNames = ["<INVALID>",
+                    "'R'", "'='", "'+'", "'-'", "'IF'", "'if'", "'!='"]
 
-    symbolicNames = [ "<INVALID>",
-            "INT", "THEN", "GOTOB", "GOTOF", "NEWLINE", "WHITESPACE" ]
+    symbolicNames = ["<INVALID>",
+                     "INT", "THEN", "GOTOB", "GOTOF", "NEWLINE", "WHITESPACE"]
 
-    ruleNames = [ "T__0", "T__1", "T__2", "T__3", "T__4", "T__5", "T__6", 
-                  "INT", "THEN", "GOTOB", "GOTOF", "NEWLINE", "WHITESPACE" ]
+    ruleNames = ["T__0", "T__1", "T__2", "T__3", "T__4", "T__5", "T__6",
+                 "INT", "THEN", "GOTOB", "GOTOF", "NEWLINE", "WHITESPACE"]
 
     grammarFileName = "MyGrammar.g4"
 
-    def __init__(self, input=None, output:TextIO = sys.stdout):
+    def __init__(self, input=None, output: TextIO = sys.stdout):
         super().__init__(input, output)
         self.checkVersion("4.9.2")
-        self._interp = LexerATNSimulator(self, self.atn, self.decisionsToDFA, PredictionContextCache())
+        self._interp = LexerATNSimulator(
+            self, self.atn, self.decisionsToDFA, PredictionContextCache())
         self._actions = None
         self._predicates = None
-
-

@@ -1,7 +1,12 @@
 from typing import List
-from src.cantor_int import Int
-from src.decode_int import decode_int_instr, decode_int_program
-from src.instruction import Instruction
+try:
+    from src.cantor_int import Int
+    from src.decode_int import decode_int_instr, decode_int_program
+    from src.instruction import Instruction
+except:
+    from cantor_int import Int
+    from decode_int import decode_int_instr, decode_int_program
+    from instruction import Instruction
 
 
 class Interpreter(dict):

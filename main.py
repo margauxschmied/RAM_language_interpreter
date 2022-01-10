@@ -4,8 +4,8 @@ from tkinter.scrolledtext import ScrolledText
 import tkinter as tk
 
 from antlr4 import InputStream, CommonTokenStream
-from src.antlr4.dist.MyGrammarLexer import MyGrammarLexer
-from src.antlr4.dist.MyGrammarParser import MyGrammarParser
+from src.myAntlr4.dist.MyGrammarLexer import MyGrammarLexer
+from src.myAntlr4.dist.MyGrammarParser import MyGrammarParser
 from src.cantor_int import Int
 from src.instruction import Instruction
 from src.parser import MyVisitor, listInstruction

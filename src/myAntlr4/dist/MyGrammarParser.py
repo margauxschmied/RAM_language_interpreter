@@ -4,12 +4,18 @@ from antlr4 import *
 from io import StringIO
 import sys
 if sys.version_info[1] > 5:
-	from typing import TextIO
+    from typing import TextIO
 else:
-	from typing.io import TextIO
+    from typing.io import TextIO
 
 
-from src.instruction import Instruction
+try:
+    from src.instruction import Instruction
+except:
+    try:
+        from ...instruction import Instruction
+    except:
+        from instruction import Instruction
 
 
 def serializedATN():
@@ -32,100 +38,93 @@ def serializedATN():
         return buf.getvalue()
 
 
-class MyGrammarParser ( Parser ):
+class MyGrammarParser (Parser):
 
     grammarFileName = "MyGrammar.g4"
 
     atn = ATNDeserializer().deserialize(serializedATN())
 
-    decisionsToDFA = [ DFA(ds, i) for i, ds in enumerate(atn.decisionToState) ]
+    decisionsToDFA = [DFA(ds, i) for i, ds in enumerate(atn.decisionToState)]
 
     sharedContextCache = PredictionContextCache()
 
-    literalNames = [ "<INVALID>", "'R'", "'='", "'+'", "'-'", "'IF'", "'if'", 
-                     "'!='" ]
+    literalNames = ["<INVALID>", "'R'", "'='", "'+'", "'-'", "'IF'", "'if'",
+                    "'!='"]
 
-    symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "INT", "THEN", "GOTOB", "GOTOF", "NEWLINE", "WHITESPACE" ]
+    symbolicNames = ["<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                     "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                     "INT", "THEN", "GOTOB", "GOTOF", "NEWLINE", "WHITESPACE"]
 
     RULE_program = 0
     RULE_code = 1
     RULE_expr = 2
 
-    ruleNames =  [ "program", "code", "expr" ]
+    ruleNames = ["program", "code", "expr"]
 
     EOF = Token.EOF
-    T__0=1
-    T__1=2
-    T__2=3
-    T__3=4
-    T__4=5
-    T__5=6
-    T__6=7
-    INT=8
-    THEN=9
-    GOTOB=10
-    GOTOF=11
-    NEWLINE=12
-    WHITESPACE=13
+    T__0 = 1
+    T__1 = 2
+    T__2 = 3
+    T__3 = 4
+    T__4 = 5
+    T__5 = 6
+    T__6 = 7
+    INT = 8
+    THEN = 9
+    GOTOB = 10
+    GOTOF = 11
+    NEWLINE = 12
+    WHITESPACE = 13
 
-    def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
+    def __init__(self, input: TokenStream, output: TextIO = sys.stdout):
         super().__init__(input, output)
         self.checkVersion("4.9.2")
-        self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
+        self._interp = ParserATNSimulator(
+            self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
-
-
-
 
     class ProgramContext(ParserRuleContext):
         __slots__ = 'parser'
 
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+        def __init__(self, parser, parent: ParserRuleContext = None, invokingState: int = -1):
             super().__init__(parent, invokingState)
             self.parser = parser
             self.instruction = None
 
-
         def getRuleIndex(self):
             return MyGrammarParser.RULE_program
 
-     
-        def copyFrom(self, ctx:ParserRuleContext):
+        def copyFrom(self, ctx: ParserRuleContext):
             super().copyFrom(ctx)
             self.instruction = ctx.instruction
 
-
-
     class MakeListContext(ProgramContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a MyGrammarParser.ProgramContext
+        # actually a MyGrammarParser.ProgramContext
+        def __init__(self, parser, ctx: ParserRuleContext):
             super().__init__(parser)
-            self._code = None # CodeContext
+            self._code = None  # CodeContext
             self.copyFrom(ctx)
 
         def code(self):
-            return self.getTypedRuleContext(MyGrammarParser.CodeContext,0)
+            return self.getTypedRuleContext(MyGrammarParser.CodeContext, 0)
 
         def EOF(self):
             return self.getToken(MyGrammarParser.EOF, 0)
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMakeList" ):
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterMakeList"):
                 listener.enterMakeList(self)
 
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMakeList" ):
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitMakeList"):
                 listener.exitMakeList(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitMakeList" ):
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitMakeList"):
                 return visitor.visitMakeList(self)
             else:
                 return visitor.visitChildren(self)
-
-
 
     def program(self):
 
@@ -138,7 +137,7 @@ class MyGrammarParser ( Parser ):
             localctx._code = self.code()
             self.state = 7
             self.match(MyGrammarParser.EOF)
-            localctx.instruction=localctx._code.instruction
+            localctx.instruction = localctx._code.instruction
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -147,47 +146,41 @@ class MyGrammarParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class CodeContext(ParserRuleContext):
         __slots__ = 'parser'
 
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+        def __init__(self, parser, parent: ParserRuleContext = None, invokingState: int = -1):
             super().__init__(parent, invokingState)
             self.parser = parser
             self.instruction = None
-            self._expr = None # ExprContext
-            self._code = None # CodeContext
+            self._expr = None  # ExprContext
+            self._code = None  # CodeContext
 
         def expr(self):
-            return self.getTypedRuleContext(MyGrammarParser.ExprContext,0)
-
+            return self.getTypedRuleContext(MyGrammarParser.ExprContext, 0)
 
         def NEWLINE(self):
             return self.getToken(MyGrammarParser.NEWLINE, 0)
 
         def code(self):
-            return self.getTypedRuleContext(MyGrammarParser.CodeContext,0)
-
+            return self.getTypedRuleContext(MyGrammarParser.CodeContext, 0)
 
         def getRuleIndex(self):
             return MyGrammarParser.RULE_code
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCode" ):
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterCode"):
                 listener.enterCode(self)
 
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCode" ):
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitCode"):
                 listener.exitCode(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitCode" ):
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitCode"):
                 return visitor.visitCode(self)
             else:
                 return visitor.visitChildren(self)
-
-
-
 
     def code(self):
 
@@ -196,7 +189,7 @@ class MyGrammarParser ( Parser ):
         try:
             self.state = 18
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,0,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input, 0, self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 10
@@ -205,7 +198,7 @@ class MyGrammarParser ( Parser ):
                 self.match(MyGrammarParser.NEWLINE)
                 self.state = 12
                 localctx._code = self.code()
-                localctx.instruction =localctx._expr.instruction
+                localctx.instruction = localctx._expr.instruction
                 localctx.instruction.setNext(localctx._code.instruction)
                 pass
 
@@ -213,9 +206,8 @@ class MyGrammarParser ( Parser ):
                 self.enterOuterAlt(localctx, 2)
                 self.state = 15
                 localctx._expr = self.expr()
-                localctx.instruction =localctx._expr.instruction
+                localctx.instruction = localctx._expr.instruction
                 pass
-
 
         except RecognitionException as re:
             localctx.exception = re
@@ -225,23 +217,22 @@ class MyGrammarParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class ExprContext(ParserRuleContext):
         __slots__ = 'parser'
 
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+        def __init__(self, parser, parent: ParserRuleContext = None, invokingState: int = -1):
             super().__init__(parent, invokingState)
             self.parser = parser
             self.instruction = None
-            self.r1 = None # Token
-            self.r2 = None # Token
-            self.op = None # Token
-            self.un = None # Token
-            self.zero = None # Token
-            self.goto = None # Token
-            self.n = None # Token
+            self.r1 = None  # Token
+            self.r2 = None  # Token
+            self.op = None  # Token
+            self.un = None  # Token
+            self.zero = None  # Token
+            self.goto = None  # Token
+            self.n = None  # Token
 
-        def INT(self, i:int=None):
+        def INT(self, i: int = None):
             if i is None:
                 return self.getTokens(MyGrammarParser.INT)
             else:
@@ -259,28 +250,25 @@ class MyGrammarParser ( Parser ):
         def getRuleIndex(self):
             return MyGrammarParser.RULE_expr
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterExpr" ):
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterExpr"):
                 listener.enterExpr(self)
 
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitExpr" ):
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitExpr"):
                 listener.exitExpr(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitExpr" ):
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitExpr"):
                 return visitor.visitExpr(self)
             else:
                 return visitor.visitChildren(self)
-
-
-
 
     def expr(self):
 
         localctx = MyGrammarParser.ExprContext(self, self._ctx, self.state)
         self.enterRule(localctx, 4, self.RULE_expr)
-        self._la = 0 # Token type
+        self._la = 0  # Token type
         try:
             self.state = 37
             self._errHandler.sync(self)
@@ -300,7 +288,7 @@ class MyGrammarParser ( Parser ):
                 self.state = 25
                 localctx.op = self._input.LT(1)
                 _la = self._input.LA(1)
-                if not(_la==MyGrammarParser.T__2 or _la==MyGrammarParser.T__3):
+                if not(_la == MyGrammarParser.T__2 or _la == MyGrammarParser.T__3):
                     localctx.op = self._errHandler.recoverInline(self)
                 else:
                     self._errHandler.reportMatch(self)
@@ -309,20 +297,24 @@ class MyGrammarParser ( Parser ):
                 localctx.un = self.match(MyGrammarParser.INT)
 
                 if (None if localctx.r1 is None else localctx.r1.text) != (None if localctx.r2 is None else localctx.r2.text):
-                    raise ValueError("line "+str((0 if localctx.r1 is None else localctx.r1.line))+": R"+(None if localctx.r1 is None else localctx.r1.text)+" != "+"R"+(None if localctx.r2 is None else localctx.r2.text))
+                    raise ValueError("line "+str((0 if localctx.r1 is None else localctx.r1.line))+": R"+(
+                        None if localctx.r1 is None else localctx.r1.text)+" != "+"R"+(None if localctx.r2 is None else localctx.r2.text))
                 if (None if localctx.un is None else localctx.un.text) != '1':
-                    raise ValueError("line "+str((0 if localctx.un is None else localctx.un.line))+": "+(None if localctx.un is None else localctx.un.text)+" != 1")
-                if (None if localctx.op is None else localctx.op.text)=='+':
-                    localctx.instruction= Instruction(0, (None if localctx.r1 is None else localctx.r1.text))
+                    raise ValueError("line "+str((0 if localctx.un is None else localctx.un.line))+": "+(
+                        None if localctx.un is None else localctx.un.text)+" != 1")
+                if (None if localctx.op is None else localctx.op.text) == '+':
+                    localctx.instruction = Instruction(
+                        0, (None if localctx.r1 is None else localctx.r1.text))
                 else:
-                    localctx.instruction= Instruction(1, (None if localctx.r1 is None else localctx.r1.text))
+                    localctx.instruction = Instruction(
+                        1, (None if localctx.r1 is None else localctx.r1.text))
 
                 pass
             elif token in [MyGrammarParser.T__4, MyGrammarParser.T__5]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 28
                 _la = self._input.LA(1)
-                if not(_la==MyGrammarParser.T__4 or _la==MyGrammarParser.T__5):
+                if not(_la == MyGrammarParser.T__4 or _la == MyGrammarParser.T__5):
                     self._errHandler.recoverInline(self)
                 else:
                     self._errHandler.reportMatch(self)
@@ -340,7 +332,7 @@ class MyGrammarParser ( Parser ):
                 self.state = 34
                 localctx.goto = self._input.LT(1)
                 _la = self._input.LA(1)
-                if not(_la==MyGrammarParser.GOTOB or _la==MyGrammarParser.GOTOF):
+                if not(_la == MyGrammarParser.GOTOB or _la == MyGrammarParser.GOTOF):
                     localctx.goto = self._errHandler.recoverInline(self)
                 else:
                     self._errHandler.reportMatch(self)
@@ -349,11 +341,14 @@ class MyGrammarParser ( Parser ):
                 localctx.n = self.match(MyGrammarParser.INT)
 
                 if (None if localctx.zero is None else localctx.zero.text) != '0':
-                    raise ValueError("line "+str((0 if localctx.zero is None else localctx.zero.line))+": "+(None if localctx.zero is None else localctx.zero.text)+" != 0")
-                if (None if localctx.goto is None else localctx.goto.text)=='GOTOB' or (None if localctx.goto is None else localctx.goto.text)=='gotob':
-                    localctx.instruction= Instruction(2, (None if localctx.r1 is None else localctx.r1.text), (None if localctx.n is None else localctx.n.text))
+                    raise ValueError("line "+str((0 if localctx.zero is None else localctx.zero.line))+": "+(
+                        None if localctx.zero is None else localctx.zero.text)+" != 0")
+                if (None if localctx.goto is None else localctx.goto.text) == 'GOTOB' or (None if localctx.goto is None else localctx.goto.text) == 'gotob':
+                    localctx.instruction = Instruction(
+                        2, (None if localctx.r1 is None else localctx.r1.text), (None if localctx.n is None else localctx.n.text))
                 else:
-                    localctx.instruction= Instruction(3, (None if localctx.r1 is None else localctx.r1.text), (None if localctx.n is None else localctx.n.text))
+                    localctx.instruction = Instruction(
+                        3, (None if localctx.r1 is None else localctx.r1.text), (None if localctx.n is None else localctx.n.text))
 
                 pass
             else:
@@ -366,8 +361,3 @@ class MyGrammarParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
-
-
-
-
-

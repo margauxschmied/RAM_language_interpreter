@@ -1,4 +1,7 @@
-from src.cantor_int import Int
+try:
+    from src.cantor_int import Int
+except:
+    from cantor_int import Int
 
 
 class Instruction:

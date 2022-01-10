@@ -5,8 +5,13 @@ if __name__ is not None and "." in __name__:
 else:
     from MyGrammarParser import MyGrammarParser
 
-from src.instruction import Instruction
-
+try:
+    from src.instruction import Instruction
+except:
+    try:
+        from ...instruction import Instruction
+    except:
+        from instruction import Instruction
 
 # This class defines a complete generic visitor for a parse tree produced by MyGrammarParser.
 
