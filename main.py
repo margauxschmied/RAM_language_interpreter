@@ -2,7 +2,11 @@ from tkinter import messagebox
 from tkinter import filedialog, ttk
 from tkinter.scrolledtext import ScrolledText
 import tkinter as tk
-import sys as sys
+
+from antlr4 import *
+from src.antlr4.dist.MyGrammarLexer import MyGrammarLexer
+from src.antlr4.dist.MyGrammarParser import MyGrammarParser
+from src.parser import MyVisitor
 
 
 class Texte(tk.Text):
@@ -352,11 +356,31 @@ def main(root):
 
 
 if __name__ == '__main__':
-    root = tk.Tk()
-    root.title("RAM_language_interpreter")
-    root.iconphoto(False, tk.PhotoImage(file='../ressources/img/ramen.png'))
-    root.geometry("640x480")
+    # root = tk.Tk()
+    # root.title("RAM_language_interpreter")
+    # root.iconphoto(False, tk.PhotoImage(file='../ressources/img/ramen.png'))
+    # root.geometry("640x480")
+    #
+    # main(root)
+    #
+    # root.mainloop()
 
-    main(root)
+    data = InputStream(
+        """R2 = R2 + 1
+R2 = R2 - 1
+if R2!=0 THEN GOTOB 0
+R0 = R0 - 1"""
+    )
+    # print(data)
+    # lexer
+    lexer = MyGrammarLexer(data)
+    stream = CommonTokenStream(lexer)
+    # parser
+    parser = MyGrammarParser(stream)
+    tree = parser.program()
+    # evaluator
+    visitor = MyVisitor()
+    output = visitor.visit(tree)
+    # listInstruction(tree)
+    print(output)
 
-    root.mainloop()

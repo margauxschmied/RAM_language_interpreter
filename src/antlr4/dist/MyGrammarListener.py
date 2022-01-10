@@ -5,15 +5,18 @@ if __name__ is not None and "." in __name__:
 else:
     from MyGrammarParser import MyGrammarParser
 
+from src.instruction import Instruction
+
+
 # This class defines a complete listener for a parse tree produced by MyGrammarParser.
 class MyGrammarListener(ParseTreeListener):
 
-    # Enter a parse tree produced by MyGrammarParser#program.
-    def enterProgram(self, ctx:MyGrammarParser.ProgramContext):
+    # Enter a parse tree produced by MyGrammarParser#MakeList.
+    def enterMakeList(self, ctx:MyGrammarParser.MakeListContext):
         pass
 
-    # Exit a parse tree produced by MyGrammarParser#program.
-    def exitProgram(self, ctx:MyGrammarParser.ProgramContext):
+    # Exit a parse tree produced by MyGrammarParser#MakeList.
+    def exitMakeList(self, ctx:MyGrammarParser.MakeListContext):
         pass
 
 
@@ -26,21 +29,12 @@ class MyGrammarListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by MyGrammarParser#coucou.
-    def enterCoucou(self, ctx:MyGrammarParser.CoucouContext):
+    # Enter a parse tree produced by MyGrammarParser#expr.
+    def enterExpr(self, ctx:MyGrammarParser.ExprContext):
         pass
 
-    # Exit a parse tree produced by MyGrammarParser#coucou.
-    def exitCoucou(self, ctx:MyGrammarParser.CoucouContext):
-        pass
-
-
-    # Enter a parse tree produced by MyGrammarParser#pomme.
-    def enterPomme(self, ctx:MyGrammarParser.PommeContext):
-        pass
-
-    # Exit a parse tree produced by MyGrammarParser#pomme.
-    def exitPomme(self, ctx:MyGrammarParser.PommeContext):
+    # Exit a parse tree produced by MyGrammarParser#expr.
+    def exitExpr(self, ctx:MyGrammarParser.ExprContext):
         pass
 
 
