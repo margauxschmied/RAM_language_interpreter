@@ -115,34 +115,6 @@ class main_class:
 
         parent.config(menu=self.menu_bar)
 
-    def manage_line_numbers(self, b):
-        for l, t in zip(self.line_numbers, self.text_editors):
-            if b == 1:
-                t.pack_forget()
-                l.pack(side=tk.LEFT, fill=tk.BOTH)
-                t.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-            else:
-                l.pack_forget()
-
-    def open_option(self):
-        new_window = tk.Toplevel(self.panel)
-
-        new_window.title("Options")
-        new_window.grab_set()
-        new_window.focus()
-        new_window.geometry("300x80")
-        new_window.resizable(False, False)
-        check1 = tk.Checkbutton(new_window, text='Show Line Numbers',
-                                variable=self.choice1, onvalue=1, offvalue=0, command=lambda: self.manage_line_numbers(self.choice1.get()))
-        check1.grid(column=0, row=0, sticky='W')
-        check2 = tk.Checkbutton(
-            new_window, text='Automaticaly Go to Next Line', variable=self.choice2, onvalue=1, offvalue=0)
-        check2.grid(column=0, row=1, sticky='W')
-
-        valid = tk.Button(new_window, text="OK",
-                          command=lambda: new_window.destroy())
-        valid.grid(column=0, row=2, sticky='E')
-
     def create_tab(self, tab_name):
         """ We create a new tab when : we open a file, we create new file. """
 
@@ -242,7 +214,7 @@ class main_class:
                        ("All files",
                         "*.*")))
         if filenam != '':
-            self.create_tab(self.path_to_filename(filenam))
+            self.create_tab(main_class.path_to_filename(filenam))
             self.read_file(filenam, len(self.text_editors) - 1)
             self.filenames.append((filenam, False))
             self.notebook.select(self.notebook.index('end')-1)
@@ -275,10 +247,7 @@ class main_class:
         f.write(program_text)
         f.close
         self.notebook.tab(
-            tab_num, text=self.path_to_filename(self.filenames[tab_num][0]))
-
-    def path_to_filename(self, path):
-        return path.split('/')[-1]
+            tab_num, text=main_class.path_to_filename(self.filenames[tab_num][0]))
 
     def create_notebook(self, parent):
         """ Creation of tab's container. """
@@ -308,12 +277,97 @@ class main_class:
     def create_intern_shortcut(self, element):
         element.bind('<Control-Return>', lambda e: self.execute_line())
 
+    def create_output_terminal(self, parent):
+        self.output = output_terminal(parent)
+
+        self.panel.add(self.output)
+
+    def create_panel(self, parent):
+        self.panel = tk.PanedWindow(parent, orient=tk.VERTICAL)
+        self.panel.pack(fill=tk.BOTH, expand=True)
+
+    def show_message(self, s):
+        res = messagebox.askokcancel("Quit", s)
+        if res:
+            self.root.destroy()
+
+    def create_popup(self, parent):
+        self.m = tk.Menu(parent, tearoff=0)
+        self.m.add_command(
+            label="Run This Line", command=lambda: self.execute_mouse_line())
+        self.m.add_command(
+            label="Mark This Line as End", command=lambda: self.mark_line())
+        self.m.add_command(
+            label="Remove Line Mark", command=lambda: self.remove_mark())
+
+    def popup(self, event):
+        try:
+            self.m.tk_popup(event.x_root, event.y_root)
+        finally:
+            self.m.grab_release()
+
+    def open_option(self):
+        new_window = tk.Toplevel(self.panel)
+
+        new_window.title("Options")
+        new_window.grab_set()
+        new_window.focus()
+        new_window.geometry("300x80")
+        new_window.resizable(False, False)
+        check1 = tk.Checkbutton(new_window, text='Show Line Numbers',
+                                variable=self.choice1, onvalue=1, offvalue=0, command=lambda: self.manage_line_numbers(self.choice1.get()))
+        check1.grid(column=0, row=0, sticky='W')
+        check2 = tk.Checkbutton(
+            new_window, text='Automaticaly Go to Next Line', variable=self.choice2, onvalue=1, offvalue=0)
+        check2.grid(column=0, row=1, sticky='W')
+
+        valid = tk.Button(new_window, text="OK",
+                          command=lambda: new_window.destroy())
+        valid.grid(column=0, row=2, sticky='E')
+
+    def manage_line_numbers(self, b):
+        for l, t in zip(self.line_numbers, self.text_editors):
+            if b == 1:
+                t.pack_forget()
+                l.pack(side=tk.LEFT, fill=tk.BOTH)
+                t.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+            else:
+                l.pack_forget()
+
+    def mark_line(self):
+        index = self.get_current_text_editor().index('insert')
+        current_text_editor = self.get_current_text_editor()
+        self.end_line = main_class.idx_to_nb(index)
+        first = ('1.0', str(max(int(main_class.idx_to_nb(index))-1, 1)) + '.end')
+        second = (main_class.idx_to_nb(index) + '.0',
+                  main_class.idx_to_nb(index) + '.end')
+        third = (second[1], 'end-1c')
+
+        copy = pp.copy_text(current_text_editor)
+        current_text_editor.clean()
+        if main_class.idx_to_nb(index) != '1':
+            current_text_editor.insert(
+                tk.END, copy.get(first[0], first[1]) + '\n')
+        current_text_editor.insert(
+            tk.END, copy.get(second[0], second[1]), 'mark')
+        current_text_editor.insert(tk.END, copy.get(third[0], third[1]))
+        current_text_editor.mark_set("insert", index)
+
+    def remove_mark(self):
+        index = self.get_current_text_editor().index('insert')
+        current_text_editor = self.get_current_text_editor()
+        copy = pp.copy_text(current_text_editor)
+        current_text_editor.clean()
+        current_text_editor.insert(tk.END, copy.get('1.0', 'end-1c'))
+        current_text_editor.mark_set("insert", index)
+        self.end_line = None
+
     def execute_line(self, line_index=None):
         """ The selected line is where the insertion cursor is. """
         if line_index == None:
             line_index = self.get_current_text_editor().index('insert')
-        line_number = line_index.split('.')[0]
-        res = 'Execution (line ' + line_index.split('.')[0] + ', file ' + self.get_current_tabname(
+        line_number = main_class.idx_to_nb(line_index)
+        res = 'Execution (line ' + main_class.idx_to_nb(line_index) + ', file ' + self.get_current_tabname(
         ) + '): '
         self.output.pretty_print("TODO: Run line\n", 'blue')
         self.output.pretty_print(res)
@@ -339,66 +393,16 @@ class main_class:
         program_includes_defines = pp.user_defines(
             program_includes, self.output)
         program = program_includes_defines.get('1.0', 'end-1c')
-        print(program)
 
         self.output.pretty_print("TODO: Run file\n", 'blue')
 
-    def create_output_terminal(self, parent):
-        self.output = output_terminal(parent)
+    @staticmethod
+    def path_to_filename(path):
+        return path.split('/')[-1]
 
-        self.panel.add(self.output)
-
-    def create_panel(self, parent):
-        self.panel = tk.PanedWindow(parent, orient=tk.VERTICAL)
-        self.panel.pack(fill=tk.BOTH, expand=True)
-
-    def show_message(self, s):
-        res = messagebox.askokcancel("Quit", s)
-        if res:
-            self.root.destroy()
-
-    def create_popup(self, parent):
-        self.m = tk.Menu(parent, tearoff=0)
-        self.m.add_command(
-            label="Run This Line", command=lambda: self.execute_mouse_line())
-
-        self.m.add_command(
-            label="Mark This Line as End", command=lambda: self.mark_line())
-        self.m.add_command(
-            label="Remove Line Mark", command=lambda: self.remove_mark())
-
-    def mark_line(self):
-        index = self.get_current_text_editor().index('insert')
-        current_text_editor = self.get_current_text_editor()
-        self.end_line = index.split('.')[0]
-        first = ('1.0', str(max(int(index.split('.')[0])-1, 1)) + '.end')
-        second = (index.split('.')[0] + '.0', index.split('.')[0] + '.end')
-        third = (second[1], 'end-1c')
-
-        copy = pp.copy_text(current_text_editor)
-        current_text_editor.clean()
-        if index.split('.')[0] != '1':
-            current_text_editor.insert(
-                tk.END, copy.get(first[0], first[1]) + '\n')
-        current_text_editor.insert(
-            tk.END, copy.get(second[0], second[1]), 'mark')
-        current_text_editor.insert(tk.END, copy.get(third[0], third[1]))
-        current_text_editor.mark_set("insert", index)
-
-    def remove_mark(self):
-        index = self.get_current_text_editor().index('insert')
-        current_text_editor = self.get_current_text_editor()
-        copy = pp.copy_text(current_text_editor)
-        current_text_editor.clean()
-        current_text_editor.insert(tk.END, copy.get('1.0', 'end-1c'))
-        current_text_editor.mark_set("insert", index)
-        self.end_line = None
-
-    def popup(self, event):
-        try:
-            self.m.tk_popup(event.x_root, event.y_root)
-        finally:
-            self.m.grab_release()
+    @staticmethod
+    def idx_to_nb(index):
+        return index.split('.')[0]
 
 
 class output_terminal(ScrolledText):
