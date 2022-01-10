@@ -1,3 +1,4 @@
+import src.preprocessing as pp
 from tkinter import messagebox
 from tkinter import filedialog, ttk
 from tkinter.scrolledtext import ScrolledText
@@ -93,7 +94,7 @@ class main_class:
             label="Stop execution", command=lambda: print("Stopped"))
         self.menu_bar.add_cascade(label="Stop", menu=self.menu_stop)"""
         self.menu_bar.add_command(
-            label="Stop", command=lambda: self.pretty_print("TODO: Stop\n", 'blue'))
+            label="Stop", command=lambda: self.output.pretty_print("TODO: Stop\n", 'blue'))
 
         # The 'Option' button
         self.menu_bar.add_command(
@@ -102,11 +103,11 @@ class main_class:
         # The 'Help' contextual menu
         self.menu_help = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_help.add_command(
-            label="User manual", command=lambda: self.pretty_print("TODO: User Manual\n", 'blue'))
+            label="User manual", command=lambda: self.output.pretty_print("TODO: User Manual\n", 'blue'))
         self.menu_help.add_command(
-            label="RAM instructions", command=lambda: self.pretty_print("TODO: RAM\n", 'blue'))
+            label="RAM instructions", command=lambda: self.output.pretty_print("TODO: RAM\n", 'blue'))
         self.menu_help.add_command(
-            label="About", command=lambda: self.pretty_print("TODO: About\n", 'blue'))
+            label="About", command=lambda: self.output.pretty_print("TODO: About\n", 'blue'))
 
         self.menu_bar.add_cascade(label="Help", menu=self.menu_help)
 
@@ -307,9 +308,9 @@ class main_class:
         line_number = line_index.split('.')[0]
         res = 'Execution (line ' + line_index.split('.')[0] + ', file ' + self.get_current_tabname(
         ) + '): '
-        self.pretty_print("TODO: Run line\n", 'blue')
-        self.pretty_print(res)
-        self.pretty_print(self.text_editors[self.get_current_tab()].get(
+        self.output.pretty_print("TODO: Run line\n", 'blue')
+        self.output.pretty_print(res)
+        self.output.pretty_print(self.text_editors[self.get_current_tab()].get(
             line_number + '.0', line_number + '.end') + '\n', 'gray')
 
         if self.choice2.get() == 1:
@@ -319,19 +320,19 @@ class main_class:
         return 'break'
 
     def execute_file(self):
-        program = self.get_current_text_editor().get('1.0', 'end')
-        res = 'Execution (' + self.get_current_tabname() + ')\n'
-        self.pretty_print("TODO: Run file\n", 'blue')
-        self.pretty_print(res)
+
+        self.output.pretty_print(
+            'Execution (' + self.get_current_tabname() + ')\n')
+        program_includes = pp.file_includes(
+            self.get_current_text_editor(), self.output)
+        program_includes_defines = pp.user_defines(
+            program_includes, self.output)
+        program = program_includes_defines.get('1.0', 'end')
+
+        self.output.pretty_print("TODO: Run file\n", 'blue')
 
     def create_output_terminal(self, parent):
-        self.output = ScrolledText(
-            parent, bg="white", wrap='word')
-        self.output.pack(fill=tk.X, expand=1)
-        self.output.configure(state='disabled')
-        self.output.tag_config('blue', foreground="blue")
-        self.output.tag_config('gray', foreground="gray30")
-        self.output.tag_config('black', foreground="black")
+        self.output = output_terminal(parent)
 
         self.panel.add(self.output)
 
@@ -344,11 +345,23 @@ class main_class:
         if res:
             self.root.destroy()
 
+
+class output_terminal(ScrolledText):
+    def __init__(self, parent):
+        super().__init__(parent, bg="white", wrap='word')
+
+        self.pack(fill=tk.X, expand=1)
+        self.configure(state='disabled')
+        self.tag_config('blue', foreground="blue")
+        self.tag_config('red', foreground="red")
+        self.tag_config('gray', foreground="gray30")
+        self.tag_config('black', foreground="black")
+
     def pretty_print(self, s, fg='black'):
-        self.output.configure(state='normal')
-        self.output.insert('end', s, fg)
-        self.output.yview_moveto(1)
-        self.output.configure(state='disabled')
+        self.configure(state='normal')
+        self.insert('end', s, fg)
+        self.yview_moveto(1)
+        self.configure(state='disabled')
 
 
 def main(root):
@@ -356,14 +369,14 @@ def main(root):
 
 
 if __name__ == '__main__':
-    # root = tk.Tk()
-    # root.title("RAM_language_interpreter")
-    # root.iconphoto(False, tk.PhotoImage(file='../ressources/img/ramen.png'))
-    # root.geometry("640x480")
-    #
-    # main(root)
-    #
-    # root.mainloop()
+    root = tk.Tk()
+    root.title("RAM_language_interpreter")
+    root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
+    root.geometry("640x480")
+
+    main(root)
+
+    root.mainloop()
 
     data = InputStream(
         """R2 = R2 + 1
@@ -382,5 +395,4 @@ R0 = R0 - 1"""
     visitor = MyVisitor()
     output = visitor.visit(tree)
     # listInstruction(tree)
-    print(output)
-
+    # print(output)
