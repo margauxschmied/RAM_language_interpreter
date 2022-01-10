@@ -6,7 +6,7 @@ de = '#define '
 
 def copy_text(text_editor):
     text = tk.Text()
-    text.insert('1.0', text_editor.get('1.0', tk.END))
+    text.insert('1.0', text_editor.get('1.0', 'end-1c'))
     return text
 
 
@@ -27,7 +27,7 @@ def file_includes(text_editor, output):
 
             try:
                 f2 = open(path, 'r')
-                text_editor_temp.insert(index, f2.read() + '\n')
+                text_editor_temp.insert(index, f2.read())
                 f2.close()
 
             except FileNotFoundError:
@@ -40,7 +40,7 @@ def file_includes(text_editor, output):
 
 
 def replace_all(text_editor, word, replace):
-    text = text_editor.get('1.0', tk.END)
+    text = text_editor.get('1.0', 'end-1c')
     text = text.replace(word, replace)
     text_editor.delete('1.0', tk.END)
     text_editor.insert('1.0', text)

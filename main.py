@@ -52,6 +52,7 @@ class main_class:
         self.line_numbers = []
         self.titles = []
 
+        self.end_line = None
         self.choice1 = tk.IntVar(value=1)
         self.choice2 = tk.IntVar(value=1)
 
@@ -59,6 +60,7 @@ class main_class:
         self.create_panel(self.root)
         self.create_notebook(self.root)
         self.create_output_terminal(self.root)
+        self.create_popup(self.root)
         self.create_extern_shortcut(self.root)
 
     def create_menu(self, parent):
@@ -157,6 +159,11 @@ class main_class:
         text_editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         text_editor.bind('<Return>', lambda e: self.update_line(e))
         text_editor.bind('<BackSpace>', lambda e: self.update_line(e))
+        text_editor.bind('<Button-3>', lambda e: self.popup(e))
+
+        text_editor.tag_config(
+            'default', foreground="black", background="lightgray")
+        text_editor.tag_config('mark', foreground="white", background="blue")
 
         line_number.insert(1.0, '1')
         line_number.configure(width=1)
@@ -263,7 +270,7 @@ class main_class:
             else:
                 return
 
-        program_text = self.text_editors[tab_num].get('1.0', tk.END)
+        program_text = self.text_editors[tab_num].get('1.0', 'end-1c')
         f = open(self.filenames[tab_num][0], "w")
         f.write(program_text)
         f.close
@@ -301,10 +308,10 @@ class main_class:
     def create_intern_shortcut(self, element):
         element.bind('<Control-Return>', lambda e: self.execute_line())
 
-    def execute_line(self):
+    def execute_line(self, line_index=None):
         """ The selected line is where the insertion cursor is. """
-
-        line_index = self.get_current_text_editor().index('insert')
+        if line_index == None:
+            line_index = self.get_current_text_editor().index('insert')
         line_number = line_index.split('.')[0]
         res = 'Execution (line ' + line_index.split('.')[0] + ', file ' + self.get_current_tabname(
         ) + '): '
@@ -319,6 +326,10 @@ class main_class:
 
         return 'break'
 
+    def execute_mouse_line(self):
+        index = self.get_current_text_editor().index('insert')
+        self.execute_line(index)
+
     def execute_file(self):
 
         self.output.pretty_print(
@@ -327,7 +338,8 @@ class main_class:
             self.get_current_text_editor(), self.output)
         program_includes_defines = pp.user_defines(
             program_includes, self.output)
-        program = program_includes_defines.get('1.0', 'end')
+        program = program_includes_defines.get('1.0', 'end-1c')
+        print(program)
 
         self.output.pretty_print("TODO: Run file\n", 'blue')
 
@@ -344,6 +356,49 @@ class main_class:
         res = messagebox.askokcancel("Quit", s)
         if res:
             self.root.destroy()
+
+    def create_popup(self, parent):
+        self.m = tk.Menu(parent, tearoff=0)
+        self.m.add_command(
+            label="Run This Line", command=lambda: self.execute_mouse_line())
+
+        self.m.add_command(
+            label="Mark This Line as End", command=lambda: self.mark_line())
+        self.m.add_command(
+            label="Remove Line Mark", command=lambda: self.remove_mark())
+
+    def mark_line(self):
+        index = self.get_current_text_editor().index('insert')
+        current_text_editor = self.get_current_text_editor()
+        self.end_line = index.split('.')[0]
+        first = ('1.0', str(max(int(index.split('.')[0])-1, 1)) + '.end')
+        second = (index.split('.')[0] + '.0', index.split('.')[0] + '.end')
+        third = (second[1], 'end-1c')
+
+        copy = pp.copy_text(current_text_editor)
+        current_text_editor.clean()
+        if index.split('.')[0] != '1':
+            current_text_editor.insert(
+                tk.END, copy.get(first[0], first[1]) + '\n')
+        current_text_editor.insert(
+            tk.END, copy.get(second[0], second[1]), 'mark')
+        current_text_editor.insert(tk.END, copy.get(third[0], third[1]))
+        current_text_editor.mark_set("insert", index)
+
+    def remove_mark(self):
+        index = self.get_current_text_editor().index('insert')
+        current_text_editor = self.get_current_text_editor()
+        copy = pp.copy_text(current_text_editor)
+        current_text_editor.clean()
+        current_text_editor.insert(tk.END, copy.get('1.0', 'end-1c'))
+        current_text_editor.mark_set("insert", index)
+        self.end_line = None
+
+    def popup(self, event):
+        try:
+            self.m.tk_popup(event.x_root, event.y_root)
+        finally:
+            self.m.grab_release()
 
 
 class output_terminal(ScrolledText):
