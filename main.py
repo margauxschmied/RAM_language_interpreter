@@ -5,8 +5,8 @@ from tkinter.scrolledtext import ScrolledText
 import tkinter as tk
 
 from antlr4 import *
-from src.antlr4.dist.MyGrammarLexer import MyGrammarLexer
-from src.antlr4.dist.MyGrammarParser import MyGrammarParser
+from src.myAntlr4.dist.MyGrammarLexer import MyGrammarLexer
+from src.myAntlr4.dist.MyGrammarParser import MyGrammarParser
 from src.parser import MyVisitor
 
 
