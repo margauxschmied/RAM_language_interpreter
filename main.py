@@ -4,6 +4,7 @@ from tkinter import filedialog, ttk
 from tkinter.scrolledtext import ScrolledText
 import tkinter as tk
 
+
 from antlr4 import InputStream, CommonTokenStream
 from src.myAntlr4.dist.MyGrammarLexer import MyGrammarLexer
 from src.myAntlr4.dist.MyGrammarParser import MyGrammarParser

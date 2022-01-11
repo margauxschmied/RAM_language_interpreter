@@ -32,5 +32,4 @@ class MyGrammarVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-
 del MyGrammarParser
