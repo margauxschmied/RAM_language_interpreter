@@ -19,20 +19,20 @@ class Int(int):
 
     def aux(self):
         """ Aux. function to calculate left and right part """
-        def aux(m, M, s):
-            if s < 3:
-                return s
-            res = m + (M-m)//2
-            diff = s - res * (res + 1) // 2
-            diff_down = s - res * (res - 1) // 2
-            if diff <= 0 and diff_down > 0:
-                return res
-            elif diff <= 0:
-                return aux(m, res, s)
-            return aux(res, M, s)
+
+        def diff(val): return Int(self - val * (val + 1) // 2)
+        def mean(m, M): return Int(m + (M-m)//2)
+        m, M = 0, self
         if self == 0:
             raise Exception("Can't decode 0")
-        return Int(aux(0, self, self))
+        while True:
+            if M < 3:
+                return M
+            meanV = mean(m, M)
+            diffV, diffD = diff(meanV), diff(meanV-1)
+            if diffV <= 0 and diffD > 0:
+                return meanV
+            m, M = (m, meanV) if diffV <= 0 else (meanV, M)
 
     def right(self):
         """ Give the right part of a Int, from Cantor formula """
@@ -59,7 +59,7 @@ class Int(int):
         return res if res[1] == 0 else (res[0], Int(res[1]).int_to_couple())
 
     def couple_to_int(s):
-        return Int.cantor(s[0], Int.couple_to_int(s[1])) if s[1] != 0 else Int.cantor(*s)
+        return Int.cantor(s[0], Int.couple_to_int(s[1])) if not isinstance(s[1], int) else Int.cantor(*s)
 
     def int_to_str(self) -> str:
         """ 

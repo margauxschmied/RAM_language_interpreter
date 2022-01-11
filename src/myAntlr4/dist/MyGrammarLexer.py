@@ -11,7 +11,10 @@ else:
 try:
     from src.instruction import Instruction
 except:
-    from instruction import Instruction
+    try:
+        from ...instruction import Instruction
+    except:
+        from instruction import Instruction
 
 
 def serializedATN():

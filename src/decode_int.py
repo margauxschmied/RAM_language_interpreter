@@ -1,5 +1,10 @@
 from typing import List
-from cantor_int import Int
+try:
+    from src.instruction import Instruction
+    from src.cantor_int import Int
+except:
+    from instruction import Instruction
+    from cantor_int import Int
 
 
 def decode_int_instr(n: int):
@@ -7,13 +12,13 @@ def decode_int_instr(n: int):
         Gödelisation :
         - ADD = Rk = Rk + 1 (n = 3 * k)
         - SUB = Rk = Rk - 1 (n = 3 * k + 1)
-        - IFF = IF Rk != 0 THEN GOTOF n (n = 3 <k, <0, <n, 0>>> + 2)
         - IFB = IF Rk != 0 THEN GOTOB n (n = 3 <k, <1, <n, 0>>> + 2)
+        - IFF = IF Rk != 0 THEN GOTOF n (n = 3 <k, <0, <n, 0>>> + 2)
     """
     res: List[str] = []
     n = Int(n)
     if n % 3 < 2:
-        current = n / 3
+        current = Int(n) / 3
         res.append(
             'R{} = R{} {} 1'.format(current, current, ['+', '-'][n % 3 == 1]))
     else:
@@ -29,18 +34,28 @@ def decode_int_instr(n: int):
             rpart = current.right()
             type_saut = rpart.left()
             saut = rpart.right()
-        inst = ('F', 'B')
-        res.append(f'if R{k}!=0 THEN GOTO{inst[type_saut!=1]} {saut}')
+        saut_letter = 'F' if type_saut != 1 else 'B'
+        res.append(f'if R{k}!=0 THEN GOTO{saut_letter} {saut}')
     return '\n'.join(res)
 
 
-def decode_int_program(inp):
+def decode_int_program(inp) -> str:
     """
-        If n is an int it is converted to the Cantor's couple
-        Else n is on the form <a1, ... <an, 0>>>
-        The program transform every instr to a RAM instr 
-        thanks to decode_int_instr function
+        Function trasforming a program to a str of RAM instruction
+
+        It takes as parameters:
+            - an int -> the int is at first translated in Cantor's couple <a1, <a2 ..., <an, 0>>>
+            - a Cantor's couple
+            - a list of Instruction (from instruction.py file)
+
+        Exemple :
+        decode_int_program(1) = 
+        decode_int_program((0,0)) = 
+        decode_int_program([Instruction(0,1)]) = 
+        `R0 = R0 + 1`
     """
+    if type(inp) == list and type(inp[0]) == Instruction:
+        return "\n".join(map(decode_int_instr, map(Instruction.encode_instr, inp)))
     n = Int(inp).int_to_couple() if type(inp) == int else inp
     program = []
     while True:
