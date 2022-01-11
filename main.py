@@ -9,7 +9,7 @@ from antlr4 import InputStream, CommonTokenStream
 from src.myAntlr4.dist.MyGrammarLexer import MyGrammarLexer
 from src.myAntlr4.dist.MyGrammarParser import MyGrammarParser
 from src.cantor_int import Int
-from src.instruction import Instruction
+from src.instruction import Macro, RawInstruction
 from src.parser import MyVisitor, listInstruction
 from src.decode_int import decode_int_instr, decode_int_program
 from src.interpreter import Interpreter
@@ -433,29 +433,36 @@ def main(root):
 
 
 if __name__ == '__main__':
-    root = tk.Tk()
-    root.title("RAM_language_interpreter")
-    root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
-    root.geometry("640x480")
+    # root = tk.Tk()
+    # root.title("RAM_language_interpreter")
+    # root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
+    # root.geometry("640x480")
 
-    main(root)
+    # main(root)
 
-    root.mainloop()
+    # root.mainloop()
+
+    MACROS = {
+        'add':  Macro('add', ['kappa'], [
+            RawInstruction(1, 'kappa')
+        ])
+    }
 
     N = 100
     i = Interpreter(
-        [Instruction(0, 0),
+        [RawInstruction('add', [5], is_macro=True),
+         RawInstruction(0, 0),
 
-         Instruction(0, 2),
-         Instruction(0, 2),
-         Instruction(1, 0),
-         Instruction(2, 0, 3),
-         Instruction(1, 2),
+         RawInstruction(0, 2),
+         RawInstruction(0, 2),
+         RawInstruction(1, 0),
+         RawInstruction(2, 0, 3),
+         RawInstruction(1, 2),
 
-         Instruction(1, 2),
-         Instruction(0, 1),
-         Instruction(2, 2, 2),
-         Instruction(1, 1)], N)
+         RawInstruction(1, 2),
+         RawInstruction(0, 1),
+         RawInstruction(2, 2, 2),
+         RawInstruction(1, 1)], N, MACROS)
 
     print(f"\n  Starting instructions \n{i.instr_list}")
 
@@ -491,4 +498,3 @@ if __name__ == '__main__':
     interp = Interpreter(l_inst, N)
     interp.treat_all_instr()
     print("\n  Program output =", interp.get_otput())
-

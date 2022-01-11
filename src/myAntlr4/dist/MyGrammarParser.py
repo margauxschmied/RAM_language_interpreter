@@ -10,12 +10,9 @@ else:
 
 
 try:
-    from src.instruction import Instruction
+    from src.instruction import RawInstruction
 except:
-    try:
-        from ...instruction import Instruction
-    except:
-        from instruction import Instruction
+    from instruction import RawInstruction
 
 
 def serializedATN():
@@ -303,10 +300,10 @@ class MyGrammarParser (Parser):
                     raise ValueError("line "+str((0 if localctx.un is None else localctx.un.line))+": "+(
                         None if localctx.un is None else localctx.un.text)+" != 1")
                 if (None if localctx.op is None else localctx.op.text) == '+':
-                    localctx.instruction = Instruction(
+                    localctx.instruction = RawInstruction(
                         0, (None if localctx.r1 is None else localctx.r1.text))
                 else:
-                    localctx.instruction = Instruction(
+                    localctx.instruction = RawInstruction(
                         1, (None if localctx.r1 is None else localctx.r1.text))
 
                 pass
@@ -344,10 +341,10 @@ class MyGrammarParser (Parser):
                     raise ValueError("line "+str((0 if localctx.zero is None else localctx.zero.line))+": "+(
                         None if localctx.zero is None else localctx.zero.text)+" != 0")
                 if (None if localctx.goto is None else localctx.goto.text) == 'GOTOB' or (None if localctx.goto is None else localctx.goto.text) == 'gotob':
-                    localctx.instruction = Instruction(
+                    localctx.instruction = RawInstruction(
                         2, (None if localctx.r1 is None else localctx.r1.text), (None if localctx.n is None else localctx.n.text))
                 else:
-                    localctx.instruction = Instruction(
+                    localctx.instruction = RawInstruction(
                         3, (None if localctx.r1 is None else localctx.r1.text), (None if localctx.n is None else localctx.n.text))
 
                 pass
