@@ -458,11 +458,30 @@ if __name__ == '__main__':
 
     print(f"\n  Program int \n{program_int}")
 
-    program_decoded = decode_int_program(str(i))
+#    program_decoded = decode_int_program(str(i))
 
-    print(f"\n  Instruction in RAM \n{program_decoded}")
+    # print(f"\n  Instruction in RAM \n{program_decoded}")
 
-    data = InputStream(program_decoded)
+    data = InputStream("""
+R0 = R0 + 1
+R0 = R0 - 1
+R0 = R0 + 1
+R0 = R0 - 1
+R1000 = R1000 + 1
+IF R0 != 0 then gotob 2
+R1000 = R1000 - 1
+R0 = R0 + 1
+R100 = R100 + 1
+IF R1000 != 0 then gotob 3
+R0 = R0 - 1
+R100 = R100 - 1
+R100 = R100 + 1
+R1 = R1 + 1
+R100 = R100 - 1
+IF R100 != 0 then gotob 2
+R1 = R1 - 1
+IF R0 != 0 then gotob 16   
+""")
 
     # lexer
     lexer = MyGrammarLexer(data)
@@ -483,6 +502,6 @@ if __name__ == '__main__':
     print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
 
     # interpreter
-    interp = Interpreter(l_inst, N)
+    interp = Interpreter(l_inst, memory=RAM(N))
     interp.treat_all_instr()
     print("\n  Program output =", interp.get_otput())

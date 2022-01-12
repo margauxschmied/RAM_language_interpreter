@@ -56,7 +56,7 @@ def decode_int_program(inp) -> str:
         `R0 = R0 + 1`
     """
     if type(inp) == list and isinstance(inp[0], RawInstruction):
-        return "\n".join(map(decode_int_instr, map(RawInstruction.encode_instr, inp)))
+        return "\n".join(map(decode_int_instr, map(RawInstruction.encode_instr, (map(RawInstruction.clone_in_instr, inp)))))
     n = Int(inp).int_to_couple() if type(inp) == int else inp
     program = []
     while True:

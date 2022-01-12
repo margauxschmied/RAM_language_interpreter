@@ -92,6 +92,41 @@ class Interpreter:
             res.append(str(instr))
         return "\n".join(res)
 
+    def remove_macros(self):
+        def count_macro(a, b):
+            return Int(sum([self.macros[self.instr_list[i].numInstr].len(self.macros)
+                            for i in range(a, b) if self.instr_list[i].is_macro])) - 1
+
+        def aux():
+            res = []
+            for pos, i in enumerate(self.instr_list):
+                if i.numInstr == 2:
+                    i.n = i.n + count_macro(Int(pos) - Int(i.n), Int(pos))
+                if i.numInstr == 3:
+                    i.n = i.n + count_macro(Int(pos), Int(pos) + Int(i.n))
+            for i in self.instr_list:
+                if i.is_macro:
+                    sub_interp = Interpreter(
+                        self.macros[i.numInstr].clone_instr(i.register), self.macros, self.memory)
+                    print(self.macros[i.numInstr].len(self.macros))
+                    res.append(sub_interp.remove_macros())
+                else:
+                    res.append(i)
+            return res
+
+        def flatten_list(L, res):
+            if not isinstance(L, list):
+                res.append(L)
+            else:
+                for i in L:
+                    if isinstance(L, list):
+                        flatten_list(i, res)
+                    else:
+                        res.append(i)
+            return res
+        self.instr_list = flatten_list(aux(), [])
+        return self.instr_list
+
 
 if __name__ == '__main__':
 
@@ -147,12 +182,21 @@ if __name__ == '__main__':
         'sum_0_to_n': SUM_0_TO_N
     }
 
-    for i in range(20):
-        interp = Interpreter([
-            RawInstruction('sum_0_to_n', [0], is_macro=True)
-        ], macros, RAM(i))
-        interp.treat_all_instr()
-        print(f"The sum from 0 to {i} is {interp.get_otput()}")
-        interp.encode_list_instr()
+    interp = Interpreter([
+        RawInstruction('sum_0_to_n', [0], is_macro=True)
+    ], macros, RAM(20))
 
-    print(str(interp))
+    interp.remove_macros()
+    print("\n".join(map(str, interp.instr_list)))
+    interp.treat_all_instr()
+    print(interp.get_otput())
+
+    # for i in range(20):
+    #     interp = Interpreter([
+    #         RawInstruction('sum_0_to_n', [0], is_macro=True)
+    #     ], macros, RAM(i))
+    #     interp.treat_all_instr()
+    #     print(f"The sum from 0 to {i} is {interp.get_otput()}")
+    #     interp.encode_list_instr()
+
+    # print(str(interp))

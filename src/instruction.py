@@ -122,6 +122,15 @@ class Macro:
             res.append(instr)
         return res
 
+    def len(self, dico):
+        acc = 0
+        for i in self.instr_list:
+            if i.is_macro:
+                acc += dico[i.numInstr].len(dico)
+            else:
+                acc += 1
+        return acc
+
 
 class RAM(dict):
     def __init__(self, start_value=0):
