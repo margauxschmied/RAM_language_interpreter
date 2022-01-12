@@ -5,7 +5,9 @@ if __name__ is not None and "." in __name__:
 else:
     from MyGrammarParser import MyGrammarParser
 
-from src.instruction import Instruction
+from src.instruction.instruction import Instruction
+from src.instruction.register import Register
+
 
 
 # This class defines a complete generic visitor for a parse tree produced by MyGrammarParser.
@@ -24,6 +26,16 @@ class MyGrammarVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by MyGrammarParser#expr.
     def visitExpr(self, ctx:MyGrammarParser.ExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MyGrammarParser#macro.
+    def visitMacro(self, ctx:MyGrammarParser.MacroContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MyGrammarParser#list_register.
+    def visitList_register(self, ctx:MyGrammarParser.List_registerContext):
         return self.visitChildren(ctx)
 
 

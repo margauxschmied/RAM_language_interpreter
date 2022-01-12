@@ -5,7 +5,9 @@ if __name__ is not None and "." in __name__:
 else:
     from MyGrammarParser import MyGrammarParser
 
-from src.instruction import Instruction
+from src.instruction.instruction import Instruction
+from src.instruction.register import Register
+
 
 
 # This class defines a complete listener for a parse tree produced by MyGrammarParser.
@@ -35,6 +37,24 @@ class MyGrammarListener(ParseTreeListener):
 
     # Exit a parse tree produced by MyGrammarParser#expr.
     def exitExpr(self, ctx:MyGrammarParser.ExprContext):
+        pass
+
+
+    # Enter a parse tree produced by MyGrammarParser#macro.
+    def enterMacro(self, ctx:MyGrammarParser.MacroContext):
+        pass
+
+    # Exit a parse tree produced by MyGrammarParser#macro.
+    def exitMacro(self, ctx:MyGrammarParser.MacroContext):
+        pass
+
+
+    # Enter a parse tree produced by MyGrammarParser#list_register.
+    def enterList_register(self, ctx:MyGrammarParser.List_registerContext):
+        pass
+
+    # Exit a parse tree produced by MyGrammarParser#list_register.
+    def exitList_register(self, ctx:MyGrammarParser.List_registerContext):
         pass
 
 

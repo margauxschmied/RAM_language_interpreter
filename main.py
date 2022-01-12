@@ -26,7 +26,7 @@ class Texte(tk.Text):
         self.add_text(txt)
 
 
-class main_class:
+class Frame:
     """ This class aims to manage all frames. Here we create the menu bar, the file tabs or the shortcuts. """
 
     def __init__(self, root) -> None:
@@ -53,8 +53,8 @@ class main_class:
         self.titles = []
 
         self.end_line = None
-        self.choice1 = tk.IntVar(value=1)
-        self.choice2 = tk.IntVar(value=1)
+        self.choice_show_line_numbers = tk.IntVar(value=1)
+        self.choice_automaticaly_go_to_next_line = tk.IntVar(value=1)
 
         self.create_menu(self.root)
         self.create_panel(self.root)
@@ -214,7 +214,7 @@ class main_class:
                        ("All files",
                         "*.*")))
         if filenam != '':
-            self.create_tab(main_class.path_to_filename(filenam))
+            self.create_tab(Frame.path_to_filename(filenam))
             self.read_file(filenam, len(self.text_editors) - 1)
             self.filenames.append((filenam, False))
             self.notebook.select(self.notebook.index('end')-1)
@@ -247,7 +247,7 @@ class main_class:
         f.write(program_text)
         f.close
         self.notebook.tab(
-            tab_num, text=main_class.path_to_filename(self.filenames[tab_num][0]))
+            tab_num, text=Frame.path_to_filename(self.filenames[tab_num][0]))
 
     def create_notebook(self, parent):
         """ Creation of tab's container. """
@@ -315,10 +315,10 @@ class main_class:
         new_window.geometry("300x80")
         new_window.resizable(False, False)
         check1 = tk.Checkbutton(new_window, text='Show Line Numbers',
-                                variable=self.choice1, onvalue=1, offvalue=0, command=lambda: self.manage_line_numbers(self.choice1.get()))
+                                variable=self.choice_show_line_numbers, onvalue=1, offvalue=0, command=lambda: self.manage_line_numbers(self.choice_show_line_numbers.get()))
         check1.grid(column=0, row=0, sticky='W')
         check2 = tk.Checkbutton(
-            new_window, text='Automaticaly Go to Next Line', variable=self.choice2, onvalue=1, offvalue=0)
+            new_window, text='Automaticaly Go to Next Line', variable=self.choice_automaticaly_go_to_next_line, onvalue=1, offvalue=0)
         check2.grid(column=0, row=1, sticky='W')
 
         valid = tk.Button(new_window, text="OK",
@@ -337,15 +337,15 @@ class main_class:
     def mark_line(self):
         index = self.get_current_text_editor().index('insert')
         current_text_editor = self.get_current_text_editor()
-        self.end_line = main_class.idx_to_nb(index)
-        first = ('1.0', str(max(int(main_class.idx_to_nb(index))-1, 1)) + '.end')
-        second = (main_class.idx_to_nb(index) + '.0',
-                  main_class.idx_to_nb(index) + '.end')
+        self.end_line = Frame.idx_to_nb(index)
+        first = ('1.0', str(max(int(Frame.idx_to_nb(index)) - 1, 1)) + '.end')
+        second = (Frame.idx_to_nb(index) + '.0',
+                  Frame.idx_to_nb(index) + '.end')
         third = (second[1], 'end-1c')
 
         copy = pp.copy_text(current_text_editor)
         current_text_editor.clean()
-        if main_class.idx_to_nb(index) != '1':
+        if Frame.idx_to_nb(index) != '1':
             current_text_editor.insert(
                 tk.END, copy.get(first[0], first[1]) + '\n')
         current_text_editor.insert(
@@ -366,15 +366,15 @@ class main_class:
         """ The selected line is where the insertion cursor is. """
         if line_index == None:
             line_index = self.get_current_text_editor().index('insert')
-        line_number = main_class.idx_to_nb(line_index)
-        res = 'Execution (line ' + main_class.idx_to_nb(line_index) + ', file ' + self.get_current_tabname(
+        line_number = Frame.idx_to_nb(line_index)
+        res = 'Execution (line ' + Frame.idx_to_nb(line_index) + ', file ' + self.get_current_tabname(
         ) + '): '
         self.output.pretty_print("TODO: Run line\n", 'blue')
         self.output.pretty_print(res)
         self.output.pretty_print(self.text_editors[self.get_current_tab()].get(
             line_number + '.0', line_number + '.end') + '\n', 'gray')
 
-        if self.choice2.get() == 1:
+        if self.choice_automaticaly_go_to_next_line.get() == 1:
             self.get_current_text_editor().mark_set(
                 "insert", str(int(line_number) + 1) + '.end')
 
@@ -424,21 +424,24 @@ class output_terminal(ScrolledText):
 
 
 def main(root):
-    main_class(root)
+    Frame(root)
 
 
 if __name__ == '__main__':
-    root = tk.Tk()
-    root.title("RAM_language_interpreter")
-    root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
-    root.geometry("640x480")
-
-    main(root)
-
-    root.mainloop()
+    # root = tk.Tk()
+    # root.title("RAM_language_interpreter")
+    # root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
+    # root.geometry("640x480")
+    #
+    # main(root)
+    #
+    # root.mainloop()
 
     data = InputStream(
         """R2 = R2 + 1
+PUSH R2
+POP R2
+R2 = R2 + 1
 R2 = R2 - 1
 if R2!=0 THEN GOTOB 0
 R0 = R0 - 1"""
@@ -454,4 +457,4 @@ R0 = R0 - 1"""
     visitor = MyVisitor()
     output = visitor.visit(tree)
     # listInstruction(tree)
-    # print(output)
+    print(output)

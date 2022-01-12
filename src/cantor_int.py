@@ -1,3 +1,5 @@
+import re
+
 class Int(int):
     """
     This class aims to represent an int with the propreties 
@@ -61,17 +63,27 @@ class Int(int):
     def couple_to_int(s):
         return Int.cantor(s[0], Int.couple_to_int(s[1])) if s[1] != 0 else Int.cantor(*s)
 
+    # def int_to_str(self) -> str:
+    #     """
+    #     Gives a str repr of the couple of Cantor in the form we've seen in class : \n
+    #     (a1, (a2, ... (an, 0))) → <a1, <a2, ... <an, 0>>>
+    #     """
+    #     def aux(x, s='', e=''):
+    #         if x[1] == 0:
+    #             return f"{s}, <{x[0]}, 0>{e}"
+    #         return aux(x[1], f"{s + ', ' if s != '' else ''}<{x[0]}", e + '>')
+    #     return aux(self.int_to_couple())
+
     def int_to_str(self) -> str:
-        """ 
+        """
         Gives a str repr of the couple of Cantor in the form we've seen in class : \n
         (a1, (a2, ... (an, 0))) → <a1, <a2, ... <an, 0>>>
         """
-        def aux(x, s='', e=''):
-            if x[1] == 0:
-                return f"{s}, <{x[0]}, 0>{e}"
-            return aux(x[1], f"{s + ', ' if s != '' else ''}<{x[0]}", e + '>')
-        return aux(self.int_to_couple())
 
+        val=str(self.int_to_couple())
+        val = re.sub("\(", "<", val)
+        val = re.sub("\)", ">", val)
+        return val
 
 if __name__ == '__main__':
     for i in range(1, 20):

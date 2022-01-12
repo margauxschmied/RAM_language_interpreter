@@ -1,5 +1,5 @@
 import tkinter as tk
-from main import main_class
+from main import Frame
 inc = '#include '
 de = '#define '
 
@@ -19,7 +19,7 @@ def file_includes(text_editor, output):
         index = text_editor_temp.search(inc, '1.0', stopindex=tk.END)
 
         if index != '':
-            index_end = main_class.idx_to_nb(index) + '.end'
+            index_end = Frame.idx_to_nb(index) + '.end'
             line = text_editor_temp.get(index, index_end)
             path = line[len(inc):]
 
@@ -32,7 +32,7 @@ def file_includes(text_editor, output):
 
             except FileNotFoundError:
                 output.pretty_print(
-                    '[' + line + '] (line ' + main_class.idx_to_nb(index) + '): ', 'blue')
+                    '[' + line + '] (line ' + Frame.idx_to_nb(index) + '): ', 'blue')
                 output.pretty_print(" File not found\n", 'red')
                 continue
 
@@ -54,13 +54,13 @@ def user_defines(text_editor, output):
     while index:
         index = text_editor_temp.search(de, '1.0', stopindex=tk.END)
         if index != '':
-            index_end = main_class.idx_to_nb(index) + '.end'
+            index_end = Frame.idx_to_nb(index) + '.end'
             line = text_editor_temp.get(index, index_end)
             text_editor_temp.delete(index, index_end)
             words = line.split(' ')
             if len(words) != 3:
                 output.pretty_print(
-                    '[' + line + '] (line ' + main_class.idx_to_nb(index) + '): ', 'blue')
+                    '[' + line + '] (line ' + Frame.idx_to_nb(index) + '): ', 'blue')
                 output.pretty_print(
                     " 2 parameters expected (found " + str(len(words) - 1) + ')\n', 'red')
                 continue
