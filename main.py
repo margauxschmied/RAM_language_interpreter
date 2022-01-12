@@ -462,8 +462,7 @@ if __name__ == '__main__':
 
     # print(f"\n  Instruction in RAM \n{program_decoded}")
 
-    data = InputStream("""
-R0 = R0 + 1
+    data = InputStream("""R0 = R0 + 1
 R0 = R0 - 1
 R0 = R0 + 1
 R0 = R0 - 1

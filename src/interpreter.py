@@ -72,12 +72,12 @@ class Interpreter:
 
     def __str__(self) -> str:
         res = []
-        for name, content in self.macros.items():
-            res.append("begin macro {}({})".format(
-                name, ",".join(content.params)))
-            for instr in content.instr_list:
-                res.append(" " + str(instr))
-            res.append('end macro;')
+        # for name, content in self.macros.items():
+        #     res.append("begin macro {}({})".format(
+        #         name, ",".join(content.params)))
+        #     for instr in content.instr_list:
+        #         res.append(" " + str(instr))
+        #     res.append('end macro;')
         for instr in self.instr_list:
             res.append(str(instr))
         return "\n".join(res)
@@ -98,7 +98,6 @@ class Interpreter:
                 if i.is_macro:
                     sub_interp = Interpreter(
                         self.macros[i.numInstr].clone_instr(i.register), self.macros, self.memory)
-                    print(self.macros[i.numInstr].len(self.macros))
                     res.append(sub_interp.remove_macros())
                 else:
                     res.append(i)
@@ -116,6 +115,11 @@ class Interpreter:
             return res
         self.instr_list = flatten_list(aux(), [])
         return self.instr_list
+
+    def reset(self, new_entry=0):
+        self.current_instr = 1
+        self.memory = RAM(new_entry)
+        self.end = False
 
 
 if __name__ == '__main__':
@@ -135,21 +139,21 @@ if __name__ == '__main__':
 
     ADD_MACRO = Macro(
         'add', ['x', 'y'],
-        [RawInstruction('id', ['x', 100], is_macro=True),
-         RawInstruction(0, 100),
+        [RawInstruction('id', ['x', 500], is_macro=True),
+         RawInstruction(0, 500),
          RawInstruction(0, 'y'),
-         RawInstruction(1, 100),
-         RawInstruction(2, 100, 2),
+         RawInstruction(1, 500),
+         RawInstruction(2, 500, 2),
          RawInstruction(1, 'y')])
 
     ADD_IN_Z_MACRO = Macro(
         'add', ['x', 'y', 'z'],
-        [RawInstruction('id', ['x', 100], is_macro=True),
+        [RawInstruction('id', ['x', 500], is_macro=True),
          RawInstruction('id', ['y', 'z'], is_macro=True),
-         RawInstruction(0, 100),
-         RawInstruction(1, 100),
+         RawInstruction(0, 500),
+         RawInstruction(1, 500),
          RawInstruction(0, 'z'),
-         RawInstruction(2, 100, 2),
+         RawInstruction(2, 500, 2),
          RawInstruction(1, 'z')])
 
     CLEAR = Macro(
@@ -176,17 +180,11 @@ if __name__ == '__main__':
         RawInstruction('sum_0_to_n', [0], is_macro=True)
     ], macros, RAM(20))
 
-    interp.remove_macros()
     print("\n".join(map(str, interp.instr_list)))
-    interp.treat_all_instr()
-    print(interp.get_otput())
 
-    # for i in range(20):
-    #     interp = Interpreter([
-    #         RawInstruction('sum_0_to_n', [0], is_macro=True)
-    #     ], macros, RAM(i))
-    #     interp.treat_all_instr()
-    #     print(f"The sum from 0 to {i} is {interp.get_otput()}")
-    #     interp.encode_list_instr()
+    for i in range(150):
+        interp.reset(i)
+        interp.treat_all_instr()
+        print(f"The sum from 0 to {i} is {interp.get_otput()}")
 
-    # print(str(interp))
+    print(str(interp))
