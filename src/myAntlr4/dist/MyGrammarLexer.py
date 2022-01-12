@@ -119,15 +119,15 @@ class MyGrammarLexer(Lexer):
     modeNames = [ "DEFAULT_MODE" ]
 
     literalNames = [ "<INVALID>",
-            "'R'", "'='", "'+'", "'-'", "'IF'", "'if'", "'!='", "'name'", 
+            "'R'", "'='", "'+'", "'-'", "'IF'", "'if'", "'!='", "'name'",
             "';'", "','" ]
 
     symbolicNames = [ "<INVALID>",
-            "INT", "THEN", "GOTOB", "GOTOF", "BEGIN", "END", "MACRO", "PUSH", 
+            "INT", "THEN", "GOTOB", "GOTOF", "BEGIN", "END", "MACRO", "PUSH",
             "POP", "NEWLINE", "WHITESPACE" ]
 
     ruleNames = [ "T__0", "T__1", "T__2", "T__3", "T__4", "T__5", "T__6", 
-                  "T__7", "T__8", "T__9", "INT", "THEN", "GOTOB", "GOTOF", 
+                  "T__7", "T__8", "T__9", "INT", "THEN", "GOTOB", "GOTOF",
                   "BEGIN", "END", "MACRO", "PUSH", "POP", "NEWLINE", "WHITESPACE" ]
 
     grammarFileName = "MyGrammar.g4"

@@ -4,10 +4,15 @@ from tkinter import filedialog, ttk
 from tkinter.scrolledtext import ScrolledText
 import tkinter as tk
 
-from antlr4 import *
-from src.antlr4.dist.MyGrammarLexer import MyGrammarLexer
-from src.antlr4.dist.MyGrammarParser import MyGrammarParser
-from src.parser import MyVisitor
+
+from antlr4 import InputStream, CommonTokenStream
+from src.myAntlr4.dist.MyGrammarLexer import MyGrammarLexer
+from src.myAntlr4.dist.MyGrammarParser import MyGrammarParser
+from src.cantor_int import Int
+from src.instruction import Instruction
+from src.parser import MyVisitor, listInstruction
+from src.decode_int import decode_int_instr, decode_int_program
+from src.interpreter import Interpreter
 
 
 class Texte(tk.Text):
@@ -79,7 +84,7 @@ class Frame:
 
         self.menu_file.add_separator()
         self.menu_file.add_command(
-            label="Exit", command=lambda: root.destroy())
+            label="Exit", command=lambda: self.root.destroy())
         self.menu_bar.add_cascade(label="File", menu=self.menu_file)
 
         # The 'Run' contextual menu
@@ -437,6 +442,33 @@ if __name__ == '__main__':
     #
     # root.mainloop()
 
+    N = 100
+    i = Interpreter(
+        [Instruction(0, 0),
+
+         Instruction(0, 2),
+         Instruction(0, 2),
+         Instruction(1, 0),
+         Instruction(2, 0, 3),
+         Instruction(1, 2),
+
+         Instruction(1, 2),
+         Instruction(0, 1),
+         Instruction(2, 2, 2),
+         Instruction(1, 1)], N)
+
+    print(f"\n  Starting instructions \n{i.instr_list}")
+
+    program_int = i.encode_list_instr()
+
+    print(f"\n  Program int \n{program_int}")
+
+    program_decoded = decode_int_program(i.instr_list)
+
+    print(f"\n  Instruction in RAM \n{program_decoded}")
+
+    data = InputStream(program_decoded)
+
     data = InputStream(
         """R2 = R2 + 1
 PUSH R2
@@ -450,11 +482,25 @@ R0 = R0 - 1"""
     # lexer
     lexer = MyGrammarLexer(data)
     stream = CommonTokenStream(lexer)
+
     # parser
     parser = MyGrammarParser(stream)
     tree = parser.program()
+
     # evaluator
     visitor = MyVisitor()
     output = visitor.visit(tree)
     # listInstruction(tree)
     print(output)
+
+    l_inst = listInstruction(tree)
+
+    print(f"\n  List instr after parsing \n{l_inst}")
+
+    print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
+
+    # interpreter
+    interp = Interpreter(l_inst, N)
+    interp.treat_all_instr()
+    print("\n  Program output =", interp.get_otput())
+

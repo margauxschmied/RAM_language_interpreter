@@ -1,14 +1,15 @@
-import sys
-
-
-import antlr4
 from antlr4 import *
 
 
 # https://faun.pub/introduction-to-antlr-python-af8a3c603d23
-from src.antlr4.dist.MyGrammarLexer import MyGrammarLexer
-from src.antlr4.dist.MyGrammarParser import MyGrammarParser
-from src.antlr4.dist.MyGrammarVisitor import MyGrammarVisitor
+try:
+    from src.myAntlr4.dist.MyGrammarLexer import MyGrammarLexer
+    from src.myAntlr4.dist.MyGrammarParser import MyGrammarParser
+    from src.myAntlr4.dist.MyGrammarVisitor import MyGrammarVisitor
+except:
+    from myAntlr4.dist.MyGrammarLexer import MyGrammarLexer
+    from myAntlr4.dist.MyGrammarParser import MyGrammarParser
+    from myAntlr4.dist.MyGrammarVisitor import MyGrammarVisitor
 
 
 class MyVisitor(MyGrammarVisitor):
@@ -41,7 +42,7 @@ def listInstruction(expr):
 
 if __name__ == "__main__":
     data = InputStream(
-         """R2 = R2 + 1
+        """R2 = R2 + 1
 R2 = R2 - 1
 if R2!=0 THEN GOTOB 0
 R0 = R0 - 1"""
@@ -58,4 +59,3 @@ R0 = R0 - 1"""
     output = visitor.visit(tree)
     # listInstruction(tree)
     print(output)
-

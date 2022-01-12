@@ -1,6 +1,12 @@
 from typing import List
-from cantor_int import Int
-from instruction import Instruction
+try:
+    from src.cantor_int import Int
+    from src.decode_int import decode_int_instr, decode_int_program
+    from src.instruction import Instruction
+except:
+    from cantor_int import Int
+    from decode_int import decode_int_instr, decode_int_program
+    from instruction import Instruction
 
 
 class Interpreter(dict):
@@ -38,6 +44,13 @@ class Interpreter(dict):
     def init_zero(self, value):
         self[0] = value
 
+    def encode_list_instr(self):
+        t = self.instr_list[::-1]
+        res = (t.pop(0).encode_instr(), 0)
+        while len(t) != 0:
+            res = (t.pop(0).encode_instr(), res)
+        return Int.couple_to_int(res)
+
     def __getitem__(self, k) -> Int:
         if k not in dict(self):
             self.__setitem__(k, Int(0))
@@ -58,21 +71,26 @@ if __name__ == '__main__':
     i = Interpreter(
         [Instruction(1, 0),
          Instruction(0, 1),
-         Instruction(2, 0, -2)], N)
+         Instruction(2, 0, 2)], N)
+
     i.treat_all_instr()
     print(i.get_otput())
+
+    print(decode_int_program(i.encode_list_instr()))
 
     """
         Ram program returing sigma(N)
     """
-    N = 5
+    N = 1
     i = Interpreter(
         [Instruction(0, 0),
          Instruction(1, 0),
          Instruction(0, 1),
-         Instruction(2, 0, -2)], 5)
+         Instruction(2, 0, 2)], N)
     i.treat_all_instr()
     print(i.get_otput())
+
+    print(decode_int_program(i.encode_list_instr()))
 
     """
         Ram program returning N * 2
@@ -81,15 +99,15 @@ if __name__ == '__main__':
     i = Interpreter(
         [Instruction(0, 0),
 
-         Instruction(0, 8),
-         Instruction(0, 8),
+         Instruction(0, 2),
+         Instruction(0, 2),
          Instruction(1, 0),
-         Instruction(2, 0, -3),
-         Instruction(1, 8),
+         Instruction(2, 0, 3),
+         Instruction(1, 2),
 
-         Instruction(1, 8),
+         Instruction(1, 2),
          Instruction(0, 1),
-         Instruction(2, 8, -2),
+         Instruction(2, 2, 2),
          Instruction(1, 1)], N
     )
     i.treat_all_instr()

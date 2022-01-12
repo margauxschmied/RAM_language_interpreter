@@ -58,8 +58,8 @@ class MyGrammarParser ( Parser ):
 
     symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "INT", "THEN", 
-                      "GOTOB", "GOTOF", "BEGIN", "END", "MACRO", "PUSH", 
+                      "<INVALID>", "<INVALID>", "<INVALID>", "INT", "THEN",
+                      "GOTOB", "GOTOF", "BEGIN", "END", "MACRO", "PUSH",
                       "POP", "NEWLINE", "WHITESPACE" ]
 
     RULE_program = 0
