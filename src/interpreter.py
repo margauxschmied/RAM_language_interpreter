@@ -25,6 +25,7 @@ class Interpreter:
         self.end = False
         self.memory = memory
         self.macros = macros
+        self.remove_macros()
 
     def update_current_instr(self, n: int):
         self.current_instr += n
@@ -36,17 +37,6 @@ class Interpreter:
         il, ci = self.instr_list, self.current_instr
         if ci == 0 or ci - 1 >= len(il):
             self.end = True
-        elif il[ci-1].is_macro:
-            instrs = self.translate_macro(il[ci - 1])
-            sub_int = Interpreter(instrs, self.macros, self.memory)
-            sub_int.treat_all_instr()
-            sub_int_inst = sub_int.current_instr
-            if sub_int_inst == 0:
-                self.current_instr += 1
-            elif sub_int_inst < 0:
-                self.current_instr -= sub_int_inst
-            else:
-                self.current_instr += (sub_int_inst - len(instrs))
         else:
             il[ci-1].execute(self.memory, self)
 
@@ -101,9 +91,9 @@ class Interpreter:
             res = []
             for pos, i in enumerate(self.instr_list):
                 if i.numInstr == 2:
-                    i.n = i.n + count_macro(Int(pos) - Int(i.n), Int(pos))
+                    i.n = Int(i.n) + count_macro(Int(pos) - Int(i.n), Int(pos))
                 if i.numInstr == 3:
-                    i.n = i.n + count_macro(Int(pos), Int(pos) + Int(i.n))
+                    i.n = Int(i.n) + count_macro(Int(pos), Int(pos) + Int(i.n))
             for i in self.instr_list:
                 if i.is_macro:
                     sub_interp = Interpreter(
