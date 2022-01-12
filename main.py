@@ -9,7 +9,7 @@ from antlr4 import InputStream, CommonTokenStream
 from src.myAntlr4.dist.MyGrammarLexer import MyGrammarLexer
 from src.myAntlr4.dist.MyGrammarParser import MyGrammarParser
 from src.cantor_int import Int
-from src.instruction import Instruction
+from src.instruction.instruction import Instruction
 from src.parser import MyVisitor, listInstruction
 from src.decode_int import decode_int_instr, decode_int_program
 from src.interpreter import Interpreter
@@ -442,32 +442,32 @@ if __name__ == '__main__':
     #
     # root.mainloop()
 
-    N = 100
-    i = Interpreter(
-        [Instruction(0, 0),
-
-         Instruction(0, 2),
-         Instruction(0, 2),
-         Instruction(1, 0),
-         Instruction(2, 0, 3),
-         Instruction(1, 2),
-
-         Instruction(1, 2),
-         Instruction(0, 1),
-         Instruction(2, 2, 2),
-         Instruction(1, 1)], N)
-
-    print(f"\n  Starting instructions \n{i.instr_list}")
-
-    program_int = i.encode_list_instr()
-
-    print(f"\n  Program int \n{program_int}")
-
-    program_decoded = decode_int_program(i.instr_list)
-
-    print(f"\n  Instruction in RAM \n{program_decoded}")
-
-    data = InputStream(program_decoded)
+    # N = 100
+    # i = Interpreter(
+    #     [Instruction(0, 0),
+    #
+    #      Instruction(0, 2),
+    #      Instruction(0, 2),
+    #      Instruction(1, 0),
+    #      Instruction(2, 0, 3),
+    #      Instruction(1, 2),
+    #
+    #      Instruction(1, 2),
+    #      Instruction(0, 1),
+    #      Instruction(2, 2, 2),
+    #      Instruction(1, 1)], N)
+    #
+    # print(f"\n  Starting instructions \n{i.instr_list}")
+    #
+    # program_int = i.encode_list_instr()
+    #
+    # print(f"\n  Program int \n{program_int}")
+    #
+    # program_decoded = decode_int_program(i.instr_list)
+    #
+    # print(f"\n  Instruction in RAM \n{program_decoded}")
+    #
+    # data = InputStream(program_decoded)
 
     data = InputStream(
         """R2 = R2 + 1
@@ -478,7 +478,16 @@ R2 = R2 - 1
 if R2!=0 THEN GOTOB 0
 R0 = R0 - 1"""
     )
-    # print(data)
+
+#     data = InputStream("""BEGIN macro name(Rx, Ry)
+# R1 = R1 + 1
+# R1 = R1 + 1
+# R1 = R1 - 1
+# if R1 != 0 then gotob 2
+# R1 = R1 - 1
+# end macro;""")
+
+# print(data)
     # lexer
     lexer = MyGrammarLexer(data)
     stream = CommonTokenStream(lexer)
@@ -494,13 +503,14 @@ R0 = R0 - 1"""
     print(output)
 
     l_inst = listInstruction(tree)
+    print(l_inst)
 
-    print(f"\n  List instr after parsing \n{l_inst}")
-
-    print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
-
-    # interpreter
-    interp = Interpreter(l_inst, N)
-    interp.treat_all_instr()
-    print("\n  Program output =", interp.get_otput())
+    # print(f"\n  List instr after parsing \n{l_inst}")
+    #
+    # print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
+    #
+    # # interpreter
+    # interp = Interpreter(l_inst, N)
+    # interp.treat_all_instr()
+    # print("\n  Program output =", interp.get_otput())
 

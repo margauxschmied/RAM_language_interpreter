@@ -58,5 +58,14 @@ class MyGrammarListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by MyGrammarParser#macro_list_register.
+    def enterMacro_list_register(self, ctx:MyGrammarParser.Macro_list_registerContext):
+        pass
+
+    # Exit a parse tree produced by MyGrammarParser#macro_list_register.
+    def exitMacro_list_register(self, ctx:MyGrammarParser.Macro_list_registerContext):
+        pass
+
+
 
 del MyGrammarParser

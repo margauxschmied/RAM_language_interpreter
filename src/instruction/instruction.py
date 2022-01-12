@@ -1,19 +1,22 @@
+
 try:
+    from src.instruction.register import Register
     from src.cantor_int import Int
 except:
+    from register import Register
     from cantor_int import Int
 
 
 class Instruction:
-    def __init__(self, num_instr: int, register: int, n=None, next=None):
+    def __init__(self, num_instr: int, register: Register, n=None, next=None):
         self.numInstr = Int(num_instr)
-        self.register = Int(register)
+        self.register = register
         self.n = Int(n) if n is not None else None
         self.next = next
         self.instr = [self.add_instr,
                       self.sub_instr,
                       self.jumpb_instr,
-                      self.jumpf_instr][num_instr]
+                      self.jumpf_instr, None, None, None][num_instr]
 
     def setNext(self, next):
         self.next = next

@@ -39,5 +39,10 @@ class MyGrammarVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MyGrammarParser#macro_list_register.
+    def visitMacro_list_register(self, ctx:MyGrammarParser.Macro_list_registerContext):
+        return self.visitChildren(ctx)
+
+
 
 del MyGrammarParser

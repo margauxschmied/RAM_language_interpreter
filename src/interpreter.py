@@ -2,11 +2,11 @@ from typing import List
 try:
     from src.cantor_int import Int
     from src.decode_int import decode_int_instr, decode_int_program
-    from src.instruction import Instruction
+    from src.instruction.instruction import Instruction
 except:
     from cantor_int import Int
     from decode_int import decode_int_instr, decode_int_program
-    from instruction import Instruction
+    from instruction.instruction import Instruction
 
 
 class Interpreter(dict):
