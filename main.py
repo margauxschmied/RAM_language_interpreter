@@ -9,7 +9,7 @@ from antlr4 import InputStream, CommonTokenStream
 from src.myAntlr4.dist.MyGrammarLexer import MyGrammarLexer
 from src.myAntlr4.dist.MyGrammarParser import MyGrammarParser
 from src.cantor_int import Int
-from src.instruction import Macro, RawInstruction
+from src.instruction import RAM, Macro, RawInstruction
 from src.parser import MyVisitor, listInstruction
 from src.decode_int import decode_int_instr, decode_int_program
 from src.interpreter import Interpreter
@@ -450,27 +450,15 @@ if __name__ == '__main__':
 
     N = 100
     i = Interpreter(
-        [RawInstruction('add', [5], is_macro=True),
-         RawInstruction(0, 0),
+        [RawInstruction('add', [5], is_macro=True)], MACROS, RAM(N))
 
-         RawInstruction(0, 2),
-         RawInstruction(0, 2),
-         RawInstruction(1, 0),
-         RawInstruction(2, 0, 3),
-         RawInstruction(1, 2),
-
-         RawInstruction(1, 2),
-         RawInstruction(0, 1),
-         RawInstruction(2, 2, 2),
-         RawInstruction(1, 1)], N, MACROS)
-
-    print(f"\n  Starting instructions \n{i.instr_list}")
+    print(f"\n  Starting instructions \n{i}")
 
     program_int = i.encode_list_instr()
 
     print(f"\n  Program int \n{program_int}")
 
-    program_decoded = decode_int_program(i.instr_list)
+    program_decoded = decode_int_program(str(i))
 
     print(f"\n  Instruction in RAM \n{program_decoded}")
 

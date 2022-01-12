@@ -3,12 +3,10 @@ from typing import Dict, List
 try:
     from src.instruction import RAM
     from src.cantor_int import Int
-    from src.decode_int import decode_int_instr, decode_int_program
     from src.instruction import RawInstruction, Macro
 except:
     from instruction import RAM
     from cantor_int import Int
-    from decode_int import decode_int_instr, decode_int_program
     from instruction import RawInstruction, Macro
 
 
@@ -83,7 +81,16 @@ class Interpreter:
         return Int.couple_to_int(res)
 
     def __str__(self) -> str:
-        return repr((self.current_instr, self.memory))
+        res = []
+        for name, content in self.macros.items():
+            res.append("begin macro {}({})".format(
+                name, ",".join(content.params)))
+            for instr in content.instr_list:
+                res.append(" " + str(instr))
+            res.append('end macro;')
+        for instr in self.instr_list:
+            res.append(str(instr))
+        return "\n".join(res)
 
 
 if __name__ == '__main__':
@@ -147,3 +154,5 @@ if __name__ == '__main__':
         interp.treat_all_instr()
         print(f"The sum from 0 to {i} is {interp.get_otput()}")
         interp.encode_list_instr()
+
+    print(str(interp))

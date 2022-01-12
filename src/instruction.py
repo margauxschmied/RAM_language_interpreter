@@ -31,13 +31,26 @@ class RawInstruction:
         return self.clone_in_instr().execute(dico, interp)
 
     def encode_instr(self):
-        return self.clone_in_instr().encode_instr()
+        if self.numInstr == 0:
+            return self.register * 3
+        elif self.numInstr == 1:
+            return self.register * 3 + 1
+        elif self.numInstr == 2:
+            return 3 * Int.couple_to_int((self.register, (1, self.n))) + 2
+        else:
+            return 3 * Int.couple_to_int((self.register, (0, self.n))) + 2
 
-    def __str__(self):
-        dico = {"istr_nb": self.numInstr, "reg": self.register}
-        if self.n != None:
-            dico['n'] = self.n
-        return str(dico)
+    def __str__(self) -> str:
+        if self.numInstr == 0:
+            return f"R{self.register} = R{self.register} + 1"
+        elif self.numInstr == 1:
+            return f"R{self.register} = R{self.register} - 1"
+        elif self.numInstr == 2:
+            return f"IF R{self.register} != 0 then gotob {self.n}"
+        elif self.numInstr == 3:
+            return f"IF R{self.register} != 0 then gotof {self.n}"
+        else:
+            return "{}({})".format(self.numInstr, ",".join(map(str, self.register)))
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -78,16 +91,6 @@ class Instruction(RawInstruction):
     def pop_instr(self, dico, interp):
         dico[self.register] = dico['Monster']
         interp.update_current_instr(1)
-
-    def encode_instr(self):
-        if self.numInstr == 0:
-            return self.register * 3
-        elif self.numInstr == 1:
-            return self.register * 3 + 1
-        elif self.numInstr == 2:
-            return 3 * Int.couple_to_int((self.register, (1, self.n))) + 2
-        else:
-            return 3 * Int.couple_to_int((self.register, (0, self.n))) + 2
 
 
 class Macro:
