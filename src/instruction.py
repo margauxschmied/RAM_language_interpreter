@@ -21,14 +21,17 @@ class RawInstruction:
     def getNext(self):
         return self.next
 
-    def clone(self, new_reg=None):
+    def clone_in_instr(self, new_reg=None):
         return Instruction(self.numInstr, self.register if new_reg is None else new_reg, self.n)
 
-    def execute(self, dico):
-        return self.clone().execute(dico)
+    def clone(self):
+        return RawInstruction(self.numInstr, self.register, self.n, self.is_macro)
+
+    def execute(self, dico, interp):
+        return self.clone_in_instr().execute(dico, interp)
 
     def encode_instr(self):
-        return self.clone().encode_instr()
+        return self.clone_in_instr().encode_instr()
 
     def __str__(self):
         dico = {"istr_nb": self.numInstr, "reg": self.register}
@@ -51,29 +54,30 @@ class Instruction(RawInstruction):
                       self.push_instr,
                       self.pop_instr][num_instr]
 
-    def add_instr(self, dico):
+    def add_instr(self, dico, interp):
         dico[self.register] += 1
-        dico.update_current_instr(1)
+        interp.update_current_instr(1)
 
-    def sub_instr(self, dico):
+    def sub_instr(self, dico, interp):
         dico[self.register] -= 1
-        dico.update_current_instr(1)
+        interp.update_current_instr(1)
 
-    def jumpb_instr(self, dico):
-        dico.update_current_instr(-self.n if dico[self.register] != 0 else 1)
+    def jumpb_instr(self, dico, interp):
+        interp.update_current_instr(-self.n if dico[self.register] != 0 else 1)
 
-    def jumpf_instr(self, dico):
-        dico.update_current_instr(self.n if dico[self.register] != 0 else 1)
+    def jumpf_instr(self, dico, interp):
+        interp.update_current_instr(self.n if dico[self.register] != 0 else 1)
 
-    def execute(self, dico):
-        self.register = Int(self.register)
-        self.instr(dico)
+    def execute(self, dico, interp):
+        self.instr(dico, interp)
 
-    def push_instr(self, dico):
+    def push_instr(self, dico, interp):
         dico['Monster'] = dico[self.register]
+        interp.update_current_instr(1)
 
-    def pop_instr(self, dico):
+    def pop_instr(self, dico, interp):
         dico[self.register] = dico['Monster']
+        interp.update_current_instr(1)
 
     def encode_instr(self):
         if self.numInstr == 0:
@@ -98,14 +102,32 @@ class Macro:
         self.macro_dict = dico
 
     def remove_macro(self, params, interp):
-        if len(self.params) != len(set(params)):
-            raise Exception(f'Invalid call to macro {self.nom}')
+        res = self.clone_instr(params)
+        interp.instr_list[interp.current_instr:interp.current_instr] = res
+
+    def clone_instr(self, params) -> List[Instruction]:
         dico = {macro_var: real_var for macro_var,
                 real_var in zip(self.params, params)}
-        res = []
-        for instr in self.instr_list:
-            if instr.register in dico:
-                res.append(instr.clone(new_reg=dico[instr.register]))
-            else:
-                res.append(instr)
-        interp.instr_list[interp.current_instr:interp.current_instr] = res
+        res: List[Instruction] = []
+        clone = [i.clone() for i in self.instr_list]
+        for instr in clone:
+            if not instr.is_macro and instr.register in dico:
+                instr.register = dico[instr.register]
+            elif instr.is_macro:
+                instr.register = [dico[var] if var in dico else var
+                                  for var in instr.register]
+            res.append(instr)
+        return res
+
+
+class RAM(dict):
+    def __init__(self, start_value=0):
+        self[0] = Int(start_value)
+
+    def __getitem__(self, k) -> Int:
+        if k not in dict(self):
+            self.__setitem__(k, Int(0))
+        return dict(self)[k]
+
+    def __setitem__(self, key: int, value: Int) -> None:
+        return super().__setitem__(key, Int(value))
