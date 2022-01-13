@@ -29,13 +29,13 @@ class MyGrammarVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by MyGrammarParser#macro.
-    def visitMacro(self, ctx:MyGrammarParser.MacroContext):
+    # Visit a parse tree produced by MyGrammarParser#list_register.
+    def visitList_register(self, ctx:MyGrammarParser.List_registerContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by MyGrammarParser#list_register.
-    def visitList_register(self, ctx:MyGrammarParser.List_registerContext):
+    # Visit a parse tree produced by MyGrammarParser#macro.
+    def visitMacro(self, ctx:MyGrammarParser.MacroContext):
         return self.visitChildren(ctx)
 
 

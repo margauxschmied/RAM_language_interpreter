@@ -469,23 +469,23 @@ if __name__ == '__main__':
     #
     # data = InputStream(program_decoded)
 
-    data = InputStream(
-        """R2 = R2 + 1
-PUSH R2
-POP R2
-R2 = R2 + 1
-R2 = R2 - 1
-if R2!=0 THEN GOTOB 0
-R0 = R0 - 1"""
-    )
+#     data = InputStream(
+#         """R2 = R2 + 1
+# PUSH R2
+# POP R2
+# R2 = R2 + 1
+# R2 = R2 - 1
+# if R2!=0 THEN GOTOB 0
+# R0 = R0 - 1"""
+#     )
 
-#     data = InputStream("""BEGIN macro name(Rx, Ry)
-# R1 = R1 + 1
-# R1 = R1 + 1
-# R1 = R1 - 1
-# if R1 != 0 then gotob 2
-# R1 = R1 - 1
-# end macro;""")
+    data = InputStream("""BEGIN macro name(Rx, Ry)
+R1 = R1 + 1
+R1 = R1 + 1
+R1 = R1 - 1
+if R1 != 0 then gotob 2
+R1 = R1 - 1
+end macro;""")
 
 # print(data)
     # lexer
