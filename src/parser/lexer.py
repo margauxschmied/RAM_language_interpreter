@@ -23,7 +23,8 @@ tokens = (
     'NEQ',
     'VIRGULE',
     'POINTVIRGULE',
-    'ID',
+    'MACROID',
+    'RID',
 )
 
 # Regular expression rules for simple tokens
@@ -48,8 +49,11 @@ t_VIRGULE = r','
 t_POINTVIRGULE = r';'
 
 digit = r'([0-9])'
-nondigit = r'([_A-Za-z])'
-identifier = r'(' + nondigit + r'(' + digit + r'|' + nondigit + r')*)'
+nondigit = r'([_A-Za-z]+)'
+# identifier = r'(' + nondigit + r'(' + digit + r'|' + nondigit + r')*)'
+
+macroIdentifier = r'(' + nondigit + '\()'
+RIdentifier = r'(R' + nondigit + ')'
 
 
 # A regular expression rule with some action code
@@ -59,9 +63,14 @@ def t_NUMBER(t):
     return t
 
 
-@lex.TOKEN(identifier)
-def t_ID(t):
-    r'[a-zA-Z_][a-zA-Z_0-9]*'
+
+@lex.TOKEN(RIdentifier)
+def t_RID(t):
+    t.value = str(t.value)
+    return t
+
+@lex.TOKEN(macroIdentifier)
+def t_MACROID(t):
     t.value = str(t.value)
     return t
 
@@ -81,18 +90,20 @@ def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
 
+def build():
+    return lex.lex()
 
-# Build the lexer
-lexer = lex.lex()
 
 if __name__ == '__main__':
     data = """BEGIN MACRO name(Rx, Ry)
     R1 = R1 + 1
     R1 = R1 + 1
     R1 = R1 - 1
-    if R1 != 0 then gotob 2
+    IF R1 != 0 THEN GOTOB 2
     R1 = R1 - 1
-    end macro;"""
+    END MACRO;"""
+
+    lexer = lex.lex()
     lexer.input(data)
 
     # Tokenize
