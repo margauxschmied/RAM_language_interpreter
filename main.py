@@ -1,3 +1,4 @@
+import tkinter.font as tkf
 import src.preprocessing as pp
 from tkinter import messagebox
 from tkinter import filedialog, ttk
@@ -110,7 +111,7 @@ class main_class:
         # The 'Help' contextual menu
         self.menu_help = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_help.add_command(
-            label="User manual", command=lambda: self.output.pretty_print("TODO: User Manual\n", 'blue'))
+            label="Get Started", command=lambda: self.output.pretty_print("TODO: User Manual\n", 'blue'))
         self.menu_help.add_command(
             label="RAM instructions", command=lambda: self.output.pretty_print("TODO: RAM\n", 'blue'))
         self.menu_help.add_command(
@@ -263,7 +264,7 @@ class main_class:
 
         self.create_intern_shortcut(self.text_editors[0])
 
-        self.notebook.pack(fill=tk.BOTH, expand=1)
+        #self.notebook.pack(fill=tk.BOTH, expand=1)
         self.panel.add(self.notebook)
 
         self.notebook.bind("<<NotebookTabChanged>>",
@@ -283,9 +284,67 @@ class main_class:
         element.bind('<Control-Return>', lambda e: self.execute_line())
 
     def create_output_terminal(self, parent):
-        self.output = output_terminal(parent)
+        self.frame = tk.Frame(parent)
 
-        self.panel.add(self.output)
+        self.output = output_terminal(self.frame)
+
+        # Choice between if we execute a RAM Program or Int Code
+        vals = [0, 1]
+        etiqs = ['RAM Program', 'Int Code']
+        self.s_var = tk.StringVar()
+        self.s_var.set(vals[0])
+
+        self.radio_frame = tk.Frame(self.frame)
+        self.radio_frame.pack()
+        for i in range(2):
+            radio = tk.Radiobutton(self.radio_frame, variable=self.s_var,
+                                   text=etiqs[i], value=vals[i], command=lambda: self.display_entry())
+            radio.grid(row=0, column=i+1)
+
+        self.output_label = tk.Label(self.frame, text="OUTPUT", bg='darkgray')
+        self.default_font = tk.font.nametofont("TkDefaultFont")
+
+        # The entry of the program (R0)
+        self.entry = tk.Entry(self.radio_frame)
+        self.entry.bind("<FocusIn>", lambda e: self.set_default(False))
+        self.entry.bind("<FocusOut>", lambda e: self.set_default(True))
+        self.entry.insert(0, "Enter the R0 value")
+        self.entry.configure(font=(self.default_font.cget('family'),
+                                   self.default_font.cget('size'), 'italic'))
+        self.entry.config({"foreground": "Gray25"})
+
+        self.entry.grid(row=0, column=0)
+
+        self.output_label.pack(fill=tk.X)
+        self.output.pack(fill=tk.BOTH, expand=True)
+
+        self.panel.add(self.frame)
+
+    def display_entry(self):
+        if self.s_var.get() == '0':
+            self.entry.grid(row=0, column=0)
+        else:
+            self.entry.grid_forget()
+
+    def set_default(self, b):
+        """ Display italic hint text 'Enter the R0' if entry field is empty and not selected """
+        if b:
+            if self.entry.get() == '':
+                self.entry.delete(0, "end")
+                self.entry.insert(0, "Enter the R0 value")
+                self.entry.configure(font=(self.default_font.cget('family'),
+                                           self.default_font.cget('size'), 'italic'))
+                self.entry.config({"foreground": "Gray25"})
+        else:
+            if self.entry.get() == 'Enter the R0 value' and self.get_current_font().cget('slant') == 'italic':
+                self.entry.delete(0, "end")
+                self.entry.insert(0, "")
+
+            self.entry.configure(font=self.default_font)
+            self.entry.config({"foreground": "Black"})
+
+    def get_current_font(self):
+        return tkf.Font(font=self.entry['font'])
 
     def create_panel(self, parent):
         self.panel = tk.PanedWindow(parent, orient=tk.VERTICAL)
@@ -369,6 +428,7 @@ class main_class:
 
     def execute_line(self, line_index=None):
         """ The selected line is where the insertion cursor is. """
+        # TODO
         if line_index == None:
             line_index = self.get_current_text_editor().index('insert')
         line_number = main_class.idx_to_nb(line_index)
@@ -390,16 +450,36 @@ class main_class:
         self.execute_line(index)
 
     def execute_file(self):
-
+        # TODO
         self.output.pretty_print(
             'Execution (' + self.get_current_tabname() + ')\n')
+
+        program = self.get_program()
+        entry = self.get_entry()
+
+        # RAM = 0, Int = 1
+        print(self.s_var.get())
+        if self.s_var.get() == '0':
+            self.output.pretty_print("RAM Programm\n", 'blue')
+            self.output.pretty_print(
+                "Entry: " + entry + '\n' + "Program: " + program + '\n')
+        else:
+            self.output.pretty_print("Int Code\n", 'blue')
+            self.output.pretty_print("Int: " + program + '\n')
+
+    def get_program(self):
         program_includes = pp.file_includes(
             self.get_current_text_editor(), self.output)
         program_includes_defines = pp.user_defines(
             program_includes, self.output)
         program = program_includes_defines.get('1.0', 'end-1c')
+        return program
 
-        self.output.pretty_print("TODO: Run file\n", 'blue')
+    def get_entry(self):
+        if self.get_current_font().cget('slant') == 'italic':
+            return ''
+        else:
+            return self.entry.get()
 
     @staticmethod
     def path_to_filename(path):
@@ -414,7 +494,7 @@ class output_terminal(ScrolledText):
     def __init__(self, parent):
         super().__init__(parent, bg="white", wrap='word')
 
-        self.pack(fill=tk.X, expand=1)
+        #self.pack(fill=tk.X, expand=1)
         self.configure(state='disabled')
         self.tag_config('blue', foreground="blue")
         self.tag_config('red', foreground="red")
@@ -491,4 +571,3 @@ if __name__ == '__main__':
     interp = Interpreter(l_inst, N)
     interp.treat_all_instr()
     print("\n  Program output =", interp.get_otput())
-
