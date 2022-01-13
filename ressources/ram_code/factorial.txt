@@ -1,0 +1,12 @@
+begin macro add(Rx, Ry)
+  Ry = Ry + 1
+  Rx = Rx + 1
+  Ry = Ry - 1
+  if Ry != 0 then gotob 2
+  Rx = Rx - 1
+end macro; 
+
+
+add(R1, R0)
+R0 = R0 - 1
+if R0 != 0 then gotob 2

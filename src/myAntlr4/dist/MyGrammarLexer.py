@@ -9,12 +9,9 @@ else:
 
 
 try:
-    from src.instruction import Instruction
+    from src.instruction import RawInstruction
 except:
-    try:
-        from ...instruction import Instruction
-    except:
-        from instruction import Instruction
+    from instruction import RawInstruction
 
 
 def serializedATN():

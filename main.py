@@ -10,7 +10,7 @@ from antlr4 import InputStream, CommonTokenStream
 from src.myAntlr4.dist.MyGrammarLexer import MyGrammarLexer
 from src.myAntlr4.dist.MyGrammarParser import MyGrammarParser
 from src.cantor_int import Int
-from src.instruction import Instruction
+from src.instruction import RAM, Macro, RawInstruction
 from src.parser import MyVisitor, listInstruction
 from src.decode_int import decode_int_instr, decode_int_program
 from src.interpreter import Interpreter
@@ -513,41 +513,54 @@ def main(root):
 
 
 if __name__ == '__main__':
-    root = tk.Tk()
-    root.title("RAM_language_interpreter")
-    root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
-    root.geometry("640x480")
+    # root = tk.Tk()
+    # root.title("RAM_language_interpreter")
+    # root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
+    # root.geometry("640x480")
 
-    main(root)
+    # main(root)
 
-    root.mainloop()
+    # root.mainloop()
+
+    MACROS = {
+        'add':  Macro('add', ['kappa'], [
+            RawInstruction(1, 'kappa')
+        ])
+    }
 
     N = 100
     i = Interpreter(
-        [Instruction(0, 0),
+        [RawInstruction('add', [5], is_macro=True)], MACROS, RAM(N))
 
-         Instruction(0, 2),
-         Instruction(0, 2),
-         Instruction(1, 0),
-         Instruction(2, 0, 3),
-         Instruction(1, 2),
-
-         Instruction(1, 2),
-         Instruction(0, 1),
-         Instruction(2, 2, 2),
-         Instruction(1, 1)], N)
-
-    print(f"\n  Starting instructions \n{i.instr_list}")
+    print(f"\n  Starting instructions \n{i}")
 
     program_int = i.encode_list_instr()
 
     print(f"\n  Program int \n{program_int}")
 
-    program_decoded = decode_int_program(i.instr_list)
+#    program_decoded = decode_int_program(str(i))
 
-    print(f"\n  Instruction in RAM \n{program_decoded}")
+    # print(f"\n  Instruction in RAM \n{program_decoded}")
 
-    data = InputStream(program_decoded)
+    data = InputStream("""R0 = R0 + 1
+R0 = R0 - 1
+R0 = R0 + 1
+R0 = R0 - 1
+R1000 = R1000 + 1
+IF R0 != 0 then gotob 2
+R1000 = R1000 - 1
+R0 = R0 + 1
+R100 = R100 + 1
+IF R1000 != 0 then gotob 3
+R0 = R0 - 1
+R100 = R100 - 1
+R100 = R100 + 1
+R1 = R1 + 1
+R100 = R100 - 1
+IF R100 != 0 then gotob 2
+R1 = R1 - 1
+IF R0 != 0 then gotob 16   
+""")
 
     # lexer
     lexer = MyGrammarLexer(data)
@@ -568,6 +581,6 @@ if __name__ == '__main__':
     print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
 
     # interpreter
-    interp = Interpreter(l_inst, N)
+    interp = Interpreter(l_inst, memory=RAM(N))
     interp.treat_all_instr()
     print("\n  Program output =", interp.get_otput())
