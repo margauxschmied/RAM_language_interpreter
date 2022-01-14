@@ -33,15 +33,15 @@ tokens = (
 # Regular expression rules for simple tokens
 
 t_R = 'R'
-t_IF = 'IF'
-t_THEN = 'THEN'
-t_GOTOB = 'GOTOB'
-t_GOTOF = 'GOTOF'
-t_BEGIN = 'BEGIN'
-t_END = 'END'
-t_MACRO = 'MACRO'
-t_PUSH = 'PUSH'
-t_POP = 'POP'
+t_IF = r'(IF|if)'
+t_THEN = r'(THEN|then)'
+t_GOTOB = r'(GOTOB|gotob)'
+t_GOTOF = r'(GOTOF|gotof)'
+t_BEGIN = r'(BEGIN|begin)'
+t_END = r'(END|end)'
+t_MACRO = r'(MACRO|macro)'
+t_PUSH = r'(PUSH|push)'
+t_POP = r'(POP|pop)'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_EQ = r'\='
@@ -51,12 +51,13 @@ t_MINUS = r'-'
 t_VIRGULE = r','
 t_POINTVIRGULE = r';'
 
-digit = r'([0-9])'
+digit = r'([0-9]+)'
 nondigit = r'([_A-Za-z]+)'
-# identifier = r'(' + nondigit + r'(' + digit + r'|' + nondigit + r')*)'
+macroIdentifier = r'(' + nondigit + r'(' + digit + r'|' + nondigit + r')*\()'
 
-macroIdentifier = r'(' + nondigit + '\()'
-RIdentifier = r'(R' + nondigit + ')'
+# macroIdentifier = r'(' + nondigit + '\()'
+RIdentifier = r'(R(' + nondigit + r'(' + digit + r'|' + nondigit + r')*))'
+# RIdentifier = r'(R(' + digit + r'|' + nondigit + r')+)'
 
 
 # A regular expression rule with some action code
@@ -327,8 +328,8 @@ def p_error(p):
 
 
 if __name__ == '__main__':
-    data = """BEGIN MACRO name(Rx, Ry)
-    Rx = Rx + 1
+    data = """begin MACRO Na2me(Rx, Ry)
+    RxAz2 = RxAz2 + 1
     Rx = Rx + 1
     Rx = Rx - 1
     IF Rx != 0 THEN GOTOB 2
