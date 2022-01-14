@@ -9,14 +9,14 @@ except:
 
 class Instruction:
     def __init__(self, num_instr: int, register: Register, n=None, next=None):
-        self.numInstr = Int(num_instr)
+        self.numInstr = num_instr
         self.register = register
-        self.n = Int(n) if n is not None else None
+        self.n = n
         self.next = next
-        self.instr = [self.add_instr,
-                      self.sub_instr,
-                      self.jumpb_instr,
-                      self.jumpf_instr, None, None, None, None][num_instr]
+        # self.instr = [self.add_instr,
+        #               self.sub_instr,
+        #               self.jumpb_instr,
+        #               self.jumpf_instr, None, None, None, None][num_instr]
 
     def setNext(self, next):
         self.next = next

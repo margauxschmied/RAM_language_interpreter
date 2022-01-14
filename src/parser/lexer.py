@@ -194,15 +194,15 @@ def p_expression_5(p):
     p[0] = p[1]
 
 
-# def p_expression_call_macro(p):
-#     # | ID(list) {$instruction=$macro.instruction}
-#     'expression : call_macro'
-#     p[0] = p[1]
-#
-# #TODO
-# def p_call_macro(p):
-#     'call_macro : MACROID list_register RPAREN'
-#     p[0] = p[1] + p[2] + p[3]
+def p_expression_callmacro(p):
+    # | ID(list) {$instruction=$macro.instruction}
+    'expression : callmacro'
+    p[0] = p[1]
+
+
+def p_callmacro(p):
+    'callmacro : MACROID list_register RPAREN'
+    p[0] = Macro(p[1][:-1], p[2], None)  #p[1] + p[2] + p[3]
 
 # macro returns [Instruction instruction]:
 #     BEGIN MACRO name=MACROIDENTIFIER  macro_list_register ')' NEWLINE code NEWLINE END MACRO ';'  {$instruction=Macro($name.text, macro_list_register.register, $code.instruction)}
@@ -210,16 +210,19 @@ def p_expression_5(p):
 
 def p_macro(p):
     'macro : BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE'
-    p[0] = Macro(p[3], p[4], p[6]) #p[1] + p[2] + p[3] + str(p[4]) + p[5] + "\n" + p[6] + p[7] + p[8] + p[9]
+    p[0] = Macro(p[3][:-1], p[4], p[6]) #p[1] + p[2] + p[3] + str(p[4]) + p[5] + "\n" + p[6] + p[7] + p[8] + p[9]
 
 
 def p_list_register(p):
     '''list_register : R NUMBER VIRGULE list_register
-                            | R NUMBER'''
+                            | R NUMBER
+                            | '''
     if len(p) == 3:
         p[0] = Register(p[2])  #p[1] + str(p[2])
     elif len(p) == 5:
         p[0] = Register(p[2], p[4])  #p[1] + str(p[2]) + p[3] + p[4]
+    else:
+        p[0]=None
 
 
 # macro_list_register returns [Register register]:
@@ -230,11 +233,14 @@ def p_list_register(p):
 
 def p_macro_list_register(p):
     '''macro_list_register : RID VIRGULE macro_list_register
-                            | RID'''
+                            | RID
+                            | '''
     if len(p) == 2:
-        p[0] = Register(p[1])  #p[1]
+        p[0] = Register(p[1][1:])  #p[1]
     elif len(p) == 4:
-        p[0] = Register(p[1], p[3])  #p[1] + p[2] + p[3]
+        p[0] = Register(p[1][1:], p[3])  #p[1] + p[2] + p[3]
+    else:
+        p[0] = None
 
 
 def p_macro_code_list(p):
@@ -255,14 +261,14 @@ def p_macro_expression_push(p):
     #     PUSH R r1=INT {$instruction= Instruction(4, Register($r1.text))}
 
     'macro_expression : PUSH RID'
-    p[0] = Instruction(4, Register(p[2]))  #p[1] + p[2]
+    p[0] = Instruction(4, Register(p[2][1:]))  #p[1] + p[2]
 
 
 def p_macro_expression_pop(p):
     #     | POP R r1=INT {$instruction= Instruction(5, Register($r1.text))}
 
     'macro_expression : POP RID'
-    p[0] = Instruction(5, Register(p[2]))  #p[1] + p[2]
+    p[0] = Instruction(5, Register(p[2][1:]))  #p[1] + p[2]
 
 
 def p_macro_expression_12(p):
@@ -288,9 +294,9 @@ def p_macro_expression_12(p):
         p_error(p)
 
     if p[4] == '+':
-        p[0] = Instruction(0, Register(p[1]))  #p[1] + str(p[2]) + p[3] + p[4] + str(p[5])
+        p[0] = Instruction(0, Register(p[1][1:]))  #p[1] + str(p[2]) + p[3] + p[4] + str(p[5])
     elif p[4] == '-':
-        p[0] = Instruction(1, Register(p[1]))  #p[1] + str(p[2]) + p[3] + p[4] + str(p[5])
+        p[0] = Instruction(1, Register(p[1][1:]))  #p[1] + str(p[2]) + p[3] + p[4] + str(p[5])
 
 
 def p_macro_expression_34(p):
@@ -309,15 +315,15 @@ def p_macro_expression_34(p):
         p_error(p)
 
     if p[6] == 'GOTOB':
-        p[0] = Instruction(2, Register(p[2]), p[7])  #p[1] + p[2] + p[3] + str(p[4]) + p[5] + p[6] + str(p[7])
+        p[0] = Instruction(2, Register(p[2][1:]), p[7])  #p[1] + p[2] + p[3] + str(p[4]) + p[5] + p[6] + str(p[7])
     elif p[6] == 'GOTOF':
-        p[0] = Instruction(3, Register(p[2]), p[7])  #p[1] + p[2] + p[3] + str(p[4]) + p[5] + p[6] + str(p[7])
+        p[0] = Instruction(3, Register(p[2][1:]), p[7])  #p[1] + p[2] + p[3] + str(p[4]) + p[5] + p[6] + str(p[7])
 
 
 # Error rule for syntax errors
 def p_error(p):
-    print("Syntax error in input! " + p.type)
-    yacc.errok()
+    print("Syntax error in input! ")
+    # yacc.errok()
 
 
 if __name__ == '__main__':
@@ -327,7 +333,9 @@ if __name__ == '__main__':
     Rx = Rx - 1
     IF Rx != 0 THEN GOTOB 2
     Rx = Rx - 1
-    END MACRO;"""
+    END MACRO;
+    a()
+"""
 
     # data = """PUSH R2
     # POP R2
@@ -337,11 +345,11 @@ if __name__ == '__main__':
     lexer.input(data)
 
     # Tokenize
-    while True:
-        tok = lexer.token()
-        if not tok:
-            break  # No more input
-        print(tok)
+    # while True:
+    #     tok = lexer.token()
+    #     if not tok:
+    #         break  # No more input
+    #     print(tok)
 
     parser = yacc.yacc()
 
