@@ -17,7 +17,8 @@ $instruction.setNext($code.instruction)}
     ;
 
 expr returns [Instruction instruction]:
-    PUSH R r1=INT {$instruction= Instruction(4, Register($r1.text))}
+    macro {$instruction=$macro.instruction}
+    | PUSH R r1=INT {$instruction= Instruction(4, Register($r1.text))}
     | POP R r1=INT {$instruction= Instruction(5, Register($r1.text))}
     | R r1=INT '=' R r2=INT op=('+'|'-') un=INT  {
 if $r1.text != $r2.text:
@@ -37,7 +38,6 @@ if $goto.text=='GOTOB' or $goto.text=='gotob':
 else:
     $instruction= Instruction(3, Register($r1.text), $n.text)
 }
-    | macro {$instruction=$macro.instruction}
     ;
 
 list_register returns [Register register]:
@@ -51,7 +51,7 @@ macro returns [Instruction instruction]:
 ;
 
 macro_list_register returns [Register register]:
-    r1=RIDENTIFIER ',' list_register {$register=Register($r1.text, $list_register.register)}
+    r1=RIDENTIFIER ',' macro_list_register {$register=Register($r1.text, $macro_list_register.register)}
     | r1=RIDENTIFIER   {$register=Register($r1.text)}
     ;
 

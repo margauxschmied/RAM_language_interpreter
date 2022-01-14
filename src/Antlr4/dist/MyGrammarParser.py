@@ -30,21 +30,21 @@ def serializedATN():
         buf.write("\2\2\22\23\5\6\4\2\23\24\7\27\2\2\24\25\5\4\3\2\25\26")
         buf.write("\b\3\1\2\26\33\3\2\2\2\27\30\5\6\4\2\30\31\b\3\1\2\31")
         buf.write("\33\3\2\2\2\32\22\3\2\2\2\32\27\3\2\2\2\33\5\3\2\2\2\34")
-        buf.write("\35\7\23\2\2\35\36\7\13\2\2\36\37\7\n\2\2\379\b\4\1\2")
-        buf.write(" !\7\24\2\2!\"\7\13\2\2\"#\7\n\2\2#9\b\4\1\2$%\7\13\2")
-        buf.write("\2%&\7\n\2\2&\'\7\3\2\2\'(\7\13\2\2()\7\n\2\2)*\t\2\2")
-        buf.write("\2*+\7\n\2\2+9\b\4\1\2,-\7\f\2\2-.\7\13\2\2./\7\n\2\2")
-        buf.write("/\60\7\6\2\2\60\61\7\n\2\2\61\62\7\r\2\2\62\63\t\3\2\2")
-        buf.write("\63\64\7\n\2\2\649\b\4\1\2\65\66\5\n\6\2\66\67\b\4\1\2")
-        buf.write("\679\3\2\2\28\34\3\2\2\28 \3\2\2\28$\3\2\2\28,\3\2\2\2")
-        buf.write("8\65\3\2\2\29\7\3\2\2\2:;\7\13\2\2;<\7\n\2\2<=\7\7\2\2")
-        buf.write("=>\5\b\5\2>?\b\5\1\2?D\3\2\2\2@A\7\13\2\2AB\7\n\2\2BD")
-        buf.write("\b\5\1\2C:\3\2\2\2C@\3\2\2\2D\t\3\2\2\2EF\7\20\2\2FG\7")
-        buf.write("\22\2\2GH\7\26\2\2HI\5\f\7\2IJ\7\b\2\2JK\7\27\2\2KL\5")
-        buf.write("\4\3\2LM\7\27\2\2MN\7\21\2\2NO\7\22\2\2OP\7\t\2\2PQ\b")
-        buf.write("\6\1\2Q\13\3\2\2\2RS\7\25\2\2ST\7\7\2\2TU\5\b\5\2UV\b")
-        buf.write("\7\1\2VZ\3\2\2\2WX\7\25\2\2XZ\b\7\1\2YR\3\2\2\2YW\3\2")
-        buf.write("\2\2Z\r\3\2\2\2\6\328CY")
+        buf.write("\35\5\n\6\2\35\36\b\4\1\2\369\3\2\2\2\37 \7\23\2\2 !\7")
+        buf.write("\13\2\2!\"\7\n\2\2\"9\b\4\1\2#$\7\24\2\2$%\7\13\2\2%&")
+        buf.write("\7\n\2\2&9\b\4\1\2\'(\7\13\2\2()\7\n\2\2)*\7\3\2\2*+\7")
+        buf.write("\13\2\2+,\7\n\2\2,-\t\2\2\2-.\7\n\2\2.9\b\4\1\2/\60\7")
+        buf.write("\f\2\2\60\61\7\13\2\2\61\62\7\n\2\2\62\63\7\6\2\2\63\64")
+        buf.write("\7\n\2\2\64\65\7\r\2\2\65\66\t\3\2\2\66\67\7\n\2\2\67")
+        buf.write("9\b\4\1\28\34\3\2\2\28\37\3\2\2\28#\3\2\2\28\'\3\2\2\2")
+        buf.write("8/\3\2\2\29\7\3\2\2\2:;\7\13\2\2;<\7\n\2\2<=\7\7\2\2=")
+        buf.write(">\5\b\5\2>?\b\5\1\2?D\3\2\2\2@A\7\13\2\2AB\7\n\2\2BD\b")
+        buf.write("\5\1\2C:\3\2\2\2C@\3\2\2\2D\t\3\2\2\2EF\7\20\2\2FG\7\22")
+        buf.write("\2\2GH\7\26\2\2HI\5\f\7\2IJ\7\b\2\2JK\7\27\2\2KL\5\4\3")
+        buf.write("\2LM\7\27\2\2MN\7\21\2\2NO\7\22\2\2OP\7\t\2\2PQ\b\6\1")
+        buf.write("\2Q\13\3\2\2\2RS\7\25\2\2ST\7\7\2\2TU\5\f\7\2UV\b\7\1")
+        buf.write("\2VZ\3\2\2\2WX\7\25\2\2XZ\b\7\1\2YR\3\2\2\2YW\3\2\2\2")
+        buf.write("Z\r\3\2\2\2\6\328CY")
         return buf.getvalue()
 
 
@@ -264,6 +264,7 @@ class MyGrammarParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
             self.instruction = None
+            self._macro = None # MacroContext
             self.r1 = None # Token
             self.r2 = None # Token
             self.op = None # Token
@@ -271,7 +272,10 @@ class MyGrammarParser ( Parser ):
             self.zero = None # Token
             self.goto = None # Token
             self.n = None # Token
-            self._macro = None # MacroContext
+
+        def macro(self):
+            return self.getTypedRuleContext(MyGrammarParser.MacroContext,0)
+
 
         def PUSH(self):
             return self.getToken(MyGrammarParser.PUSH, 0)
@@ -303,10 +307,6 @@ class MyGrammarParser ( Parser ):
         def GOTOF(self):
             return self.getToken(MyGrammarParser.GOTOF, 0)
 
-        def macro(self):
-            return self.getTypedRuleContext(MyGrammarParser.MacroContext,0)
-
-
         def getRuleIndex(self):
             return MyGrammarParser.RULE_expr
 
@@ -336,39 +336,45 @@ class MyGrammarParser ( Parser ):
             self.state = 54
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [MyGrammarParser.PUSH]:
+            if token in [MyGrammarParser.BEGIN]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 26
+                localctx._macro = self.macro()
+                localctx.instruction=localctx._macro.instruction
+                pass
+            elif token in [MyGrammarParser.PUSH]:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 29
                 self.match(MyGrammarParser.PUSH)
-                self.state = 27
+                self.state = 30
                 self.match(MyGrammarParser.R)
-                self.state = 28
+                self.state = 31
                 localctx.r1 = self.match(MyGrammarParser.INT)
                 localctx.instruction= Instruction(4, Register((None if localctx.r1 is None else localctx.r1.text)))
                 pass
             elif token in [MyGrammarParser.POP]:
-                self.enterOuterAlt(localctx, 2)
-                self.state = 30
-                self.match(MyGrammarParser.POP)
-                self.state = 31
-                self.match(MyGrammarParser.R)
-                self.state = 32
-                localctx.r1 = self.match(MyGrammarParser.INT)
-                localctx.instruction= Instruction(5, Register((None if localctx.r1 is None else localctx.r1.text)))
-                pass
-            elif token in [MyGrammarParser.R]:
                 self.enterOuterAlt(localctx, 3)
+                self.state = 33
+                self.match(MyGrammarParser.POP)
                 self.state = 34
                 self.match(MyGrammarParser.R)
                 self.state = 35
                 localctx.r1 = self.match(MyGrammarParser.INT)
-                self.state = 36
-                self.match(MyGrammarParser.T__0)
+                localctx.instruction= Instruction(5, Register((None if localctx.r1 is None else localctx.r1.text)))
+                pass
+            elif token in [MyGrammarParser.R]:
+                self.enterOuterAlt(localctx, 4)
                 self.state = 37
                 self.match(MyGrammarParser.R)
                 self.state = 38
-                localctx.r2 = self.match(MyGrammarParser.INT)
+                localctx.r1 = self.match(MyGrammarParser.INT)
                 self.state = 39
+                self.match(MyGrammarParser.T__0)
+                self.state = 40
+                self.match(MyGrammarParser.R)
+                self.state = 41
+                localctx.r2 = self.match(MyGrammarParser.INT)
+                self.state = 42
                 localctx.op = self._input.LT(1)
                 _la = self._input.LA(1)
                 if not(_la==MyGrammarParser.T__1 or _la==MyGrammarParser.T__2):
@@ -376,7 +382,7 @@ class MyGrammarParser ( Parser ):
                 else:
                     self._errHandler.reportMatch(self)
                     self.consume()
-                self.state = 40
+                self.state = 43
                 localctx.un = self.match(MyGrammarParser.INT)
 
                 if (None if localctx.r1 is None else localctx.r1.text) != (None if localctx.r2 is None else localctx.r2.text):
@@ -390,20 +396,20 @@ class MyGrammarParser ( Parser ):
 
                 pass
             elif token in [MyGrammarParser.IF]:
-                self.enterOuterAlt(localctx, 4)
-                self.state = 42
-                self.match(MyGrammarParser.IF)
-                self.state = 43
-                self.match(MyGrammarParser.R)
-                self.state = 44
-                localctx.r1 = self.match(MyGrammarParser.INT)
+                self.enterOuterAlt(localctx, 5)
                 self.state = 45
-                self.match(MyGrammarParser.T__3)
+                self.match(MyGrammarParser.IF)
                 self.state = 46
-                localctx.zero = self.match(MyGrammarParser.INT)
+                self.match(MyGrammarParser.R)
                 self.state = 47
-                self.match(MyGrammarParser.THEN)
+                localctx.r1 = self.match(MyGrammarParser.INT)
                 self.state = 48
+                self.match(MyGrammarParser.T__3)
+                self.state = 49
+                localctx.zero = self.match(MyGrammarParser.INT)
+                self.state = 50
+                self.match(MyGrammarParser.THEN)
+                self.state = 51
                 localctx.goto = self._input.LT(1)
                 _la = self._input.LA(1)
                 if not(_la==MyGrammarParser.GOTOB or _la==MyGrammarParser.GOTOF):
@@ -411,7 +417,7 @@ class MyGrammarParser ( Parser ):
                 else:
                     self._errHandler.reportMatch(self)
                     self.consume()
-                self.state = 49
+                self.state = 52
                 localctx.n = self.match(MyGrammarParser.INT)
 
                 if (None if localctx.zero is None else localctx.zero.text) != '0':
@@ -421,12 +427,6 @@ class MyGrammarParser ( Parser ):
                 else:
                     localctx.instruction= Instruction(3, Register((None if localctx.r1 is None else localctx.r1.text)), (None if localctx.n is None else localctx.n.text))
 
-                pass
-            elif token in [MyGrammarParser.BEGIN]:
-                self.enterOuterAlt(localctx, 5)
-                self.state = 51
-                localctx._macro = self.macro()
-                localctx.instruction=localctx._macro.instruction
                 pass
             else:
                 raise NoViableAltException(self)
@@ -625,10 +625,10 @@ class MyGrammarParser ( Parser ):
             self.parser = parser
             self.register = None
             self.r1 = None # Token
-            self._list_register = None # List_registerContext
+            self._macro_list_register = None # Macro_list_registerContext
 
-        def list_register(self):
-            return self.getTypedRuleContext(MyGrammarParser.List_registerContext,0)
+        def macro_list_register(self):
+            return self.getTypedRuleContext(MyGrammarParser.Macro_list_registerContext,0)
 
 
         def RIDENTIFIER(self):
@@ -669,8 +669,8 @@ class MyGrammarParser ( Parser ):
                 self.state = 81
                 self.match(MyGrammarParser.T__4)
                 self.state = 82
-                localctx._list_register = self.list_register()
-                localctx.register=Register((None if localctx.r1 is None else localctx.r1.text), localctx._list_register.register)
+                localctx._macro_list_register = self.macro_list_register()
+                localctx.register=Register((None if localctx.r1 is None else localctx.r1.text), localctx._macro_list_register.register)
                 pass
 
             elif la_ == 2:

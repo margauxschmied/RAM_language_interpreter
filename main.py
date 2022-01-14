@@ -6,13 +6,13 @@ import tkinter as tk
 
 
 from antlr4 import InputStream, CommonTokenStream
-from src.myAntlr4.dist.MyGrammarLexer import MyGrammarLexer
-from src.myAntlr4.dist.MyGrammarParser import MyGrammarParser
+from src.Antlr4.dist.MyGrammarLexer import MyGrammarLexer
+from src.Antlr4.dist.MyGrammarParser import MyGrammarParser
 from src.cantor_int import Int
 from src.instruction.instruction import Instruction
-from src.parser import MyVisitor, listInstruction
 from src.decode_int import decode_int_instr, decode_int_program
 from src.interpreter import Interpreter
+from src.parser import MyVisitor, listInstruction
 
 
 class Texte(tk.Text):

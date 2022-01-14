@@ -4,5 +4,6 @@ from src.instruction.register import Register
 
 class Macro(Instruction):
     def __init__(self, name, register, instruction=None, next=None):
-        super().__init__(name, register, instruction, next)
-
+        super().__init__(7, register, None, next)
+        self.name=name
+        self.instruction=instruction

@@ -16,7 +16,7 @@ class Instruction:
         self.instr = [self.add_instr,
                       self.sub_instr,
                       self.jumpb_instr,
-                      self.jumpf_instr, None, None, None][num_instr]
+                      self.jumpf_instr, None, None, None, None][num_instr]
 
     def setNext(self, next):
         self.next = next
