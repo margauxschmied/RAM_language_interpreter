@@ -161,7 +161,7 @@ class main_class:
         table_window = tk.Toplevel(self.root)
         table_window.geometry('250x250')
         table_window.resizable(False, False)
-        table_window.title("Registers")
+        table_window.title("Memory")
         tree_scroll = tk.Scrollbar(table_window)
         tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
         table = ttk.Treeview(table_window, yscrollcommand=tree_scroll)
@@ -175,7 +175,7 @@ class main_class:
         table.heading("register", text="Register", anchor=tk.CENTER)
         table.heading("value", text="Value", anchor=tk.CENTER)
 
-        table.pack()
+        table.pack(fill=tk.BOTH, expand=1)
 
         table_window.withdraw()
         table_window.protocol("WM_DELETE_WINDOW",
@@ -365,7 +365,7 @@ class main_class:
         self.input_label = tk.Label(self.radio_frame, text="R0 = ")
         self.input_label.grid(row=0, column=1)
         self.display_registers = tk.Button(
-            self.radio_frame, text="Display Registers", command=lambda: self.open_registers())
+            self.radio_frame, text="Display Memory", command=lambda: self.open_registers())
         self.display_registers.grid(row=0, column=0)
 
     def open_registers(self):
