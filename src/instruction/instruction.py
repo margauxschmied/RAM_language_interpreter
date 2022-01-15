@@ -59,3 +59,4 @@ class Instruction:
             return 3 * Int.couple_to_int((self.register, (1, self.n))) + 2
         else:
             return 3 * Int.couple_to_int((self.register, (0, self.n))) + 2
+

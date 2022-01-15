@@ -7,3 +7,4 @@ class Macro(Instruction):
         super().__init__(name, register, None, next)
         self.name=name
         self.instruction=instruction
+
