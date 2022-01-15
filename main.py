@@ -57,6 +57,9 @@ class main_class:
         self.text_editors = []
         self.line_numbers = []
         self.titles = []
+        self.interpreters = []
+        self.table_windows = []
+        self.tables = []
 
         self.end_line = None
         self.choice1 = tk.IntVar(value=1)
@@ -91,14 +94,14 @@ class main_class:
         # The 'Run' contextual menu
         self.menu_run = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_run.add_command(
-            label="Run Selected Line", command=self.execute_line)
+            label="Start/Run Next Instruction", command=self.execute_line)
         self.menu_run.add_command(
             label="Run File", command=self.execute_file)
         self.menu_bar.add_cascade(label="Run", menu=self.menu_run)
 
         # The 'Stop' button
         self.menu_bar.add_command(
-            label="Stop", command=lambda: self.output.pretty_print("TODO: Stop\n", 'blue'))
+            label="Stop", command=lambda: self.stop())
 
         # The 'Option' button
         self.menu_bar.add_command(
@@ -109,7 +112,7 @@ class main_class:
         self.menu_help.add_command(
             label="Get Started", command=lambda: self.output.pretty_print("TODO: User Manual\n", 'blue'))
         self.menu_help.add_command(
-            label="RAM instructions", command=lambda: self.output.pretty_print("TODO: RAM\n", 'blue'))
+            label="RAM Instructions", command=lambda: self.output.pretty_print("TODO: RAM\n", 'blue'))
         self.menu_help.add_command(
             label="About", command=lambda: self.output.pretty_print("TODO: About\n", 'blue'))
 
@@ -152,6 +155,37 @@ class main_class:
 
         scrollbar['command'] = self.on_scrollbar
         text_editor['yscrollcommand'] = self.on_textscroll
+
+        self.interpreters.append(None)
+
+        table_window = tk.Toplevel(self.root)
+        table_window.geometry('250x250')
+        table_window.resizable(False, False)
+        table_window.title("Registers")
+        tree_scroll = tk.Scrollbar(table_window)
+        tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+        table = ttk.Treeview(table_window, yscrollcommand=tree_scroll)
+        tree_scroll.config(command=table.yview)
+        table['columns'] = ('register', 'value')
+        table.column("#0", width=0,  stretch=tk.NO)
+        table.column("register", anchor=tk.CENTER, width=80)
+        table.column("value", anchor=tk.CENTER, width=80)
+
+        table.heading("#0", text="", anchor=tk.CENTER)
+        table.heading("register", text="Register", anchor=tk.CENTER)
+        table.heading("value", text="Value", anchor=tk.CENTER)
+
+        table.pack()
+
+        table_window.withdraw()
+        table_window.protocol("WM_DELETE_WINDOW",
+                              lambda: self.on_closing(table_window))
+        self.table_windows.append(table_window)
+        self.tables.append(table)
+
+    def on_closing(self, table_window):
+        table_window.withdraw()
+        return 'break'
 
     def update_line(self, event=None, correct_line_count=True):
         """ Update line number function's according to the current tab (selected one). """
@@ -196,6 +230,18 @@ class main_class:
 
     def get_current_scrollbar(self):
         return self.scrollbars[int(self.get_current_tab())]
+
+    def get_current_interpreter(self):
+        return self.interpreters[int(self.get_current_tab())]
+
+    def set_current_interpreter(self, interpreter):
+        self.interpreters[int(self.get_current_tab())] = interpreter
+
+    def get_current_table(self):
+        return self.tables[int(self.get_current_tab())]
+
+    def get_current_table_window(self):
+        return self.table_windows[int(self.get_current_tab())]
 
     def new_file(self):
         """ Default name of newly-created file is Untitled+[acc] """
@@ -296,7 +342,7 @@ class main_class:
         for i in range(2):
             radio = tk.Radiobutton(self.radio_frame, variable=self.s_var,
                                    text=etiqs[i], value=vals[i])
-            radio.grid(row=0, column=i+2)
+            radio.grid(row=0, column=i+3)
 
         self.output_label = tk.Label(self.frame, text="OUTPUT", bg='darkgray')
         self.default_font = tk.font.nametofont("TkDefaultFont")
@@ -310,14 +356,20 @@ class main_class:
                                    self.default_font.cget('size'), 'italic'))
         self.entry.config({"foreground": "Gray25"})
 
-        self.entry.grid(row=0, column=1)
+        self.entry.grid(row=0, column=2)
 
         self.output_label.pack(fill=tk.X)
         self.output.pack(fill=tk.BOTH, expand=True)
 
         self.panel.add(self.frame)
         self.input_label = tk.Label(self.radio_frame, text="R0 = ")
-        self.input_label.grid(row=0, column=0)
+        self.input_label.grid(row=0, column=1)
+        self.display_registers = tk.Button(
+            self.radio_frame, text="Display Registers", command=lambda: self.open_registers())
+        self.display_registers.grid(row=0, column=0)
+
+    def open_registers(self):
+        self.get_current_table_window().deiconify()
 
     def set_default(self, b):
         """ Display italic hint text 'Enter the R0' if entry field is empty and not selected """
@@ -353,18 +405,45 @@ class main_class:
     def create_popup(self, parent):
         """ At the right-click on a line, this popup opens. """
         self.m = tk.Menu(parent, tearoff=0)
-        self.m.add_command(
-            label="Run This Line", command=lambda: self.execute_mouse_line())
+        # self.m.add_command(
+        #     label="Run This Line", command=lambda: self.execute_mouse_line())
         self.m.add_command(
             label="Mark This Line as End", command=lambda: self.mark_line())
         self.m.add_command(
             label="Remove Line Mark", command=lambda: self.remove_mark())
+        self.m.add_separator()
+        self.m.add_command(
+            label="Execute File", command=lambda: self.execute_file())
+
+        self.m2 = tk.Menu(parent, tearoff=0)
+        self.m2.add_command(
+            label="Execute Int", command=lambda: self.execute_file())
+        self.m2.add_separator()
+        self.m2.add_command(
+            label="Convert Into RAM in New File", command=lambda: self.convert_int_new_file())
+
+    def convert_int_new_file(self):
+        try:
+            code_int = int(self.get_program())
+            program = decode_int_program(code_int)
+            self.new_file()
+            self.text_editors[-1].insert('1.0', program)
+        except ValueError:
+            self.output.pretty_print(
+                "Warning: Program is not an int\n", 'orange')
+            pass
 
     def popup(self, event):
         try:
-            self.m.tk_popup(event.x_root, event.y_root)
+            if self.s_var.get() == '0':
+                self.m.tk_popup(event.x_root, event.y_root)
+            else:
+                self.m2.tk_popup(event.x_root, event.y_root)
         finally:
-            self.m.grab_release()
+            if self.s_var.get() == '0':
+                self.m.grab_release()
+            else:
+                self.m2.grab_release()
 
     def open_option(self):
         """ New window for options is created and has the focus. """
@@ -427,28 +506,64 @@ class main_class:
         self.end_line = None
 
     def execute_line(self, line_index=None):
-        """ The selected line is where the insertion cursor is. """
-        # TODO
-        if line_index == None:
-            line_index = self.get_current_text_editor().index('insert')
-        line_number = main_class.idx_to_nb(line_index)
-        res = 'Execution (line ' + main_class.idx_to_nb(line_index) + ', file ' + self.get_current_tabname(
-        ) + '): '
-        self.output.pretty_print("TODO: Run line\n", 'blue')
-        self.output.pretty_print(res)
-        self.output.pretty_print(self.text_editors[self.get_current_tab()].get(
-            line_number + '.0', line_number + '.end') + '\n', 'gray')
+        """ Strat the sequencial execution or execute the next instruction if started. """
 
-        if self.choice2.get() == 1:
-            self.get_current_text_editor().mark_set(
-                "insert", str(int(line_number) + 1) + '.end')
+        if self.s_var.get() == '1':
+            self.output.pretty_print(
+                "Warning: Convert this Int program into RAM program to allow sequential execution.\n(Right-click -> Convert Into RAM in New File)\n", 'orange')
+            return 'break'
+        program = self.get_program(False)
+        entry = self.get_entry()
+        if entry == None:
+            return 'break'
+
+        if self.get_current_interpreter() == None:
+            inter = self.parse_ram_program(program, entry)
+            if inter == None:
+                return 'break'
+            self.set_current_interpreter(inter)
+            self.output.pretty_print(
+                "Sequential execution started ("+self.get_current_tabname()+").\n", 'blue')
+
+        try:
+            current_inst = self.get_current_interpreter().instr_list[self.get_current_interpreter(
+            ).current_instr - 1]
+            self.output.pretty_print(
+                "Execution of: " + current_inst.__str__() + ' (' + str(self.get_current_interpreter().current_instr) + ')\n', 'blue')
+            self.get_current_interpreter().treat_one_instr()
+            self.clear_and_put(self.get_current_interpreter().memory)
+        except IndexError:
+            self.get_current_interpreter().treat_one_instr()
+
+        if self.get_current_interpreter().end:
+            self.output.pretty_print(
+                "Sequential execution finished ("+self.get_current_tabname()+").\n", 'blue')
+            self.output.pretty_print(
+                "Result: " + str(self.get_current_interpreter().get_otput()) + '\n', 'blue')
+            self.set_current_interpreter(None)
 
         return 'break'
 
-    def execute_mouse_line(self):
-        """ Where the insertion cursor is. """
-        index = self.get_current_text_editor().index('insert')
-        self.execute_line(index)
+    def clear(self):
+        table = self.get_current_table()
+        table.delete(*table.get_children())
+
+    def clear_and_put(self, dict):
+        table = self.get_current_table()
+        self.clear()
+        acc = 0
+        for r, v in dict.items():
+            table.insert(parent='', index='end',
+                         iid=acc, text='', values=('R'+str(r), v))
+            acc += 1
+
+    def stop(self):
+        if self.get_current_interpreter() != None:
+            self.get_current_interpreter().treat_all_instr()
+            self.output.pretty_print(
+                "Sequential execution stopped ("+self.get_current_tabname()+").\nResult: " + str(self.get_current_interpreter().get_otput()) + '\n', 'blue')
+            self.clear_and_put(self.get_current_interpreter().memory)
+            self.set_current_interpreter(None)
 
     def execute_file(self):
         """ Execution of the whole file, we get the program, its type (RAM or Int) and its entry. """
@@ -478,6 +593,7 @@ class main_class:
             interp.treat_all_instr()
             output = interp.get_otput()
             self.output.pretty_print("Result: " + str(output) + '\n', 'blue')
+            self.clear_and_put(interp.memory)
 
     def parse_ram_program(self, ram_program, entry):
         data = InputStream(ram_program)
@@ -489,24 +605,28 @@ class main_class:
         tree = parser.program()
         # evaluator
         visitor = MyVisitor()
-        output = visitor.visit(tree)
+        visitor.visit(tree)
 
         l_inst = listInstruction(tree)
         try:
-            interp = Interpreter(l_inst, memory=RAM(entry))
+            interpr = Interpreter(l_inst, memory=RAM(entry))
+            return interpr
         except AttributeError:
             self.output.pretty_print(
                 "Error: Program is wrong\n", 'red')
             return None
-        return interp
 
-    def get_program(self):
+    def get_program(self, apply_preprocessing=True):
         """ Return the program in which we have do the preprocessing instructions (#define, #include). """
-        program_includes = pp.file_includes(
-            self.get_current_text_editor(), self.end_line, self.output)
-        program_includes_defines = pp.user_defines(
-            program_includes, self.output)
-        program = program_includes_defines.get('1.0', 'end-1c')
+        if apply_preprocessing:
+            program_includes = pp.file_includes(
+                self.get_current_text_editor(), self.end_line, self.output)
+            program_includes_defines = pp.user_defines(
+                program_includes, self.output)
+            program = program_includes_defines.get('1.0', 'end-1c')
+        else:
+            program = pp.delete_preprocessing(
+                self.get_current_text_editor()).get('1.0', 'end-1c')
         return program
 
     def get_entry(self):

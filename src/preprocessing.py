@@ -52,6 +52,24 @@ def replace_all(text_editor, word, replace):
     text_editor.insert('1.0', text)
 
 
+def delete_preprocessing(text_editor):
+    """ Removing of preprocessing instruction, useful when we execute line by line. """
+    text_editor_temp = copy_text(text_editor, None)
+    index = '1.0'
+    index2 = '1.0'
+    while index or index2:
+        index = text_editor_temp.search(inc, '1.0', stopindex=tk.END)
+        index2 = text_editor_temp.search(de, '1.0', stopindex=tk.END)
+        if index != '':
+            index_end = main_class.idx_to_nb(index) + '.end'
+            text_editor_temp.delete(index, index_end)
+
+        if index2 != '':
+            index_end = main_class.idx_to_nb(index2) + '.end'
+            text_editor_temp.delete(index2, index_end)
+    return text_editor_temp
+
+
 def user_defines(text_editor, output):
     """ For each #define, we remove #define word replace and replace all occurence of 'word' by 'replace'. """
     index = '1.0'
