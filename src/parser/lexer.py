@@ -369,27 +369,10 @@ if __name__ == '__main__':
     a(R1, R1)
 """
 
-    # data = """PUSH R2
-    # POP R2
-    # """
-
     lexer = lex.lex()
     lexer.input(data)
 
-    # Tokenize
-    # while True:
-    #     tok = lexer.token()
-    #     if not tok:
-    #         break  # No more input
-    #     print(tok)
-
     parser = yacc.yacc()
 
-    # while True:
-    #     try:
-    #         s = data
-    #     except EOFError:
-    #         break
-    #     if not s: continue
     result = parser.parse(data)
     print(result)

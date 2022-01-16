@@ -60,3 +60,4 @@ class Instruction:
         else:
             return 3 * Int.couple_to_int((self.register, (0, self.n))) + 2
 
+    def transform_to_interpreter(self):
