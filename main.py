@@ -10,12 +10,10 @@ from antlr4 import InputStream, CommonTokenStream
 from src.Antlr4.dist.MyGrammarLexer import MyGrammarLexer
 from src.Antlr4.dist.MyGrammarParser import MyGrammarParser
 from src.cantor_int import Int
-from src.instruction.instruction import Instruction
-from src.instruction import RAM, Macro, RawInstruction
-from src.parser import MyVisitor, listInstruction
+from src.instruction.instruction import Instruction, RAM, RawInstruction
 from src.decode_int import decode_int_instr, decode_int_program
+from src.instruction.macro import Macro
 from src.interpreter import Interpreter
-from src.parser import MyVisitor, listInstruction
 
 
 class Texte(tk.Text):
@@ -598,25 +596,26 @@ class Frame:
             self.clear_and_put(interp.memory)
 
     def parse_ram_program(self, ram_program, entry):
-        data = InputStream(ram_program)
-        # lexer
-        lexer = MyGrammarLexer(data)
-        stream = CommonTokenStream(lexer)
-        # parser
-        parser = MyGrammarParser(stream)
-        tree = parser.program()
-        # evaluator
-        visitor = MyVisitor()
-        visitor.visit(tree)
-
-        l_inst = listInstruction(tree)
-        try:
-            interpr = Interpreter(l_inst, memory=RAM(entry))
-            return interpr
-        except AttributeError:
-            self.output.pretty_print(
-                "Error: Program is wrong\n", 'red')
-            return None
+        # data = InputStream(ram_program)
+        # # lexer
+        # lexer = MyGrammarLexer(data)
+        # stream = CommonTokenStream(lexer)
+        # # parser
+        # parser = MyGrammarParser(stream)
+        # tree = parser.program()
+        # # evaluator
+        # visitor = MyVisitor()
+        # visitor.visit(tree)
+        #
+        # l_inst = listInstruction(tree)
+        # try:
+        #     interpr = Interpreter(l_inst, memory=RAM(entry))
+        #     return interpr
+        # except AttributeError:
+        #     self.output.pretty_print(
+        #         "Error: Program is wrong\n", 'red')
+        #     return None
+        return None
 
     def get_program(self, apply_preprocessing=True):
         """ Return the program in which we have do the preprocessing instructions (#define, #include). """
@@ -726,25 +725,25 @@ R1 = R1 - 1
 IF R0 != 0 then gotob 16   
 """)
 
-    # lexer
-    lexer = MyGrammarLexer(data)
-    stream = CommonTokenStream(lexer)
-
-    # parser
-    parser = MyGrammarParser(stream)
-    tree = parser.program()
-
-    # evaluator
-    visitor = MyVisitor()
-    output = visitor.visit(tree)
-
-    l_inst = listInstruction(tree)
-
-    print(f"\n  List instr after parsing \n{l_inst}")
-
-    print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
-
-    # interpreter
-    interp = Interpreter(l_inst, memory=RAM(N))
-    interp.treat_all_instr()
-    print("\n  Program output =", interp.get_otput())
+    # # lexer
+    # lexer = MyGrammarLexer(data)
+    # stream = CommonTokenStream(lexer)
+    #
+    # # parser
+    # parser = MyGrammarParser(stream)
+    # tree = parser.program()
+    #
+    # # evaluator
+    # visitor = MyVisitor()
+    # output = visitor.visit(tree)
+    #
+    # l_inst = listInstruction(tree)
+    #
+    # print(f"\n  List instr after parsing \n{l_inst}")
+    #
+    # print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
+    #
+    # # interpreter
+    # interp = Interpreter(l_inst, memory=RAM(N))
+    # interp.treat_all_instr()
+    # print("\n  Program output =", interp.get_otput())

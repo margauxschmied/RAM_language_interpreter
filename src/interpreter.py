@@ -1,17 +1,19 @@
 from typing import Dict, List
 
-try:
-    from src.instruction import RAM
-    from src.cantor_int import Int
-    from src.instruction import RawInstruction, Macro
-    from src.decode_int import decode_int_instr, decode_int_program
-    from src.instruction.instruction import Instruction
-except:
-    from instruction import RAM
-    from cantor_int import Int
-    from instruction import RawInstruction, Macro
-    from decode_int import decode_int_instr, decode_int_program
-    from instruction.instruction import Instruction
+# try:
+#     from src.instruction.instruction import RAM
+#     from src.cantor_int import Int
+#     from src.instruction import RawInstruction, Macro
+#     from src.decode_int import decode_int_instr, decode_int_program
+#     from src.instruction.instruction import Instruction
+# except:
+#     from instruction.instruction import RAM
+#     from cantor_int import Int
+#     from instruction.instruction import RawInstruction, Macro
+#     from decode_int import decode_int_instr, decode_int_program
+#     from instruction.instruction import Instruction
+from src.cantor_int import Int
+from src.instruction.instruction import RawInstruction, Macro, RAM
 
 
 class Interpreter:
@@ -35,7 +37,7 @@ class Interpreter:
         self.current_instr += n
 
     def translate_macro(self, instr):
-        return self.macros[instr.numInstr].clone_instr(instr.register)
+        return self.macros[instr.num_instr].clone_instr(instr.register)
 
     def treat_one_instr(self):
         il, ci = self.instr_list, self.current_instr

@@ -15,12 +15,7 @@ class RawInstruction:
         self.numInstr = num_instr
         self.register = register
         self.n = n
-# class Instruction:
-#     def __init__(self, num_instr: int, register: Register, n=None, next=None):
-#         self.numInstr = num_instr
-#         self.register = register
-#         self.n = n
-#         self.next = next
+
 
     def setNext(self, next):
         self.next = next
@@ -64,6 +59,7 @@ class RawInstruction:
 
 
 class Instruction(RawInstruction):
+
     def __init__(self, num_instr: int, register: int, n=None, next=None):
         super().__init__(Int(num_instr), Int(register),
                          n=Int(n) if n is not None else None, next=next)

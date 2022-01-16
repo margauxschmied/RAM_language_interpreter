@@ -3,7 +3,7 @@ class Register():
         self.register = register
         self.next = next
 
-    def goodNumberOfRegister(self, register):
+    def good_number_of_register(self, register):
         currentRegister=self
         while currentRegister!=None and register!=None:
             currentRegister=currentRegister.next
@@ -13,13 +13,13 @@ class Register():
             return True
         return False
 
-    def registerIsContain(self, registerName):
+    def register_is_contain(self, registerName):
         for name in registerName:
-            if not self.inRegister(name):
+            if not self.in_register(name):
                 return False
         return True
 
-    def inRegister(self, name):
+    def in_register(self, name):
         currentRegister = self
         while currentRegister != None:
             if currentRegister.register==name:
@@ -27,3 +27,12 @@ class Register():
             currentRegister = currentRegister.next
 
         return False
+
+    def list_register(self):
+        list = []
+        currentRegister = self
+        while currentRegister != None:
+            list.append(currentRegister.register)
+            currentRegister = currentRegister.next
+
+        return list

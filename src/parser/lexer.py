@@ -2,7 +2,7 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 # List of token names.   This is always required
-from src.instruction.instruction import Instruction
+from src.instruction.instructionParser import Instruction
 from src.instruction.macro import Macro
 from src.instruction.register import Register
 
@@ -123,7 +123,7 @@ def p_code_list(p):
 
 def p_code_simple(p):
     'code : expression'
-    p[0] = str(p[1])
+    p[0] = p[1]
 
 
 # expr returns [Instruction instruction]:
@@ -207,13 +207,12 @@ def p_expression_callmacro(p):
 
 def p_callmacro(p):
     'callmacro : MACROID list_register RPAREN'
-
-    p[0] = Macro(p[1][:-1], p[2], None)  # p[1] + p[2] + p[3]
+    p[0] = Instruction(p[1][:-1], p[2])  # p[1] + p[2] + p[3]
 
     if p[1][:-1] not in macros.keys():
         p_error(p)
 
-    elif not macros[p[1][:-1]].goodNumberOfRegister(p[2]):
+    elif not macros[p[1][:-1]].good_number_of_register(p[2]):
         p_error(p)
 
 
@@ -227,7 +226,7 @@ def p_macro(p):
 
     macros[p[3][:-1]] = p[4]
 
-    if not p[4].registerIsContain(registerUse):
+    if not p[4].register_is_contain(registerUse):
         p_error(p)
 
     macro = Macro(p[3][:-1], p[4], p[6])
@@ -376,3 +375,4 @@ if __name__ == '__main__':
 
     result = parser.parse(data)
     print(result)
+    print(result.transform_for_interpreter().treat_all_instr())
