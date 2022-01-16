@@ -1,3 +1,4 @@
+import tkinter.font as tkf
 import src.preprocessing as pp
 from tkinter import messagebox
 from tkinter import filedialog, ttk
@@ -10,6 +11,8 @@ from src.Antlr4.dist.MyGrammarLexer import MyGrammarLexer
 from src.Antlr4.dist.MyGrammarParser import MyGrammarParser
 from src.cantor_int import Int
 from src.instruction.instruction import Instruction
+from src.instruction import RAM, Macro, RawInstruction
+from src.parser import MyVisitor, listInstruction
 from src.decode_int import decode_int_instr, decode_int_program
 from src.interpreter import Interpreter
 from src.parser import MyVisitor, listInstruction
@@ -56,6 +59,9 @@ class Frame:
         self.text_editors = []
         self.line_numbers = []
         self.titles = []
+        self.interpreters = []
+        self.table_windows = []
+        self.tables = []
 
         self.end_line = None
         self.choice_show_line_numbers = tk.IntVar(value=1)
@@ -90,18 +96,14 @@ class Frame:
         # The 'Run' contextual menu
         self.menu_run = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_run.add_command(
-            label="Run Selected Line", command=self.execute_line)
+            label="Start/Run Next Instruction", command=self.execute_line)
         self.menu_run.add_command(
             label="Run File", command=self.execute_file)
         self.menu_bar.add_cascade(label="Run", menu=self.menu_run)
 
         # The 'Stop' button
-        """self.menu_stop = tk.Menu(self.menu_bar, tearoff=0)
-        self.menu_stop.add_command(
-            label="Stop execution", command=lambda: print("Stopped"))
-        self.menu_bar.add_cascade(label="Stop", menu=self.menu_stop)"""
         self.menu_bar.add_command(
-            label="Stop", command=lambda: self.output.pretty_print("TODO: Stop\n", 'blue'))
+            label="Stop", command=lambda: self.stop())
 
         # The 'Option' button
         self.menu_bar.add_command(
@@ -110,9 +112,9 @@ class Frame:
         # The 'Help' contextual menu
         self.menu_help = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_help.add_command(
-            label="User manual", command=lambda: self.output.pretty_print("TODO: User Manual\n", 'blue'))
+            label="Get Started", command=lambda: self.output.pretty_print("TODO: User Manual\n", 'blue'))
         self.menu_help.add_command(
-            label="RAM instructions", command=lambda: self.output.pretty_print("TODO: RAM\n", 'blue'))
+            label="RAM Instructions", command=lambda: self.output.pretty_print("TODO: RAM\n", 'blue'))
         self.menu_help.add_command(
             label="About", command=lambda: self.output.pretty_print("TODO: About\n", 'blue'))
 
@@ -155,6 +157,37 @@ class Frame:
 
         scrollbar['command'] = self.on_scrollbar
         text_editor['yscrollcommand'] = self.on_textscroll
+
+        self.interpreters.append(None)
+
+        table_window = tk.Toplevel(self.root)
+        table_window.geometry('250x250')
+        table_window.resizable(False, False)
+        table_window.title("Memory")
+        tree_scroll = tk.Scrollbar(table_window)
+        tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+        table = ttk.Treeview(table_window, yscrollcommand=tree_scroll)
+        tree_scroll.config(command=table.yview)
+        table['columns'] = ('register', 'value')
+        table.column("#0", width=0,  stretch=tk.NO)
+        table.column("register", anchor=tk.CENTER, width=80)
+        table.column("value", anchor=tk.CENTER, width=80)
+
+        table.heading("#0", text="", anchor=tk.CENTER)
+        table.heading("register", text="Register", anchor=tk.CENTER)
+        table.heading("value", text="Value", anchor=tk.CENTER)
+
+        table.pack(fill=tk.BOTH, expand=1)
+
+        table_window.withdraw()
+        table_window.protocol("WM_DELETE_WINDOW",
+                              lambda: self.on_closing(table_window))
+        self.table_windows.append(table_window)
+        self.tables.append(table)
+
+    def on_closing(self, table_window):
+        table_window.withdraw()
+        return 'break'
 
     def update_line(self, event=None, correct_line_count=True):
         """ Update line number function's according to the current tab (selected one). """
@@ -199,6 +232,18 @@ class Frame:
 
     def get_current_scrollbar(self):
         return self.scrollbars[int(self.get_current_tab())]
+
+    def get_current_interpreter(self):
+        return self.interpreters[int(self.get_current_tab())]
+
+    def set_current_interpreter(self, interpreter):
+        self.interpreters[int(self.get_current_tab())] = interpreter
+
+    def get_current_table(self):
+        return self.tables[int(self.get_current_tab())]
+
+    def get_current_table_window(self):
+        return self.table_windows[int(self.get_current_tab())]
 
     def new_file(self):
         """ Default name of newly-created file is Untitled+[acc] """
@@ -263,7 +308,6 @@ class Frame:
 
         self.create_intern_shortcut(self.text_editors[0])
 
-        self.notebook.pack(fill=tk.BOTH, expand=1)
         self.panel.add(self.notebook)
 
         self.notebook.bind("<<NotebookTabChanged>>",
@@ -271,23 +315,87 @@ class Frame:
 
     """
         Difference between extern and intern shorcut : first one is binding on the window whereas the intern
-        is inside the text_editor
+        is inside the text_editor.
     """
 
     def create_extern_shortcut(self, element):
         element.bind('<Control-s>', lambda e: self.save_file())
         element.bind('<Escape>', lambda e: self.show_message(
             "Do you want to quit?"))
+        element.bind('<Control-x>', lambda e: self.execute_file())
 
     def create_intern_shortcut(self, element):
         element.bind('<Control-Return>', lambda e: self.execute_line())
 
     def create_output_terminal(self, parent):
-        self.output = output_terminal(parent)
+        """ The result or error message will appear here. """
+        self.frame = tk.Frame(parent)
 
-        self.panel.add(self.output)
+        self.output = output_terminal(self.frame)
+
+        # Choice between if we execute a RAM Program or Int Code
+        vals = [0, 1]
+        etiqs = ['RAM Program', 'Int Code']
+        self.s_var = tk.StringVar()
+        self.s_var.set(vals[0])
+
+        self.radio_frame = tk.Frame(self.frame)
+        self.radio_frame.pack()
+        for i in range(2):
+            radio = tk.Radiobutton(self.radio_frame, variable=self.s_var,
+                                   text=etiqs[i], value=vals[i])
+            radio.grid(row=0, column=i+3)
+
+        self.output_label = tk.Label(self.frame, text="OUTPUT", bg='darkgray')
+        self.default_font = tk.font.nametofont("TkDefaultFont")
+
+        # The entry of the program (R0)
+        self.entry = tk.Entry(self.radio_frame)
+        self.entry.bind("<FocusIn>", lambda e: self.set_default(False))
+        self.entry.bind("<FocusOut>", lambda e: self.set_default(True))
+        self.entry.insert(0, "Enter the R0 value")
+        self.entry.configure(font=(self.default_font.cget('family'),
+                                   self.default_font.cget('size'), 'italic'))
+        self.entry.config({"foreground": "Gray25"})
+
+        self.entry.grid(row=0, column=2)
+
+        self.output_label.pack(fill=tk.X)
+        self.output.pack(fill=tk.BOTH, expand=True)
+
+        self.panel.add(self.frame)
+        self.input_label = tk.Label(self.radio_frame, text="R0 = ")
+        self.input_label.grid(row=0, column=1)
+        self.display_registers = tk.Button(
+            self.radio_frame, text="Display Memory", command=lambda: self.open_registers())
+        self.display_registers.grid(row=0, column=0)
+
+    def open_registers(self):
+        self.get_current_table_window().deiconify()
+
+    def set_default(self, b):
+        """ Display italic hint text 'Enter the R0' if entry field is empty and not selected """
+        if b:
+            if self.entry.get() == '':
+                self.entry.delete(0, "end")
+                self.entry.insert(0, "Enter the R0 value")
+                self.entry.configure(font=(self.default_font.cget('family'),
+                                           self.default_font.cget('size'), 'italic'))
+                self.entry.config({"foreground": "Gray25"})
+        else:
+            if self.entry.get() == "Enter the R0 value" and self.get_current_font().cget('slant') == 'italic':
+                self.entry.delete(0, "end")
+                self.entry.insert(0, "")
+
+            self.entry.configure(font=self.default_font)
+            self.entry.config({"foreground": "Black"})
+
+    def get_current_font(self):
+        return tkf.Font(font=self.entry['font'])
 
     def create_panel(self, parent):
+        """ Panel wich contain the text_editor of the current tab and the output_terminal (with the entry) which allows us
+        to resize it. """
         self.panel = tk.PanedWindow(parent, orient=tk.VERTICAL)
         self.panel.pack(fill=tk.BOTH, expand=True)
 
@@ -297,21 +405,50 @@ class Frame:
             self.root.destroy()
 
     def create_popup(self, parent):
+        """ At the right-click on a line, this popup opens. """
         self.m = tk.Menu(parent, tearoff=0)
-        self.m.add_command(
-            label="Run This Line", command=lambda: self.execute_mouse_line())
+        # self.m.add_command(
+        #     label="Run This Line", command=lambda: self.execute_mouse_line())
         self.m.add_command(
             label="Mark This Line as End", command=lambda: self.mark_line())
         self.m.add_command(
             label="Remove Line Mark", command=lambda: self.remove_mark())
+        self.m.add_separator()
+        self.m.add_command(
+            label="Execute File", command=lambda: self.execute_file())
+
+        self.m2 = tk.Menu(parent, tearoff=0)
+        self.m2.add_command(
+            label="Execute Int", command=lambda: self.execute_file())
+        self.m2.add_separator()
+        self.m2.add_command(
+            label="Convert Into RAM in New File", command=lambda: self.convert_int_new_file())
+
+    def convert_int_new_file(self):
+        try:
+            code_int = int(self.get_program())
+            program = decode_int_program(code_int)
+            self.new_file()
+            self.text_editors[-1].insert('1.0', program)
+        except ValueError:
+            self.output.pretty_print(
+                "Warning: Program is not an int\n", 'orange')
+            pass
 
     def popup(self, event):
         try:
-            self.m.tk_popup(event.x_root, event.y_root)
+            if self.s_var.get() == '0':
+                self.m.tk_popup(event.x_root, event.y_root)
+            else:
+                self.m2.tk_popup(event.x_root, event.y_root)
         finally:
-            self.m.grab_release()
+            if self.s_var.get() == '0':
+                self.m.grab_release()
+            else:
+                self.m2.grab_release()
 
     def open_option(self):
+        """ New window for options is created and has the focus. """
         new_window = tk.Toplevel(self.panel)
 
         new_window.title("Options")
@@ -331,6 +468,7 @@ class Frame:
         valid.grid(column=0, row=2, sticky='E')
 
     def manage_line_numbers(self, b):
+        """ Useful if we want to hide/show line numbers. """
         for l, t in zip(self.line_numbers, self.text_editors):
             if b == 1:
                 t.pack_forget()
@@ -340,6 +478,7 @@ class Frame:
                 l.pack_forget()
 
     def mark_line(self):
+        """ At the rigth-click, we can mark a line. The line will be highlighting with blue background. """
         index = self.get_current_text_editor().index('insert')
         current_text_editor = self.get_current_text_editor()
         self.end_line = Frame.idx_to_nb(index)
@@ -348,7 +487,7 @@ class Frame:
                   Frame.idx_to_nb(index) + '.end')
         third = (second[1], 'end-1c')
 
-        copy = pp.copy_text(current_text_editor)
+        copy = pp.copy_text(current_text_editor, None)
         current_text_editor.clean()
         if Frame.idx_to_nb(index) != '1':
             current_text_editor.insert(
@@ -359,47 +498,152 @@ class Frame:
         current_text_editor.mark_set("insert", index)
 
     def remove_mark(self):
+        """ At the rigth-click, we can remove the mark if it exists. """
         index = self.get_current_text_editor().index('insert')
         current_text_editor = self.get_current_text_editor()
-        copy = pp.copy_text(current_text_editor)
+        copy = pp.copy_text(current_text_editor, None)
         current_text_editor.clean()
         current_text_editor.insert(tk.END, copy.get('1.0', 'end-1c'))
         current_text_editor.mark_set("insert", index)
         self.end_line = None
 
     def execute_line(self, line_index=None):
-        """ The selected line is where the insertion cursor is. """
-        if line_index == None:
-            line_index = self.get_current_text_editor().index('insert')
-        line_number = Frame.idx_to_nb(line_index)
-        res = 'Execution (line ' + Frame.idx_to_nb(line_index) + ', file ' + self.get_current_tabname(
-        ) + '): '
-        self.output.pretty_print("TODO: Run line\n", 'blue')
-        self.output.pretty_print(res)
-        self.output.pretty_print(self.text_editors[self.get_current_tab()].get(
-            line_number + '.0', line_number + '.end') + '\n', 'gray')
+        """ Strat the sequencial execution or execute the next instruction if started. """
 
-        if self.choice_automaticaly_go_to_next_line.get() == 1:
-            self.get_current_text_editor().mark_set(
-                "insert", str(int(line_number) + 1) + '.end')
+        if self.s_var.get() == '1':
+            self.output.pretty_print(
+                "Warning: Convert this Int program into RAM program to allow sequential execution.\n(Right-click -> Convert Into RAM in New File)\n", 'orange')
+            return 'break'
+        program = self.get_program(False)
+        entry = self.get_entry()
+        if entry == None:
+            return 'break'
+
+        if self.get_current_interpreter() == None:
+            inter = self.parse_ram_program(program, entry)
+            if inter == None:
+                return 'break'
+            self.set_current_interpreter(inter)
+            self.output.pretty_print(
+                "Sequential execution started ("+self.get_current_tabname()+").\n", 'blue')
+
+        try:
+            current_inst = self.get_current_interpreter().instr_list[self.get_current_interpreter(
+            ).current_instr - 1]
+            self.output.pretty_print(
+                "Execution of: " + current_inst.__str__() + ' (' + str(self.get_current_interpreter().current_instr) + ')\n', 'blue')
+            self.get_current_interpreter().treat_one_instr()
+            self.clear_and_put(self.get_current_interpreter().memory)
+        except IndexError:
+            self.get_current_interpreter().treat_one_instr()
+
+        if self.get_current_interpreter().end:
+            self.output.pretty_print(
+                "Sequential execution finished ("+self.get_current_tabname()+").\n", 'blue')
+            self.output.pretty_print(
+                "Result: " + str(self.get_current_interpreter().get_otput()) + '\n', 'blue')
+            self.set_current_interpreter(None)
 
         return 'break'
 
-    def execute_mouse_line(self):
-        index = self.get_current_text_editor().index('insert')
-        self.execute_line(index)
+    def clear(self):
+        table = self.get_current_table()
+        table.delete(*table.get_children())
+
+    def clear_and_put(self, dict):
+        table = self.get_current_table()
+        self.clear()
+        acc = 0
+        for r, v in dict.items():
+            table.insert(parent='', index='end',
+                         iid=acc, text='', values=('R'+str(r), v))
+            acc += 1
+
+    def stop(self):
+        if self.get_current_interpreter() != None:
+            self.get_current_interpreter().treat_all_instr()
+            self.output.pretty_print(
+                "Sequential execution stopped ("+self.get_current_tabname()+").\nResult: " + str(self.get_current_interpreter().get_otput()) + '\n', 'blue')
+            self.clear_and_put(self.get_current_interpreter().memory)
+            self.set_current_interpreter(None)
 
     def execute_file(self):
-
+        """ Execution of the whole file, we get the program, its type (RAM or Int) and its entry. """
         self.output.pretty_print(
-            'Execution (' + self.get_current_tabname() + ')\n')
-        program_includes = pp.file_includes(
-            self.get_current_text_editor(), self.output)
-        program_includes_defines = pp.user_defines(
-            program_includes, self.output)
-        program = program_includes_defines.get('1.0', 'end-1c')
+            'Execution (' + self.get_current_tabname() + ')\n', 'blue')
 
-        self.output.pretty_print("TODO: Run file\n", 'blue')
+        program = self.get_program()
+        entry = self.get_entry()
+        if entry == None:
+            return
+
+        # RAM = 0, Int = 1
+        if self.s_var.get() == '0':
+            self.output.pretty_print("RAM Programm\n", 'blue')
+
+        else:
+            self.output.pretty_print("Int Code\n", 'blue')
+            try:
+                code_int = int(program)
+                program = decode_int_program(code_int)
+            except ValueError:
+                self.output.pretty_print(
+                    "Warning: Program is not an int\n", 'orange')
+                pass
+        interp = self.parse_ram_program(program, entry)
+        if interp != None:
+            interp.treat_all_instr()
+            output = interp.get_otput()
+            self.output.pretty_print("Result: " + str(output) + '\n', 'blue')
+            self.clear_and_put(interp.memory)
+
+    def parse_ram_program(self, ram_program, entry):
+        data = InputStream(ram_program)
+        # lexer
+        lexer = MyGrammarLexer(data)
+        stream = CommonTokenStream(lexer)
+        # parser
+        parser = MyGrammarParser(stream)
+        tree = parser.program()
+        # evaluator
+        visitor = MyVisitor()
+        visitor.visit(tree)
+
+        l_inst = listInstruction(tree)
+        try:
+            interpr = Interpreter(l_inst, memory=RAM(entry))
+            return interpr
+        except AttributeError:
+            self.output.pretty_print(
+                "Error: Program is wrong\n", 'red')
+            return None
+
+    def get_program(self, apply_preprocessing=True):
+        """ Return the program in which we have do the preprocessing instructions (#define, #include). """
+        if apply_preprocessing:
+            program_includes = pp.file_includes(
+                self.get_current_text_editor(), self.end_line, self.output)
+            program_includes_defines = pp.user_defines(
+                program_includes, self.output)
+            program = program_includes_defines.get('1.0', 'end-1c')
+        else:
+            program = pp.delete_preprocessing(
+                self.get_current_text_editor()).get('1.0', 'end-1c')
+        return program
+
+    def get_entry(self):
+        """ Return the entry of the program. """
+        if self.get_current_font().cget('slant') == 'italic':
+            self.output.pretty_print("Error: Enter R0 value\n", 'red')
+            return None
+        else:
+            entry = self.entry.get()
+            try:
+                entry = int(entry)
+                return entry
+            except ValueError:
+                self.output.pretty_print("Error: Entry is not an int\n", 'red')
+                return None
 
     @staticmethod
     def path_to_filename(path):
@@ -414,10 +658,10 @@ class output_terminal(ScrolledText):
     def __init__(self, parent):
         super().__init__(parent, bg="white", wrap='word')
 
-        self.pack(fill=tk.X, expand=1)
         self.configure(state='disabled')
         self.tag_config('blue', foreground="blue")
         self.tag_config('red', foreground="red")
+        self.tag_config('orange', foreground="orange")
         self.tag_config('gray', foreground="gray30")
         self.tag_config('black', foreground="black")
 
@@ -433,61 +677,55 @@ def main(root):
 
 
 if __name__ == '__main__':
-    # root = tk.Tk()
-    # root.title("RAM_language_interpreter")
-    # root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
-    # root.geometry("640x480")
-    #
-    # main(root)
-    #
-    # root.mainloop()
+    root = tk.Tk()
+    root.title("RAM_language_interpreter")
+    root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
+    root.geometry("640x480")
 
-    # N = 100
-    # i = Interpreter(
-    #     [Instruction(0, 0),
-    #
-    #      Instruction(0, 2),
-    #      Instruction(0, 2),
-    #      Instruction(1, 0),
-    #      Instruction(2, 0, 3),
-    #      Instruction(1, 2),
-    #
-    #      Instruction(1, 2),
-    #      Instruction(0, 1),
-    #      Instruction(2, 2, 2),
-    #      Instruction(1, 1)], N)
-    #
-    # print(f"\n  Starting instructions \n{i.instr_list}")
-    #
-    # program_int = i.encode_list_instr()
-    #
-    # print(f"\n  Program int \n{program_int}")
-    #
-    # program_decoded = decode_int_program(i.instr_list)
-    #
+    main(root)
+
+    root.mainloop()
+
+    MACROS = {
+        'add':  Macro('add', ['kappa'], [
+            RawInstruction(1, 'kappa')
+        ])
+    }
+
+    N = 100
+    i = Interpreter(
+        [RawInstruction('add', [5], is_macro=True)], MACROS, RAM(N))
+
+    print(f"\n  Starting instructions \n{i}")
+
+    program_int = i.encode_list_instr()
+
+    print(f"\n  Program int \n{program_int}")
+
+#    program_decoded = decode_int_program(str(i))
+
     # print(f"\n  Instruction in RAM \n{program_decoded}")
-    #
-    # data = InputStream(program_decoded)
 
-#     data = InputStream(
-#         """R2 = R2 + 1
-# PUSH R2
-# POP R2
-# R2 = R2 + 1
-# R2 = R2 - 1
-# if R2!=0 THEN GOTOB 0
-# R0 = R0 - 1"""
-#     )
-
-    data = InputStream("""BEGIN macro name(Rx, Ry)
+    data = InputStream("""R0 = R0 + 1
+R0 = R0 - 1
+R0 = R0 + 1
+R0 = R0 - 1
+R1000 = R1000 + 1
+IF R0 != 0 then gotob 2
+R1000 = R1000 - 1
+R0 = R0 + 1
+R100 = R100 + 1
+IF R1000 != 0 then gotob 3
+R0 = R0 - 1
+R100 = R100 - 1
+R100 = R100 + 1
 R1 = R1 + 1
-R1 = R1 + 1
+R100 = R100 - 1
+IF R100 != 0 then gotob 2
 R1 = R1 - 1
-if R1 != 0 then gotob 2
-R1 = R1 - 1
-end macro;""")
+IF R0 != 0 then gotob 16   
+""")
 
-# print(data)
     # lexer
     lexer = MyGrammarLexer(data)
     stream = CommonTokenStream(lexer)
@@ -499,18 +737,14 @@ end macro;""")
     # evaluator
     visitor = MyVisitor()
     output = visitor.visit(tree)
-    # listInstruction(tree)
-    print(output)
 
     l_inst = listInstruction(tree)
-    print(l_inst)
 
-    # print(f"\n  List instr after parsing \n{l_inst}")
-    #
-    # print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
-    #
-    # # interpreter
-    # interp = Interpreter(l_inst, N)
-    # interp.treat_all_instr()
-    # print("\n  Program output =", interp.get_otput())
+    print(f"\n  List instr after parsing \n{l_inst}")
 
+    print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
+
+    # interpreter
+    interp = Interpreter(l_inst, memory=RAM(N))
+    interp.treat_all_instr()
+    print("\n  Program output =", interp.get_otput())

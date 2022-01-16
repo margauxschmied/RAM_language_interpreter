@@ -14,29 +14,27 @@ from src.instruction.register import Register
 class MyGrammarListener(ParseTreeListener):
 
     # Enter a parse tree produced by MyGrammarParser#MakeList.
-    def enterMakeList(self, ctx:MyGrammarParser.MakeListContext):
+    def enterMakeList(self, ctx: MyGrammarParser.MakeListContext):
         pass
 
     # Exit a parse tree produced by MyGrammarParser#MakeList.
-    def exitMakeList(self, ctx:MyGrammarParser.MakeListContext):
+    def exitMakeList(self, ctx: MyGrammarParser.MakeListContext):
         pass
 
-
     # Enter a parse tree produced by MyGrammarParser#code.
-    def enterCode(self, ctx:MyGrammarParser.CodeContext):
+    def enterCode(self, ctx: MyGrammarParser.CodeContext):
         pass
 
     # Exit a parse tree produced by MyGrammarParser#code.
-    def exitCode(self, ctx:MyGrammarParser.CodeContext):
+    def exitCode(self, ctx: MyGrammarParser.CodeContext):
         pass
 
-
     # Enter a parse tree produced by MyGrammarParser#expr.
-    def enterExpr(self, ctx:MyGrammarParser.ExprContext):
+    def enterExpr(self, ctx: MyGrammarParser.ExprContext):
         pass
 
     # Exit a parse tree produced by MyGrammarParser#expr.
-    def exitExpr(self, ctx:MyGrammarParser.ExprContext):
+    def exitExpr(self, ctx: MyGrammarParser.ExprContext):
         pass
 
 
@@ -65,7 +63,6 @@ class MyGrammarListener(ParseTreeListener):
     # Exit a parse tree produced by MyGrammarParser#macro_list_register.
     def exitMacro_list_register(self, ctx:MyGrammarParser.Macro_list_registerContext):
         pass
-
 
 
 del MyGrammarParser

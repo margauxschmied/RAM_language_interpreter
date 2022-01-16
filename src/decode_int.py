@@ -1,4 +1,5 @@
 from typing import List
+
 try:
     from src.instruction.instruction import Instruction
     from src.cantor_int import Int
@@ -49,13 +50,13 @@ def decode_int_program(inp) -> str:
             - a list of Instruction (from instruction.py file)
 
         Exemple :
-        decode_int_program(1) = 
-        decode_int_program((0,0)) = 
-        decode_int_program([Instruction(0,1)]) = 
+        decode_int_program(1) =
+        decode_int_program((0,0)) =
+        decode_int_program([Instruction(0,1)]) =
         `R0 = R0 + 1`
     """
-    if type(inp) == list and type(inp[0]) == Instruction:
-        return "\n".join(map(decode_int_instr, map(Instruction.encode_instr, inp)))
+    if type(inp) == list and isinstance(inp[0], RawInstruction):
+        return "\n".join(map(decode_int_instr, map(RawInstruction.encode_instr, (map(RawInstruction.clone_in_instr, inp)))))
     n = Int(inp).int_to_couple() if type(inp) == int else inp
     program = []
     while True:
