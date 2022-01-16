@@ -374,5 +374,5 @@ if __name__ == '__main__':
     parser = yacc.yacc()
 
     result = parser.parse(data)
-    print(result)
+
     print(result.transform_for_interpreter().treat_all_instr())
