@@ -1,10 +1,10 @@
 from typing import List
 
 try:
-    from src.instruction import RawInstruction
+    from src.instruction.instruction import Instruction
     from src.cantor_int import Int
 except:
-    from instruction import RawInstruction
+    from instruction.instruction import Instruction
     from cantor_int import Int
 
 

@@ -7,12 +7,12 @@ import tkinter as tk
 
 
 from antlr4 import InputStream, CommonTokenStream
-from src.myAntlr4.dist.MyGrammarLexer import MyGrammarLexer
-from src.myAntlr4.dist.MyGrammarParser import MyGrammarParser
+from src.Antlr4.dist.MyGrammarLexer import MyGrammarLexer
+from src.Antlr4.dist.MyGrammarParser import MyGrammarParser
 from src.cantor_int import Int
-from src.instruction import RAM, Macro, RawInstruction
-from src.parser import MyVisitor, listInstruction
+from src.instruction.instruction import Instruction, RAM, RawInstruction
 from src.decode_int import decode_int_instr, decode_int_program
+from src.instruction.macro import Macro
 from src.interpreter import Interpreter
 
 
@@ -32,7 +32,7 @@ class Texte(tk.Text):
         self.add_text(txt)
 
 
-class main_class:
+class Frame:
     """ This class aims to manage all frames. Here we create the menu bar, the file tabs or the shortcuts. """
 
     def __init__(self, root) -> None:
@@ -62,8 +62,8 @@ class main_class:
         self.tables = []
 
         self.end_line = None
-        self.choice1 = tk.IntVar(value=1)
-        self.choice2 = tk.IntVar(value=1)
+        self.choice_show_line_numbers = tk.IntVar(value=1)
+        self.choice_automaticaly_go_to_next_line = tk.IntVar(value=1)
 
         self.create_menu(self.root)
         self.create_panel(self.root)
@@ -262,7 +262,7 @@ class main_class:
                        ("All files",
                         "*.*")))
         if filenam != '':
-            self.create_tab(main_class.path_to_filename(filenam))
+            self.create_tab(Frame.path_to_filename(filenam))
             self.read_file(filenam, len(self.text_editors) - 1)
             self.filenames.append((filenam, False))
             self.notebook.select(self.notebook.index('end')-1)
@@ -295,7 +295,7 @@ class main_class:
         f.write(program_text)
         f.close
         self.notebook.tab(
-            tab_num, text=main_class.path_to_filename(self.filenames[tab_num][0]))
+            tab_num, text=Frame.path_to_filename(self.filenames[tab_num][0]))
 
     def create_notebook(self, parent):
         """ Creation of tab's container. """
@@ -455,10 +455,10 @@ class main_class:
         new_window.geometry("300x80")
         new_window.resizable(False, False)
         check1 = tk.Checkbutton(new_window, text='Show Line Numbers',
-                                variable=self.choice1, onvalue=1, offvalue=0, command=lambda: self.manage_line_numbers(self.choice1.get()))
+                                variable=self.choice_show_line_numbers, onvalue=1, offvalue=0, command=lambda: self.manage_line_numbers(self.choice_show_line_numbers.get()))
         check1.grid(column=0, row=0, sticky='W')
         check2 = tk.Checkbutton(
-            new_window, text='Automaticaly Go to Next Line', variable=self.choice2, onvalue=1, offvalue=0)
+            new_window, text='Automaticaly Go to Next Line', variable=self.choice_automaticaly_go_to_next_line, onvalue=1, offvalue=0)
         check2.grid(column=0, row=1, sticky='W')
 
         valid = tk.Button(new_window, text="OK",
@@ -479,15 +479,15 @@ class main_class:
         """ At the rigth-click, we can mark a line. The line will be highlighting with blue background. """
         index = self.get_current_text_editor().index('insert')
         current_text_editor = self.get_current_text_editor()
-        self.end_line = main_class.idx_to_nb(index)
-        first = ('1.0', str(max(int(main_class.idx_to_nb(index))-1, 1)) + '.end')
-        second = (main_class.idx_to_nb(index) + '.0',
-                  main_class.idx_to_nb(index) + '.end')
+        self.end_line = Frame.idx_to_nb(index)
+        first = ('1.0', str(max(int(Frame.idx_to_nb(index)) - 1, 1)) + '.end')
+        second = (Frame.idx_to_nb(index) + '.0',
+                  Frame.idx_to_nb(index) + '.end')
         third = (second[1], 'end-1c')
 
         copy = pp.copy_text(current_text_editor, None)
         current_text_editor.clean()
-        if main_class.idx_to_nb(index) != '1':
+        if Frame.idx_to_nb(index) != '1':
             current_text_editor.insert(
                 tk.END, copy.get(first[0], first[1]) + '\n')
         current_text_editor.insert(
@@ -596,25 +596,26 @@ class main_class:
             self.clear_and_put(interp.memory)
 
     def parse_ram_program(self, ram_program, entry):
-        data = InputStream(ram_program)
-        # lexer
-        lexer = MyGrammarLexer(data)
-        stream = CommonTokenStream(lexer)
-        # parser
-        parser = MyGrammarParser(stream)
-        tree = parser.program()
-        # evaluator
-        visitor = MyVisitor()
-        visitor.visit(tree)
-
-        l_inst = listInstruction(tree)
-        try:
-            interpr = Interpreter(l_inst, memory=RAM(entry))
-            return interpr
-        except AttributeError:
-            self.output.pretty_print(
-                "Error: Program is wrong\n", 'red')
-            return None
+        # data = InputStream(ram_program)
+        # # lexer
+        # lexer = MyGrammarLexer(data)
+        # stream = CommonTokenStream(lexer)
+        # # parser
+        # parser = MyGrammarParser(stream)
+        # tree = parser.program()
+        # # evaluator
+        # visitor = MyVisitor()
+        # visitor.visit(tree)
+        #
+        # l_inst = listInstruction(tree)
+        # try:
+        #     interpr = Interpreter(l_inst, memory=RAM(entry))
+        #     return interpr
+        # except AttributeError:
+        #     self.output.pretty_print(
+        #         "Error: Program is wrong\n", 'red')
+        #     return None
+        return None
 
     def get_program(self, apply_preprocessing=True):
         """ Return the program in which we have do the preprocessing instructions (#define, #include). """
@@ -671,7 +672,7 @@ class output_terminal(ScrolledText):
 
 
 def main(root):
-    main_class(root)
+    Frame(root)
 
 
 if __name__ == '__main__':
@@ -724,25 +725,25 @@ R1 = R1 - 1
 IF R0 != 0 then gotob 16   
 """)
 
-    # lexer
-    lexer = MyGrammarLexer(data)
-    stream = CommonTokenStream(lexer)
-
-    # parser
-    parser = MyGrammarParser(stream)
-    tree = parser.program()
-
-    # evaluator
-    visitor = MyVisitor()
-    output = visitor.visit(tree)
-
-    l_inst = listInstruction(tree)
-
-    print(f"\n  List instr after parsing \n{l_inst}")
-
-    print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
-
-    # interpreter
-    interp = Interpreter(l_inst, memory=RAM(N))
-    interp.treat_all_instr()
-    print("\n  Program output =", interp.get_otput())
+    # # lexer
+    # lexer = MyGrammarLexer(data)
+    # stream = CommonTokenStream(lexer)
+    #
+    # # parser
+    # parser = MyGrammarParser(stream)
+    # tree = parser.program()
+    #
+    # # evaluator
+    # visitor = MyVisitor()
+    # output = visitor.visit(tree)
+    #
+    # l_inst = listInstruction(tree)
+    #
+    # print(f"\n  List instr after parsing \n{l_inst}")
+    #
+    # print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
+    #
+    # # interpreter
+    # interp = Interpreter(l_inst, memory=RAM(N))
+    # interp.treat_all_instr()
+    # print("\n  Program output =", interp.get_otput())
