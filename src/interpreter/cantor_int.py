@@ -1,5 +1,6 @@
 import re
 
+
 class Int(int):
     """
     This class aims to represent an int with the propreties 
@@ -82,18 +83,19 @@ class Int(int):
         (a1, (a2, ... (an, 0))) → <a1, <a2, ... <an, 0>>>
         """
 
-        val=str(self.int_to_couple())
+        val = str(self.int_to_couple())
         val = re.sub("\(", "<", val)
         val = re.sub("\)", ">", val)
         return val
 
+
 if __name__ == '__main__':
-    for i in range(1, 20):
-        I = Int(i)
+    for interp in range(1, 20):
+        I = Int(interp)
         l, r = I.left(), I.right()
         # Test that the f(f_inv(X)) == X
         assert(I == Int.cantor(*Int.cantor_inv(I)))
-        print(i, l, r, l.cantor(r))
+        print(interp, l, r, l.cantor(r))
 
     print(Int(32).int_to_str())
 

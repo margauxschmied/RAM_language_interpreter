@@ -1,11 +1,9 @@
 try:
-    from src.instruction.register import Register
-    from src.cantor_int import Int
+    from src.parser.register import *
+    from src.interpreter.cantor_int import *
 except:
-    from register import Register
-    from cantor_int import Int
+    from interpreter.cantor_int import *
 
-from collections import namedtuple
 from typing import List
 
 
@@ -15,7 +13,6 @@ class RawInstruction:
         self.numInstr = num_instr
         self.register = register
         self.n = n
-
 
     def setNext(self, next):
         self.next = next

@@ -2,9 +2,15 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 # List of token names.   This is always required
-from src.instruction.instructionParser import Instruction
-from src.instruction.macro import Macro
-from src.instruction.register import Register
+
+try:
+    from src.parser.instructionParser import Instruction
+    from src.parser.macro import Macro
+    from src.parser.register import Register
+except:
+    from instructionParser import Instruction
+    from macro import Macro
+    from register import Register
 
 tokens = (
     'NUMBER',
@@ -52,7 +58,7 @@ t_VIRGULE = r','
 t_POINTVIRGULE = r';'
 
 digit = r'([0-9]+)'
-nondigit = r'([A-Za-z]+)'
+nondigit = r'([A-Za-z_]+)'
 macroIdentifier = r'(' + nondigit + r'(' + digit + r'|' + nondigit + r')*\()'
 
 # macroIdentifier = r'(' + nondigit + '\()'
@@ -97,8 +103,8 @@ def t_error(t):
     t.lexer.skip(1)
 
 
-macros = {}
-registerUse=[]
+macros: dict = {}
+registerUse: list = []
 
 
 def p_program(p):
@@ -131,14 +137,12 @@ def p_code_simple(p):
 
 def p_expression_push(p):
     #     PUSH R r1=INT {$instruction= Instruction(4, Register($r1.text))}
-
     'expression : PUSH R NUMBER'
     p[0] = Instruction(4, Register(p[3]))  # "PUSH R" + str(p[3])
 
 
 def p_expression_pop(p):
     #     | POP R r1=INT {$instruction= Instruction(5, Register($r1.text))}
-
     'expression : POP R NUMBER'
     p[0] = Instruction(5, Register(p[3]))  # "POP R" + str(p[3])
 
@@ -154,7 +158,6 @@ def p_expression_12(p):
     # else:
     #     $instruction= Instruction(1, Register($r1.text))
     # }
-
     '''expression : R NUMBER EQ R NUMBER PLUS NUMBER
                     | R NUMBER EQ R NUMBER MINUS NUMBER'''
 
@@ -165,9 +168,11 @@ def p_expression_12(p):
         p_error(p)
 
     if p[6] == '+':
-        p[0] = Instruction(0, Register(p[2]))  # p[1] + str(p[2]) + p[3] + p[4] + str(p[5]) + "+" + str(p[7])
+        # p[1] + str(p[2]) + p[3] + p[4] + str(p[5]) + "+" + str(p[7])
+        p[0] = Instruction(0, Register(p[2]))
     elif p[6] == '-':
-        p[0] = Instruction(1, Register(p[2]))  # p[1] + str(p[2]) + p[3] + p[4] + str(p[5]) + "-" + str(p[7])
+        # p[1] + str(p[2]) + p[3] + p[4] + str(p[5]) + "-" + str(p[7])
+        p[0] = Instruction(1, Register(p[2]))
 
 
 def p_expression_34(p):
@@ -223,15 +228,14 @@ def p_callmacro(p):
 def p_macro(p):
     'macro : BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE'
 
-
     macros[p[3][:-1]] = p[4]
 
     if not p[4].register_is_contain(registerUse):
         p_error(p)
 
     macro = Macro(p[3][:-1], p[4], p[6])
-    p[0] = macro  # p[1] + p[2] + p[3] + str(p[4]) + p[5] + "\n" + p[6] + p[7] + p[8] + p[9]
-
+    # p[1] + p[2] + p[3] + str(p[4]) + p[5] + "\n" + p[6] + p[7] + p[8] + p[9]
+    p[0] = macro
 
 
 def p_list_register(p):
@@ -280,14 +284,12 @@ def p_macro_code_simple(p):
 
 def p_macro_expression_push(p):
     #     PUSH R r1=INT {$instruction= Instruction(4, Register($r1.text))}
-
     'macro_expression : PUSH macroid'
     p[0] = Instruction(4, Register(p[2]))  # p[1] + p[2]
 
 
 def p_macro_expression_pop(p):
     #     | POP R r1=INT {$instruction= Instruction(5, Register($r1.text))}
-
     'macro_expression : POP macroid'
     p[0] = Instruction(5, Register(p[2]))  # p[1] + p[2]
 
@@ -303,7 +305,6 @@ def p_macro_expression_12(p):
     # else:
     #     $instruction= Instruction(1, Register($r1.text))
     # }
-
     '''macro_expression : macroid EQ macroid PLUS NUMBER
                     | macroid EQ macroid MINUS NUMBER'''
 
@@ -314,9 +315,11 @@ def p_macro_expression_12(p):
         p_error(p)
 
     if p[4] == '+':
-        p[0] = Instruction(0, Register(p[1]))  # p[1] + str(p[2]) + p[3] + p[4] + str(p[5])
+        # p[1] + str(p[2]) + p[3] + p[4] + str(p[5])
+        p[0] = Instruction(0, Register(p[1]))
     elif p[4] == '-':
-        p[0] = Instruction(1, Register(p[1]))  # p[1] + str(p[2]) + p[3] + p[4] + str(p[5])
+        # p[1] + str(p[2]) + p[3] + p[4] + str(p[5])
+        p[0] = Instruction(1, Register(p[1]))
 
 
 def p_macro_expression_34(p):
@@ -335,9 +338,11 @@ def p_macro_expression_34(p):
         p_error(p)
 
     if p[6] == 'GOTOB':
-        p[0] = Instruction(2, Register(p[2]), p[7])  # p[1] + p[2] + p[3] + str(p[4]) + p[5] + p[6] + str(p[7])
+        # p[1] + p[2] + p[3] + str(p[4]) + p[5] + p[6] + str(p[7])
+        p[0] = Instruction(2, Register(p[2]), p[7])
     elif p[6] == 'GOTOF':
-        p[0] = Instruction(3, Register(p[2]), p[7])  # p[1] + p[2] + p[3] + str(p[4]) + p[5] + p[6] + str(p[7])
+        # p[1] + p[2] + p[3] + str(p[4]) + p[5] + p[6] + str(p[7])
+        p[0] = Instruction(3, Register(p[2]), p[7])
 
 
 def p_macroid(p):
@@ -350,11 +355,20 @@ def p_macroid(p):
     elif len(p) == 3:
         p[0] = p[2]
 
-
 # Error rule for syntax errors
+
+
 def p_error(p):
     print("Syntax error in input! ")
     # yacc.errok()
+
+
+def myLex():
+    return lex.lex()
+
+
+def myYacc():
+    return yacc.yacc()
 
 
 if __name__ == '__main__':
@@ -374,5 +388,3 @@ if __name__ == '__main__':
     parser = yacc.yacc()
 
     result = parser.parse(data)
-
-    print(result.transform_for_interpreter().treat_all_instr())

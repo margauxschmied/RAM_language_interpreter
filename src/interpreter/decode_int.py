@@ -1,11 +1,13 @@
 from typing import List
 
 try:
-    from src.instruction.instruction import Instruction
-    from src.cantor_int import Int
+    from src.interpreter.instruction import *
+    from src.interpreter.cantor_int import *
+    from src.interpreter.interpreter import *
 except:
-    from instruction.instruction import Instruction
-    from cantor_int import Int
+    from interpreter.instruction import *
+    from interpreter.cantor_int import *
+    from interpreter.interpreter import *
 
 
 def decode_int_instr(n: int):
@@ -72,16 +74,16 @@ def decode_int_program(inp) -> str:
 
 if __name__ == '__main__':
     decode_int_program(83)
-    for i in range(21):
+    for interp in range(21):
         try:
-            print(f"Decoding instruction {i} :")
-            print(decode_int_instr(i))
+            print(f"Decoding instruction {interp} :")
+            print(decode_int_instr(interp))
         except:
-            print(f"Can't decode {i}")
+            print(f"Can't decode {interp}")
     print("-"*40)
-    for i in range(100):
+    for interp in range(100):
         try:
-            print(f"Decoding program {i} :")
-            print(decode_int_program(i))
+            print(f"Decoding program {interp} :")
+            print(decode_int_program(interp))
         except Exception as e:
-            print(f"Can't decode {i} because there is {e}")
+            print(f"Can't decode {interp} because there is {e}")

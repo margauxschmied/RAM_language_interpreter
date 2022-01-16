@@ -1,0 +1,863 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    LPAREN
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> code
+Rule 2     code -> expression code
+Rule 3     code -> expression
+Rule 4     expression -> PUSH R NUMBER
+Rule 5     expression -> POP R NUMBER
+Rule 6     expression -> R NUMBER EQ R NUMBER PLUS NUMBER
+Rule 7     expression -> R NUMBER EQ R NUMBER MINUS NUMBER
+Rule 8     expression -> IF R NUMBER NEQ NUMBER THEN GOTOB NUMBER
+Rule 9     expression -> IF R NUMBER NEQ NUMBER THEN GOTOF NUMBER
+Rule 10    expression -> macro
+Rule 11    expression -> callmacro
+Rule 12    callmacro -> MACROID list_register RPAREN
+Rule 13    macro -> BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE
+Rule 14    list_register -> R NUMBER VIRGULE list_register
+Rule 15    list_register -> R NUMBER
+Rule 16    list_register -> <empty>
+Rule 17    macro_list_register -> RID VIRGULE macro_list_register
+Rule 18    macro_list_register -> RID
+Rule 19    macro_list_register -> <empty>
+Rule 20    macro_code -> macro_expression macro_code
+Rule 21    macro_code -> macro_expression
+Rule 22    macro_expression -> PUSH macroid
+Rule 23    macro_expression -> POP macroid
+Rule 24    macro_expression -> macroid EQ macroid PLUS NUMBER
+Rule 25    macro_expression -> macroid EQ macroid MINUS NUMBER
+Rule 26    macro_expression -> IF macroid NEQ NUMBER THEN GOTOB NUMBER
+Rule 27    macro_expression -> IF macroid NEQ NUMBER THEN GOTOF NUMBER
+Rule 28    macroid -> RID
+Rule 29    macroid -> R NUMBER
+
+Terminals, with rules where they appear
+
+BEGIN                : 13
+END                  : 13
+EQ                   : 6 7 24 25
+GOTOB                : 8 26
+GOTOF                : 9 27
+IF                   : 8 9 26 27
+LPAREN               : 
+MACRO                : 13 13
+MACROID              : 12 13
+MINUS                : 7 25
+NEQ                  : 8 9 26 27
+NUMBER               : 4 5 6 6 6 7 7 7 8 8 8 9 9 9 14 15 24 25 26 26 27 27 29
+PLUS                 : 6 24
+POINTVIRGULE         : 13
+POP                  : 5 23
+PUSH                 : 4 22
+R                    : 4 5 6 6 7 7 8 9 14 15 29
+RID                  : 17 18 28
+RPAREN               : 12 13
+THEN                 : 8 9 26 27
+VIRGULE              : 14 17
+error                : 
+
+Nonterminals, with rules where they appear
+
+callmacro            : 11
+code                 : 1 2
+expression           : 2 3
+list_register        : 12 14
+macro                : 10
+macro_code           : 13 20
+macro_expression     : 20 21
+macro_list_register  : 13 17
+macroid              : 22 23 24 24 25 25 26 27
+program              : 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . code
+    (2) code -> . expression code
+    (3) code -> . expression
+    (4) expression -> . PUSH R NUMBER
+    (5) expression -> . POP R NUMBER
+    (6) expression -> . R NUMBER EQ R NUMBER PLUS NUMBER
+    (7) expression -> . R NUMBER EQ R NUMBER MINUS NUMBER
+    (8) expression -> . IF R NUMBER NEQ NUMBER THEN GOTOB NUMBER
+    (9) expression -> . IF R NUMBER NEQ NUMBER THEN GOTOF NUMBER
+    (10) expression -> . macro
+    (11) expression -> . callmacro
+    (13) macro -> . BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE
+    (12) callmacro -> . MACROID list_register RPAREN
+
+    PUSH            shift and go to state 4
+    POP             shift and go to state 6
+    R               shift and go to state 5
+    IF              shift and go to state 7
+    BEGIN           shift and go to state 10
+    MACROID         shift and go to state 11
+
+    program                        shift and go to state 1
+    code                           shift and go to state 2
+    expression                     shift and go to state 3
+    macro                          shift and go to state 8
+    callmacro                      shift and go to state 9
+
+state 1
+
+    (0) S' -> program .
+
+
+
+state 2
+
+    (1) program -> code .
+
+    $end            reduce using rule 1 (program -> code .)
+
+
+state 3
+
+    (2) code -> expression . code
+    (3) code -> expression .
+    (2) code -> . expression code
+    (3) code -> . expression
+    (4) expression -> . PUSH R NUMBER
+    (5) expression -> . POP R NUMBER
+    (6) expression -> . R NUMBER EQ R NUMBER PLUS NUMBER
+    (7) expression -> . R NUMBER EQ R NUMBER MINUS NUMBER
+    (8) expression -> . IF R NUMBER NEQ NUMBER THEN GOTOB NUMBER
+    (9) expression -> . IF R NUMBER NEQ NUMBER THEN GOTOF NUMBER
+    (10) expression -> . macro
+    (11) expression -> . callmacro
+    (13) macro -> . BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE
+    (12) callmacro -> . MACROID list_register RPAREN
+
+    $end            reduce using rule 3 (code -> expression .)
+    PUSH            shift and go to state 4
+    POP             shift and go to state 6
+    R               shift and go to state 5
+    IF              shift and go to state 7
+    BEGIN           shift and go to state 10
+    MACROID         shift and go to state 11
+
+    expression                     shift and go to state 3
+    code                           shift and go to state 12
+    macro                          shift and go to state 8
+    callmacro                      shift and go to state 9
+
+state 4
+
+    (4) expression -> PUSH . R NUMBER
+
+    R               shift and go to state 13
+
+
+state 5
+
+    (6) expression -> R . NUMBER EQ R NUMBER PLUS NUMBER
+    (7) expression -> R . NUMBER EQ R NUMBER MINUS NUMBER
+
+    NUMBER          shift and go to state 14
+
+
+state 6
+
+    (5) expression -> POP . R NUMBER
+
+    R               shift and go to state 15
+
+
+state 7
+
+    (8) expression -> IF . R NUMBER NEQ NUMBER THEN GOTOB NUMBER
+    (9) expression -> IF . R NUMBER NEQ NUMBER THEN GOTOF NUMBER
+
+    R               shift and go to state 16
+
+
+state 8
+
+    (10) expression -> macro .
+
+    PUSH            reduce using rule 10 (expression -> macro .)
+    POP             reduce using rule 10 (expression -> macro .)
+    R               reduce using rule 10 (expression -> macro .)
+    IF              reduce using rule 10 (expression -> macro .)
+    BEGIN           reduce using rule 10 (expression -> macro .)
+    MACROID         reduce using rule 10 (expression -> macro .)
+    $end            reduce using rule 10 (expression -> macro .)
+
+
+state 9
+
+    (11) expression -> callmacro .
+
+    PUSH            reduce using rule 11 (expression -> callmacro .)
+    POP             reduce using rule 11 (expression -> callmacro .)
+    R               reduce using rule 11 (expression -> callmacro .)
+    IF              reduce using rule 11 (expression -> callmacro .)
+    BEGIN           reduce using rule 11 (expression -> callmacro .)
+    MACROID         reduce using rule 11 (expression -> callmacro .)
+    $end            reduce using rule 11 (expression -> callmacro .)
+
+
+state 10
+
+    (13) macro -> BEGIN . MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE
+
+    MACRO           shift and go to state 17
+
+
+state 11
+
+    (12) callmacro -> MACROID . list_register RPAREN
+    (14) list_register -> . R NUMBER VIRGULE list_register
+    (15) list_register -> . R NUMBER
+    (16) list_register -> .
+
+    R               shift and go to state 19
+    RPAREN          reduce using rule 16 (list_register -> .)
+
+    list_register                  shift and go to state 18
+
+state 12
+
+    (2) code -> expression code .
+
+    $end            reduce using rule 2 (code -> expression code .)
+
+
+state 13
+
+    (4) expression -> PUSH R . NUMBER
+
+    NUMBER          shift and go to state 20
+
+
+state 14
+
+    (6) expression -> R NUMBER . EQ R NUMBER PLUS NUMBER
+    (7) expression -> R NUMBER . EQ R NUMBER MINUS NUMBER
+
+    EQ              shift and go to state 21
+
+
+state 15
+
+    (5) expression -> POP R . NUMBER
+
+    NUMBER          shift and go to state 22
+
+
+state 16
+
+    (8) expression -> IF R . NUMBER NEQ NUMBER THEN GOTOB NUMBER
+    (9) expression -> IF R . NUMBER NEQ NUMBER THEN GOTOF NUMBER
+
+    NUMBER          shift and go to state 23
+
+
+state 17
+
+    (13) macro -> BEGIN MACRO . MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE
+
+    MACROID         shift and go to state 24
+
+
+state 18
+
+    (12) callmacro -> MACROID list_register . RPAREN
+
+    RPAREN          shift and go to state 25
+
+
+state 19
+
+    (14) list_register -> R . NUMBER VIRGULE list_register
+    (15) list_register -> R . NUMBER
+
+    NUMBER          shift and go to state 26
+
+
+state 20
+
+    (4) expression -> PUSH R NUMBER .
+
+    PUSH            reduce using rule 4 (expression -> PUSH R NUMBER .)
+    POP             reduce using rule 4 (expression -> PUSH R NUMBER .)
+    R               reduce using rule 4 (expression -> PUSH R NUMBER .)
+    IF              reduce using rule 4 (expression -> PUSH R NUMBER .)
+    BEGIN           reduce using rule 4 (expression -> PUSH R NUMBER .)
+    MACROID         reduce using rule 4 (expression -> PUSH R NUMBER .)
+    $end            reduce using rule 4 (expression -> PUSH R NUMBER .)
+
+
+state 21
+
+    (6) expression -> R NUMBER EQ . R NUMBER PLUS NUMBER
+    (7) expression -> R NUMBER EQ . R NUMBER MINUS NUMBER
+
+    R               shift and go to state 27
+
+
+state 22
+
+    (5) expression -> POP R NUMBER .
+
+    PUSH            reduce using rule 5 (expression -> POP R NUMBER .)
+    POP             reduce using rule 5 (expression -> POP R NUMBER .)
+    R               reduce using rule 5 (expression -> POP R NUMBER .)
+    IF              reduce using rule 5 (expression -> POP R NUMBER .)
+    BEGIN           reduce using rule 5 (expression -> POP R NUMBER .)
+    MACROID         reduce using rule 5 (expression -> POP R NUMBER .)
+    $end            reduce using rule 5 (expression -> POP R NUMBER .)
+
+
+state 23
+
+    (8) expression -> IF R NUMBER . NEQ NUMBER THEN GOTOB NUMBER
+    (9) expression -> IF R NUMBER . NEQ NUMBER THEN GOTOF NUMBER
+
+    NEQ             shift and go to state 28
+
+
+state 24
+
+    (13) macro -> BEGIN MACRO MACROID . macro_list_register RPAREN macro_code END MACRO POINTVIRGULE
+    (17) macro_list_register -> . RID VIRGULE macro_list_register
+    (18) macro_list_register -> . RID
+    (19) macro_list_register -> .
+
+    RID             shift and go to state 30
+    RPAREN          reduce using rule 19 (macro_list_register -> .)
+
+    macro_list_register            shift and go to state 29
+
+state 25
+
+    (12) callmacro -> MACROID list_register RPAREN .
+
+    PUSH            reduce using rule 12 (callmacro -> MACROID list_register RPAREN .)
+    POP             reduce using rule 12 (callmacro -> MACROID list_register RPAREN .)
+    R               reduce using rule 12 (callmacro -> MACROID list_register RPAREN .)
+    IF              reduce using rule 12 (callmacro -> MACROID list_register RPAREN .)
+    BEGIN           reduce using rule 12 (callmacro -> MACROID list_register RPAREN .)
+    MACROID         reduce using rule 12 (callmacro -> MACROID list_register RPAREN .)
+    $end            reduce using rule 12 (callmacro -> MACROID list_register RPAREN .)
+
+
+state 26
+
+    (14) list_register -> R NUMBER . VIRGULE list_register
+    (15) list_register -> R NUMBER .
+
+    VIRGULE         shift and go to state 31
+    RPAREN          reduce using rule 15 (list_register -> R NUMBER .)
+
+
+state 27
+
+    (6) expression -> R NUMBER EQ R . NUMBER PLUS NUMBER
+    (7) expression -> R NUMBER EQ R . NUMBER MINUS NUMBER
+
+    NUMBER          shift and go to state 32
+
+
+state 28
+
+    (8) expression -> IF R NUMBER NEQ . NUMBER THEN GOTOB NUMBER
+    (9) expression -> IF R NUMBER NEQ . NUMBER THEN GOTOF NUMBER
+
+    NUMBER          shift and go to state 33
+
+
+state 29
+
+    (13) macro -> BEGIN MACRO MACROID macro_list_register . RPAREN macro_code END MACRO POINTVIRGULE
+
+    RPAREN          shift and go to state 34
+
+
+state 30
+
+    (17) macro_list_register -> RID . VIRGULE macro_list_register
+    (18) macro_list_register -> RID .
+
+    VIRGULE         shift and go to state 35
+    RPAREN          reduce using rule 18 (macro_list_register -> RID .)
+
+
+state 31
+
+    (14) list_register -> R NUMBER VIRGULE . list_register
+    (14) list_register -> . R NUMBER VIRGULE list_register
+    (15) list_register -> . R NUMBER
+    (16) list_register -> .
+
+    R               shift and go to state 19
+    RPAREN          reduce using rule 16 (list_register -> .)
+
+    list_register                  shift and go to state 36
+
+state 32
+
+    (6) expression -> R NUMBER EQ R NUMBER . PLUS NUMBER
+    (7) expression -> R NUMBER EQ R NUMBER . MINUS NUMBER
+
+    PLUS            shift and go to state 37
+    MINUS           shift and go to state 38
+
+
+state 33
+
+    (8) expression -> IF R NUMBER NEQ NUMBER . THEN GOTOB NUMBER
+    (9) expression -> IF R NUMBER NEQ NUMBER . THEN GOTOF NUMBER
+
+    THEN            shift and go to state 39
+
+
+state 34
+
+    (13) macro -> BEGIN MACRO MACROID macro_list_register RPAREN . macro_code END MACRO POINTVIRGULE
+    (20) macro_code -> . macro_expression macro_code
+    (21) macro_code -> . macro_expression
+    (22) macro_expression -> . PUSH macroid
+    (23) macro_expression -> . POP macroid
+    (24) macro_expression -> . macroid EQ macroid PLUS NUMBER
+    (25) macro_expression -> . macroid EQ macroid MINUS NUMBER
+    (26) macro_expression -> . IF macroid NEQ NUMBER THEN GOTOB NUMBER
+    (27) macro_expression -> . IF macroid NEQ NUMBER THEN GOTOF NUMBER
+    (28) macroid -> . RID
+    (29) macroid -> . R NUMBER
+
+    PUSH            shift and go to state 42
+    POP             shift and go to state 44
+    IF              shift and go to state 45
+    RID             shift and go to state 46
+    R               shift and go to state 47
+
+    macro_code                     shift and go to state 40
+    macro_expression               shift and go to state 41
+    macroid                        shift and go to state 43
+
+state 35
+
+    (17) macro_list_register -> RID VIRGULE . macro_list_register
+    (17) macro_list_register -> . RID VIRGULE macro_list_register
+    (18) macro_list_register -> . RID
+    (19) macro_list_register -> .
+
+    RID             shift and go to state 30
+    RPAREN          reduce using rule 19 (macro_list_register -> .)
+
+    macro_list_register            shift and go to state 48
+
+state 36
+
+    (14) list_register -> R NUMBER VIRGULE list_register .
+
+    RPAREN          reduce using rule 14 (list_register -> R NUMBER VIRGULE list_register .)
+
+
+state 37
+
+    (6) expression -> R NUMBER EQ R NUMBER PLUS . NUMBER
+
+    NUMBER          shift and go to state 49
+
+
+state 38
+
+    (7) expression -> R NUMBER EQ R NUMBER MINUS . NUMBER
+
+    NUMBER          shift and go to state 50
+
+
+state 39
+
+    (8) expression -> IF R NUMBER NEQ NUMBER THEN . GOTOB NUMBER
+    (9) expression -> IF R NUMBER NEQ NUMBER THEN . GOTOF NUMBER
+
+    GOTOB           shift and go to state 51
+    GOTOF           shift and go to state 52
+
+
+state 40
+
+    (13) macro -> BEGIN MACRO MACROID macro_list_register RPAREN macro_code . END MACRO POINTVIRGULE
+
+    END             shift and go to state 53
+
+
+state 41
+
+    (20) macro_code -> macro_expression . macro_code
+    (21) macro_code -> macro_expression .
+    (20) macro_code -> . macro_expression macro_code
+    (21) macro_code -> . macro_expression
+    (22) macro_expression -> . PUSH macroid
+    (23) macro_expression -> . POP macroid
+    (24) macro_expression -> . macroid EQ macroid PLUS NUMBER
+    (25) macro_expression -> . macroid EQ macroid MINUS NUMBER
+    (26) macro_expression -> . IF macroid NEQ NUMBER THEN GOTOB NUMBER
+    (27) macro_expression -> . IF macroid NEQ NUMBER THEN GOTOF NUMBER
+    (28) macroid -> . RID
+    (29) macroid -> . R NUMBER
+
+    END             reduce using rule 21 (macro_code -> macro_expression .)
+    PUSH            shift and go to state 42
+    POP             shift and go to state 44
+    IF              shift and go to state 45
+    RID             shift and go to state 46
+    R               shift and go to state 47
+
+    macro_expression               shift and go to state 41
+    macro_code                     shift and go to state 54
+    macroid                        shift and go to state 43
+
+state 42
+
+    (22) macro_expression -> PUSH . macroid
+    (28) macroid -> . RID
+    (29) macroid -> . R NUMBER
+
+    RID             shift and go to state 46
+    R               shift and go to state 47
+
+    macroid                        shift and go to state 55
+
+state 43
+
+    (24) macro_expression -> macroid . EQ macroid PLUS NUMBER
+    (25) macro_expression -> macroid . EQ macroid MINUS NUMBER
+
+    EQ              shift and go to state 56
+
+
+state 44
+
+    (23) macro_expression -> POP . macroid
+    (28) macroid -> . RID
+    (29) macroid -> . R NUMBER
+
+    RID             shift and go to state 46
+    R               shift and go to state 47
+
+    macroid                        shift and go to state 57
+
+state 45
+
+    (26) macro_expression -> IF . macroid NEQ NUMBER THEN GOTOB NUMBER
+    (27) macro_expression -> IF . macroid NEQ NUMBER THEN GOTOF NUMBER
+    (28) macroid -> . RID
+    (29) macroid -> . R NUMBER
+
+    RID             shift and go to state 46
+    R               shift and go to state 47
+
+    macroid                        shift and go to state 58
+
+state 46
+
+    (28) macroid -> RID .
+
+    EQ              reduce using rule 28 (macroid -> RID .)
+    PUSH            reduce using rule 28 (macroid -> RID .)
+    POP             reduce using rule 28 (macroid -> RID .)
+    IF              reduce using rule 28 (macroid -> RID .)
+    RID             reduce using rule 28 (macroid -> RID .)
+    R               reduce using rule 28 (macroid -> RID .)
+    END             reduce using rule 28 (macroid -> RID .)
+    NEQ             reduce using rule 28 (macroid -> RID .)
+    PLUS            reduce using rule 28 (macroid -> RID .)
+    MINUS           reduce using rule 28 (macroid -> RID .)
+
+
+state 47
+
+    (29) macroid -> R . NUMBER
+
+    NUMBER          shift and go to state 59
+
+
+state 48
+
+    (17) macro_list_register -> RID VIRGULE macro_list_register .
+
+    RPAREN          reduce using rule 17 (macro_list_register -> RID VIRGULE macro_list_register .)
+
+
+state 49
+
+    (6) expression -> R NUMBER EQ R NUMBER PLUS NUMBER .
+
+    PUSH            reduce using rule 6 (expression -> R NUMBER EQ R NUMBER PLUS NUMBER .)
+    POP             reduce using rule 6 (expression -> R NUMBER EQ R NUMBER PLUS NUMBER .)
+    R               reduce using rule 6 (expression -> R NUMBER EQ R NUMBER PLUS NUMBER .)
+    IF              reduce using rule 6 (expression -> R NUMBER EQ R NUMBER PLUS NUMBER .)
+    BEGIN           reduce using rule 6 (expression -> R NUMBER EQ R NUMBER PLUS NUMBER .)
+    MACROID         reduce using rule 6 (expression -> R NUMBER EQ R NUMBER PLUS NUMBER .)
+    $end            reduce using rule 6 (expression -> R NUMBER EQ R NUMBER PLUS NUMBER .)
+
+
+state 50
+
+    (7) expression -> R NUMBER EQ R NUMBER MINUS NUMBER .
+
+    PUSH            reduce using rule 7 (expression -> R NUMBER EQ R NUMBER MINUS NUMBER .)
+    POP             reduce using rule 7 (expression -> R NUMBER EQ R NUMBER MINUS NUMBER .)
+    R               reduce using rule 7 (expression -> R NUMBER EQ R NUMBER MINUS NUMBER .)
+    IF              reduce using rule 7 (expression -> R NUMBER EQ R NUMBER MINUS NUMBER .)
+    BEGIN           reduce using rule 7 (expression -> R NUMBER EQ R NUMBER MINUS NUMBER .)
+    MACROID         reduce using rule 7 (expression -> R NUMBER EQ R NUMBER MINUS NUMBER .)
+    $end            reduce using rule 7 (expression -> R NUMBER EQ R NUMBER MINUS NUMBER .)
+
+
+state 51
+
+    (8) expression -> IF R NUMBER NEQ NUMBER THEN GOTOB . NUMBER
+
+    NUMBER          shift and go to state 60
+
+
+state 52
+
+    (9) expression -> IF R NUMBER NEQ NUMBER THEN GOTOF . NUMBER
+
+    NUMBER          shift and go to state 61
+
+
+state 53
+
+    (13) macro -> BEGIN MACRO MACROID macro_list_register RPAREN macro_code END . MACRO POINTVIRGULE
+
+    MACRO           shift and go to state 62
+
+
+state 54
+
+    (20) macro_code -> macro_expression macro_code .
+
+    END             reduce using rule 20 (macro_code -> macro_expression macro_code .)
+
+
+state 55
+
+    (22) macro_expression -> PUSH macroid .
+
+    PUSH            reduce using rule 22 (macro_expression -> PUSH macroid .)
+    POP             reduce using rule 22 (macro_expression -> PUSH macroid .)
+    IF              reduce using rule 22 (macro_expression -> PUSH macroid .)
+    RID             reduce using rule 22 (macro_expression -> PUSH macroid .)
+    R               reduce using rule 22 (macro_expression -> PUSH macroid .)
+    END             reduce using rule 22 (macro_expression -> PUSH macroid .)
+
+
+state 56
+
+    (24) macro_expression -> macroid EQ . macroid PLUS NUMBER
+    (25) macro_expression -> macroid EQ . macroid MINUS NUMBER
+    (28) macroid -> . RID
+    (29) macroid -> . R NUMBER
+
+    RID             shift and go to state 46
+    R               shift and go to state 47
+
+    macroid                        shift and go to state 63
+
+state 57
+
+    (23) macro_expression -> POP macroid .
+
+    PUSH            reduce using rule 23 (macro_expression -> POP macroid .)
+    POP             reduce using rule 23 (macro_expression -> POP macroid .)
+    IF              reduce using rule 23 (macro_expression -> POP macroid .)
+    RID             reduce using rule 23 (macro_expression -> POP macroid .)
+    R               reduce using rule 23 (macro_expression -> POP macroid .)
+    END             reduce using rule 23 (macro_expression -> POP macroid .)
+
+
+state 58
+
+    (26) macro_expression -> IF macroid . NEQ NUMBER THEN GOTOB NUMBER
+    (27) macro_expression -> IF macroid . NEQ NUMBER THEN GOTOF NUMBER
+
+    NEQ             shift and go to state 64
+
+
+state 59
+
+    (29) macroid -> R NUMBER .
+
+    EQ              reduce using rule 29 (macroid -> R NUMBER .)
+    PUSH            reduce using rule 29 (macroid -> R NUMBER .)
+    POP             reduce using rule 29 (macroid -> R NUMBER .)
+    IF              reduce using rule 29 (macroid -> R NUMBER .)
+    RID             reduce using rule 29 (macroid -> R NUMBER .)
+    R               reduce using rule 29 (macroid -> R NUMBER .)
+    END             reduce using rule 29 (macroid -> R NUMBER .)
+    NEQ             reduce using rule 29 (macroid -> R NUMBER .)
+    PLUS            reduce using rule 29 (macroid -> R NUMBER .)
+    MINUS           reduce using rule 29 (macroid -> R NUMBER .)
+
+
+state 60
+
+    (8) expression -> IF R NUMBER NEQ NUMBER THEN GOTOB NUMBER .
+
+    PUSH            reduce using rule 8 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOB NUMBER .)
+    POP             reduce using rule 8 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOB NUMBER .)
+    R               reduce using rule 8 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOB NUMBER .)
+    IF              reduce using rule 8 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOB NUMBER .)
+    BEGIN           reduce using rule 8 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOB NUMBER .)
+    MACROID         reduce using rule 8 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOB NUMBER .)
+    $end            reduce using rule 8 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOB NUMBER .)
+
+
+state 61
+
+    (9) expression -> IF R NUMBER NEQ NUMBER THEN GOTOF NUMBER .
+
+    PUSH            reduce using rule 9 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOF NUMBER .)
+    POP             reduce using rule 9 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOF NUMBER .)
+    R               reduce using rule 9 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOF NUMBER .)
+    IF              reduce using rule 9 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOF NUMBER .)
+    BEGIN           reduce using rule 9 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOF NUMBER .)
+    MACROID         reduce using rule 9 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOF NUMBER .)
+    $end            reduce using rule 9 (expression -> IF R NUMBER NEQ NUMBER THEN GOTOF NUMBER .)
+
+
+state 62
+
+    (13) macro -> BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO . POINTVIRGULE
+
+    POINTVIRGULE    shift and go to state 65
+
+
+state 63
+
+    (24) macro_expression -> macroid EQ macroid . PLUS NUMBER
+    (25) macro_expression -> macroid EQ macroid . MINUS NUMBER
+
+    PLUS            shift and go to state 66
+    MINUS           shift and go to state 67
+
+
+state 64
+
+    (26) macro_expression -> IF macroid NEQ . NUMBER THEN GOTOB NUMBER
+    (27) macro_expression -> IF macroid NEQ . NUMBER THEN GOTOF NUMBER
+
+    NUMBER          shift and go to state 68
+
+
+state 65
+
+    (13) macro -> BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE .
+
+    PUSH            reduce using rule 13 (macro -> BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE .)
+    POP             reduce using rule 13 (macro -> BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE .)
+    R               reduce using rule 13 (macro -> BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE .)
+    IF              reduce using rule 13 (macro -> BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE .)
+    BEGIN           reduce using rule 13 (macro -> BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE .)
+    MACROID         reduce using rule 13 (macro -> BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE .)
+    $end            reduce using rule 13 (macro -> BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE .)
+
+
+state 66
+
+    (24) macro_expression -> macroid EQ macroid PLUS . NUMBER
+
+    NUMBER          shift and go to state 69
+
+
+state 67
+
+    (25) macro_expression -> macroid EQ macroid MINUS . NUMBER
+
+    NUMBER          shift and go to state 70
+
+
+state 68
+
+    (26) macro_expression -> IF macroid NEQ NUMBER . THEN GOTOB NUMBER
+    (27) macro_expression -> IF macroid NEQ NUMBER . THEN GOTOF NUMBER
+
+    THEN            shift and go to state 71
+
+
+state 69
+
+    (24) macro_expression -> macroid EQ macroid PLUS NUMBER .
+
+    PUSH            reduce using rule 24 (macro_expression -> macroid EQ macroid PLUS NUMBER .)
+    POP             reduce using rule 24 (macro_expression -> macroid EQ macroid PLUS NUMBER .)
+    IF              reduce using rule 24 (macro_expression -> macroid EQ macroid PLUS NUMBER .)
+    RID             reduce using rule 24 (macro_expression -> macroid EQ macroid PLUS NUMBER .)
+    R               reduce using rule 24 (macro_expression -> macroid EQ macroid PLUS NUMBER .)
+    END             reduce using rule 24 (macro_expression -> macroid EQ macroid PLUS NUMBER .)
+
+
+state 70
+
+    (25) macro_expression -> macroid EQ macroid MINUS NUMBER .
+
+    PUSH            reduce using rule 25 (macro_expression -> macroid EQ macroid MINUS NUMBER .)
+    POP             reduce using rule 25 (macro_expression -> macroid EQ macroid MINUS NUMBER .)
+    IF              reduce using rule 25 (macro_expression -> macroid EQ macroid MINUS NUMBER .)
+    RID             reduce using rule 25 (macro_expression -> macroid EQ macroid MINUS NUMBER .)
+    R               reduce using rule 25 (macro_expression -> macroid EQ macroid MINUS NUMBER .)
+    END             reduce using rule 25 (macro_expression -> macroid EQ macroid MINUS NUMBER .)
+
+
+state 71
+
+    (26) macro_expression -> IF macroid NEQ NUMBER THEN . GOTOB NUMBER
+    (27) macro_expression -> IF macroid NEQ NUMBER THEN . GOTOF NUMBER
+
+    GOTOB           shift and go to state 72
+    GOTOF           shift and go to state 73
+
+
+state 72
+
+    (26) macro_expression -> IF macroid NEQ NUMBER THEN GOTOB . NUMBER
+
+    NUMBER          shift and go to state 74
+
+
+state 73
+
+    (27) macro_expression -> IF macroid NEQ NUMBER THEN GOTOF . NUMBER
+
+    NUMBER          shift and go to state 75
+
+
+state 74
+
+    (26) macro_expression -> IF macroid NEQ NUMBER THEN GOTOB NUMBER .
+
+    PUSH            reduce using rule 26 (macro_expression -> IF macroid NEQ NUMBER THEN GOTOB NUMBER .)
+    POP             reduce using rule 26 (macro_expression -> IF macroid NEQ NUMBER THEN GOTOB NUMBER .)
+    IF              reduce using rule 26 (macro_expression -> IF macroid NEQ NUMBER THEN GOTOB NUMBER .)
+    RID             reduce using rule 26 (macro_expression -> IF macroid NEQ NUMBER THEN GOTOB NUMBER .)
+    R               reduce using rule 26 (macro_expression -> IF macroid NEQ NUMBER THEN GOTOB NUMBER .)
+    END             reduce using rule 26 (macro_expression -> IF macroid NEQ NUMBER THEN GOTOB NUMBER .)
+
+
+state 75
+
+    (27) macro_expression -> IF macroid NEQ NUMBER THEN GOTOF NUMBER .
+
+    PUSH            reduce using rule 27 (macro_expression -> IF macroid NEQ NUMBER THEN GOTOF NUMBER .)
+    POP             reduce using rule 27 (macro_expression -> IF macroid NEQ NUMBER THEN GOTOF NUMBER .)
+    IF              reduce using rule 27 (macro_expression -> IF macroid NEQ NUMBER THEN GOTOF NUMBER .)
+    RID             reduce using rule 27 (macro_expression -> IF macroid NEQ NUMBER THEN GOTOF NUMBER .)
+    R               reduce using rule 27 (macro_expression -> IF macroid NEQ NUMBER THEN GOTOF NUMBER .)
+    END             reduce using rule 27 (macro_expression -> IF macroid NEQ NUMBER THEN GOTOF NUMBER .)
+
