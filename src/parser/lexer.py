@@ -4,13 +4,13 @@ import ply.yacc as yacc
 # List of token names.   This is always required
 
 try:
-    from src.parser.instructionParser import Instruction
-    from src.parser.macro import Macro
-    from src.parser.register import Register
+    from src.parser.instruction.instructionParser import Instruction
+    from src.parser.instruction.macro import Macro
+    from src.parser.instruction.register import Register
 except:
-    from instructionParser import Instruction
-    from macro import Macro
-    from register import Register
+    from src.parser.instruction.instructionParser import Instruction
+    from src.parser.instruction.macro import Macro
+    from src.parser.instruction.register import Register
 
 tokens = (
     'NUMBER',
@@ -26,7 +26,6 @@ tokens = (
     'MACRO',
     'PUSH',
     'POP',
-    'LPAREN',
     'RPAREN',
     'EQ',
     'NEQ',
@@ -48,7 +47,6 @@ t_END = r'(END|end)'
 t_MACRO = r'(MACRO|macro)'
 t_PUSH = r'(PUSH|push)'
 t_POP = r'(POP|pop)'
-t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_EQ = r'\='
 t_NEQ = r'\!='
@@ -103,8 +101,8 @@ def t_error(t):
     t.lexer.skip(1)
 
 
-macros: dict = {}
-registerUse: list = []
+macros = {}
+#registerUse = []
 
 
 def p_program(p):
@@ -190,17 +188,17 @@ def p_expression_34(p):
     if p[5] != 0:
         p_error(p)
 
-    if p[7] == 'GOTOB':
+    if p[7] == 'GOTOB' or p[7] == 'gotob':
         p[0] = Instruction(2, Register(p[3]),
                            p[8])  # p[1] + p[2] + str(p[3]) + p[4] + str(p[5]) + p[6] + 'GOTOB' + str(p[8])
-    elif p[7] == 'GOTOF':
+    elif p[7] == 'GOTOF' or p[7] == 'gotof':
         p[0] = Instruction(3, Register(p[3]),
                            p[8])  # p[1] + p[2] + str(p[3]) + p[4] + str(p[5]) + p[6] + 'GOTOF' + str(p[8])
 
 
 def p_expression_5(p):
     # | macro {$instruction=$macro.instruction}
-    'expression : macro'
+    'expression : macroDeclaration'
     p[0] = p[1]
 
 
@@ -211,7 +209,7 @@ def p_expression_callmacro(p):
 
 
 def p_callmacro(p):
-    'callmacro : MACROID list_register RPAREN'
+    'callmacro : MACROID listRegister RPAREN'
     p[0] = Instruction(p[1][:-1], p[2])  # p[1] + p[2] + p[3]
 
     if p[1][:-1] not in macros.keys():
@@ -225,21 +223,30 @@ def p_callmacro(p):
 #     BEGIN MACRO name=MACROIDENTIFIER  macro_list_register ')' NEWLINE code NEWLINE END MACRO ';'  {$instruction=Macro($name.text, macro_list_register.register, $code.instruction)}
 # ;
 
-def p_macro(p):
-    'macro : BEGIN MACRO MACROID macro_list_register RPAREN macro_code END MACRO POINTVIRGULE'
+def p_macroDeclaration(p):
+    'macroDeclaration : BEGIN MACRO MACROID macroListRegister RPAREN macroCode END MACRO POINTVIRGULE'
 
     macros[p[3][:-1]] = p[4]
 
-    if not p[4].register_is_contain(registerUse):
-        p_error(p)
+    # if not p[4].register_is_contain(registerUse):
+    #     p_error(p)
+
+    # print(p[6].getNext())
+    # print("next")
+    # if not p[6].verification_of_use_register():
+    #     p_error(p)
 
     macro = Macro(p[3][:-1], p[4], p[6])
     # p[1] + p[2] + p[3] + str(p[4]) + p[5] + "\n" + p[6] + p[7] + p[8] + p[9]
+
+    if not macro.verification_of_use_register():
+        p_error(p)
+
     p[0] = macro
 
 
-def p_list_register(p):
-    '''list_register : R NUMBER VIRGULE list_register
+def p_listRegister(p):
+    '''listRegister : R NUMBER VIRGULE listRegister
                             | R NUMBER
                             | '''
     if len(p) == 3:
@@ -256,8 +263,8 @@ def p_list_register(p):
 #     ;
 
 
-def p_macro_list_register(p):
-    '''macro_list_register : RID VIRGULE macro_list_register
+def p_macroListRegister(p):
+    '''macroListRegister : RID VIRGULE macroListRegister
                             | RID
                             | '''
     if len(p) == 2:
@@ -268,33 +275,33 @@ def p_macro_list_register(p):
         p[0] = None
 
 
-def p_macro_code_list(p):
-    'macro_code : macro_expression macro_code'
+def p_macroCode_list(p):
+    'macroCode : macroExpression macroCode'
     p[1].setNext(p[2])
     p[0] = p[1]  # str(p[1]) + "\n" + str(p[2])
 
 
-def p_macro_code_simple(p):
-    'macro_code : macro_expression'
+def p_macroCode_simple(p):
+    'macroCode : macroExpression'
     p[0] = p[1]
 
 
 # expr returns [Instruction instruction]:
 #     ;
 
-def p_macro_expression_push(p):
+def p_macroExpression_push(p):
     #     PUSH R r1=INT {$instruction= Instruction(4, Register($r1.text))}
-    'macro_expression : PUSH macroid'
+    'macroExpression : PUSH macroid'
     p[0] = Instruction(4, Register(p[2]))  # p[1] + p[2]
 
 
-def p_macro_expression_pop(p):
+def p_macroExpression_pop(p):
     #     | POP R r1=INT {$instruction= Instruction(5, Register($r1.text))}
-    'macro_expression : POP macroid'
+    'macroExpression : POP macroid'
     p[0] = Instruction(5, Register(p[2]))  # p[1] + p[2]
 
 
-def p_macro_expression_12(p):
+def p_macroExpression_12(p):
     # | R r1 = INT '=' R r2 = INT op = ('+' | '-') un = INT {
     # if $r1.text != $r2.text:
     #     raise ValueError("line "+str($r1.line)+": R"+$r1.text+" != "+"R"+$r2.text)
@@ -305,7 +312,7 @@ def p_macro_expression_12(p):
     # else:
     #     $instruction= Instruction(1, Register($r1.text))
     # }
-    '''macro_expression : macroid EQ macroid PLUS NUMBER
+    '''macroExpression : macroid EQ macroid PLUS NUMBER
                     | macroid EQ macroid MINUS NUMBER'''
 
     if p[1] != p[3]:
@@ -322,7 +329,7 @@ def p_macro_expression_12(p):
         p[0] = Instruction(1, Register(p[1]))
 
 
-def p_macro_expression_34(p):
+def p_macroExpression_34(p):
     # | IF R r1=INT '!=' zero=INT THEN goto=(GOTOB|GOTOF) n=INT {
     # if $zero.text != '0':
     #     raise ValueError("line "+str($zero.line)+": "+$zero.text+" != 0")
@@ -331,18 +338,29 @@ def p_macro_expression_34(p):
     # else:
     #     $instruction= Instruction(3, Register($r1.text), $n.text)
     # }
-    '''macro_expression : IF macroid NEQ NUMBER THEN GOTOB NUMBER
+    '''macroExpression : IF macroid NEQ NUMBER THEN GOTOB NUMBER
                     | IF macroid NEQ NUMBER THEN GOTOF NUMBER'''
 
     if p[4] != 0:
         p_error(p)
 
-    if p[6] == 'GOTOB':
+    if p[6] == 'GOTOB' or p[6] == 'gotob':
         # p[1] + p[2] + p[3] + str(p[4]) + p[5] + p[6] + str(p[7])
         p[0] = Instruction(2, Register(p[2]), p[7])
-    elif p[6] == 'GOTOF':
+    elif p[6] == 'GOTOF' or p[6] == 'gotof':
         # p[1] + p[2] + p[3] + str(p[4]) + p[5] + p[6] + str(p[7])
         p[0] = Instruction(3, Register(p[2]), p[7])
+
+
+def p_macroExpression_callmacro(p):
+    'macroExpression : MACROID listMacroid RPAREN'
+    p[0] = Instruction(p[1][:-1], p[2])  # p[1] + p[2] + p[3]
+
+    if p[1][:-1] not in macros.keys():
+        p_error(p)
+
+    elif not macros[p[1][:-1]].good_number_of_register(p[2]):
+        p_error(p)
 
 
 def p_macroid(p):
@@ -350,10 +368,22 @@ def p_macroid(p):
                | R NUMBER'''
 
     if len(p) == 2:
-        registerUse.append(p[1][1:])
+        #registerUse.append(p[1][1:])
         p[0] = p[1][1:]
     elif len(p) == 3:
         p[0] = p[2]
+
+
+def p_listMacroid(p):
+    '''listMacroid : macroid VIRGULE listMacroid
+                            | macroid
+                            | '''
+    if len(p) == 2:
+        p[0] = Register(p[1])  # p[1] + str(p[2])
+    elif len(p) == 4:
+        p[0] = Register(p[1], p[3])  # p[1] + str(p[2]) + p[3] + p[4]
+    else:
+        p[0] = None
 
 # Error rule for syntax errors
 

@@ -1,5 +1,5 @@
 try:
-    from src.parser.register import *
+    from src.parser.instruction.register import *
     from src.interpreter.cantor_int import *
 except:
     from interpreter.cantor_int import *
