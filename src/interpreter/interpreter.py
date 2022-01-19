@@ -5,7 +5,7 @@ try:
     from src.interpreter.cantor_int import *
     from src.interpreter.interpreter import *
 except:
-    from interpreter.instruction import *
+    from src.interpreter.instruction import *
     from interpreter.cantor_int import *
     from interpreter.interpreter import *
 
@@ -25,8 +25,6 @@ class Interpreter:
         self.end = False
         self.memory = memory
         self.macros = macros
-        print(macros)
-        print(instr_list)
         self.remove_macros()
 
     def update_current_instr(self, n: int):

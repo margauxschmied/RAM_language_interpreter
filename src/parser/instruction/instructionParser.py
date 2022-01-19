@@ -28,3 +28,9 @@ class Instruction:
             currentInstruction = currentInstruction.next
 
         return list
+
+    def __str__(self) -> str:
+        return f"{self.num_instr} {self.register} {self.n}"
+
+    def __repr__(self) -> str:
+        return self.__str__()

@@ -2,14 +2,13 @@ from ply import lex
 from ply import yacc
 
 try:
-    from src.interpreter.instruction import Macro
-    from src.interpreter.instruction import RawInstruction, RAM
-    from src.interpreter.interpreter import Interpreter
+    from src.interpreter.instruction import *
+    from src.interpreter.interpreter import *
     from src.parser.lexer import lex
 except:
-    from interpreter.instruction import Macro
-    from interpreter.instruction import RawInstruction, RAM
-    from interpreter.interpreter import Interpreter
+    from interpreter.instruction import *
+    from interpreter.interpreter import *
+    from parser.lexer import lex
 
 
 def list_intruction(list_instr):
@@ -20,18 +19,18 @@ def list_intruction(list_instr):
         if c_instr.is_macro:
             dic[c_instr.num_instr] = Macro(c_instr.num_instr,
                                            c_instr.register.list_register(),
-                                           c_instr.instruction.list_intruction())
+                                           list_intruction(c_instr.instruction)[0])
         elif isinstance(c_instr.num_instr, str):
             list.append(RawInstruction(
-                list_instr.num_instr,
-                list_instr.register.list_register(),
-                list_instr.n))
+                c_instr.num_instr,
+                c_instr.register.list_register(),
+                c_instr.n))
         else:
             list.append(
                 RawInstruction(
-                    list_instr.num_instr,
-                    list_instr.register.register,
-                    list_instr.n))
+                    c_instr.num_instr,
+                    c_instr.register.register,
+                    c_instr.n))
         c_instr = c_instr.next
     return list, dic
 
