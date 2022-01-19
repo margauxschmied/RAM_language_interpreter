@@ -5,15 +5,12 @@ from tkinter import filedialog, ttk
 from tkinter.scrolledtext import ScrolledText
 import tkinter as tk
 
-
-from antlr4 import InputStream, CommonTokenStream
-from src.Antlr4.dist.MyGrammarLexer import MyGrammarLexer
-from src.Antlr4.dist.MyGrammarParser import MyGrammarParser
-from src.cantor_int import Int
-from src.instruction.instruction import Instruction, RAM, RawInstruction
-from src.decode_int import decode_int_instr, decode_int_program
-from src.instruction.macro import Macro
-from src.interpreter import Interpreter
+from src.interpreter.cantor_int import *
+from src.interpreter.instruction import *
+from src.interpreter.decode_int import *
+from src.interpreter.interpreter import *
+from src.parser.lexer import myLex, myYacc, macros
+from src.pars_to_interp import *
 
 
 class Texte(tk.Text):
@@ -676,74 +673,109 @@ def main(root):
 
 
 if __name__ == '__main__':
-    root = tk.Tk()
-    root.title("RAM_language_interpreter")
-    root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
-    root.geometry("640x480")
+    # root = tk.Tk()
+    # root.title("RAM_language_interpreter")
+    # root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
+    # root.geometry("640x480")
 
-    main(root)
+    # main(root)
 
-    root.mainloop()
+    # root.mainloop()
+    RAM_inst = (
+        "begin macro id(Rx, Ry)"
+        "Rx=Rx + 1"
+        "Rx=Rx - 1"
+        "R1000=R1000 + 1"
+        "IF Rx != 0 then gotob 2"
+        "R1000=R1000 - 1"
+        "Rx=Rx + 1"
+        "Ry=Ry + 1"
+        "IF R1000 != 0 then gotob 3"
+        "Rx=Rx - 1"
+        "Ry=Ry - 1"
+        "end macro;"
+        "begin macro add(Rx, Ry)"
+        "id(Rx, R100)"
+        "R100=R100 + 1"
+        "Ry=Ry + 1"
+        "R100=R100 - 1"
+        "IF R100 != 0 then gotob 2"
+        "Ry=Ry - 1"
+        "end macro;"
+        "begin macro add_in_z(Rx, Ry, Rz)"
+        "id(Rx, R100)"
+        "id(Ry, Rz)"
+        "R100=R100 + 1"
+        "R100=R100 - 1"
+        "Rz=Rz + 1"
+        "IF R100 != 0 then gotob 2"
+        "Rz=Rz - 1"
+        "end macro;"
+        "begin macro clear(Rx)"
+        "Rx=Rx - 1"
+        "IF Rx != 0 then gotob 1"
+        "end macro;"
+        "begin macro sum_0_to_n(Rx)"
+        "Rx=Rx + 1"
+        "Rx=Rx - 1"
+        "add(Rx, R1)"
+        "IF Rx != 0 then gotob 2"
+        "end macro;"
+        "sum_0_to_n(R0)"
+    )
 
-    MACROS = {
-        'add':  Macro('add', ['kappa'], [
-            RawInstruction(1, 'kappa')
-        ])
-    }
+    lexer = myLex()
+    lexer.input(RAM_inst)
 
-    N = 100
-    i = Interpreter(
-        [RawInstruction('add', [5], is_macro=True)], MACROS, RAM(N))
+    parser = myYacc()
 
-    print(f"\n  Starting instructions \n{i}")
+    result = parser.parse(RAM_inst)
 
-    program_int = i.encode_list_instr()
+    interp = make_interpreter(result)
+    N = 50
+    interp.reset(N)
+    print(
+        f"Mesdames et messieurs, la somme de 0 à {N} is {interp.treat_all_instr()[1]}")
 
-    print(f"\n  Program int \n{program_int}")
+#     data = InputStream("""R0 = R0 + 1
+# R0 = R0 - 1
+# R0 = R0 + 1
+# R0 = R0 - 1
+# R1000 = R1000 + 1
+# IF R0 != 0 then gotob 2
+# R1000 = R1000 - 1
+# R0 = R0 + 1
+# R100 = R100 + 1
+# IF R1000 != 0 then gotob 3
+# R0 = R0 - 1
+# R100 = R100 - 1
+# R100 = R100 + 1
+# R1 = R1 + 1
+# R100 = R100 - 1
+# IF R100 != 0 then gotob 2
+# R1 = R1 - 1
+# IF R0 != 0 then gotob 16
+# """)
 
-#    program_decoded = decode_int_program(str(i))
-
-    # print(f"\n  Instruction in RAM \n{program_decoded}")
-
-    data = InputStream("""R0 = R0 + 1
-R0 = R0 - 1
-R0 = R0 + 1
-R0 = R0 - 1
-R1000 = R1000 + 1
-IF R0 != 0 then gotob 2
-R1000 = R1000 - 1
-R0 = R0 + 1
-R100 = R100 + 1
-IF R1000 != 0 then gotob 3
-R0 = R0 - 1
-R100 = R100 - 1
-R100 = R100 + 1
-R1 = R1 + 1
-R100 = R100 - 1
-IF R100 != 0 then gotob 2
-R1 = R1 - 1
-IF R0 != 0 then gotob 16   
-""")
-
-    # # lexer
-    # lexer = MyGrammarLexer(data)
-    # stream = CommonTokenStream(lexer)
-    #
-    # # parser
-    # parser = MyGrammarParser(stream)
-    # tree = parser.program()
-    #
-    # # evaluator
-    # visitor = MyVisitor()
-    # output = visitor.visit(tree)
-    #
-    # l_inst = listInstruction(tree)
-    #
-    # print(f"\n  List instr after parsing \n{l_inst}")
-    #
-    # print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
-    #
-    # # interpreter
-    # interp = Interpreter(l_inst, memory=RAM(N))
-    # interp.treat_all_instr()
-    # print("\n  Program output =", interp.get_otput())
+# # lexer
+# lexer = MyGrammarLexer(data)
+# stream = CommonTokenStream(lexer)
+#
+# # parser
+# parser = MyGrammarParser(stream)
+# tree = parser.program()
+#
+# # evaluator
+# visitor = MyVisitor()
+# output = visitor.visit(tree)
+#
+# l_inst = listInstruction(tree)
+#
+# print(f"\n  List instr after parsing \n{l_inst}")
+#
+# print(f"\n  Program to int instr \n{decode_int_program(l_inst)}")
+#
+# # interpreter
+# interp = Interpreter(l_inst, memory=RAM(N))
+# interp.treat_all_instr()
+# print("\n  Program output =", interp.get_otput())

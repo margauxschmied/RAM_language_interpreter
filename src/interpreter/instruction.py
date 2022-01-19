@@ -1,21 +1,18 @@
 try:
-    from src.instruction.register import Register
-    from src.cantor_int import Int
+    from src.parser.instruction.register import *
+    from src.interpreter.cantor_int import *
 except:
-    from register import Register
-    from cantor_int import Int
+    from interpreter.cantor_int import *
 
-from collections import namedtuple
 from typing import List
 
 
 class RawInstruction:
     def __init__(self, num_instr, register, n=None, is_macro=False, next=None):
-        self.is_macro = is_macro
+        self.is_macro = is_macro or type(num_instr) == str
         self.numInstr = num_instr
         self.register = register
         self.n = n
-
 
     def setNext(self, next):
         self.next = next
@@ -52,7 +49,7 @@ class RawInstruction:
         elif self.numInstr == 3:
             return f"IF R{self.register} != 0 then gotof {self.n}"
         else:
-            return "{}({})".format(self.numInstr, ",".join(map(str, self.register)))
+            return "{}({})".format(self.numInstr, ",".join(map(lambda x: f"R{x}", self.register)))
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -133,6 +130,12 @@ class Macro:
             else:
                 acc += 1
         return acc
+
+    def __str__(self) -> str:
+        return f"{self.nom} ({self.params}) {self.instr_list};"
+
+    def __repr__(self) -> str:
+        return str(self)
 
 
 class RAM(dict):

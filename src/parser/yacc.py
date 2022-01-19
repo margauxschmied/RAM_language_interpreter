@@ -6,7 +6,6 @@ from ply import lex
 from lexer import tokens, build
 
 
-
 def p_program(p):
     # program returns [Instruction instruction]:
     #     code EOF {$instruction=$code.instruction} # MakeList
@@ -20,9 +19,11 @@ def p_program(p):
 #     | expr {$instruction =$expr.instruction}
 #     ;
 
+
 def p_code_list(p):
     'code : expression code'
     p[0] = str(p[1]) + str(p[2])
+
 
 def p_code_simple(p):
     'code : expression'
@@ -54,23 +55,20 @@ def p_code_simple(p):
 
 def p_expression_push(p):
     #     PUSH R r1=INT {$instruction= Instruction(4, Register($r1.text))}
-
     'expression : PUSH R NUMBER'
     p[0] = str(p[3])
 
+
 def p_expression_pop(p):
     #     | POP R r1=INT {$instruction= Instruction(5, Register($r1.text))}
-
     'expression : POP R NUMBER'
     p[0] = str(p[3])
-
-
-
 
 
 # Error rule for syntax errors
 def p_error(p):
     print("Syntax error in input!")
+
 
 if __name__ == '__main__':
     data = """PUSH R2
@@ -93,6 +91,7 @@ POP R2
             s = data
         except EOFError:
             break
-        if not s: continue
+        if not s:
+            continue
         result = parser.parse(s)
         print(result)
