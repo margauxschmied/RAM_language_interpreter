@@ -9,7 +9,7 @@ from src.interpreter.cantor_int import *
 from src.interpreter.instruction import *
 from src.interpreter.decode_int import *
 from src.interpreter.interpreter import *
-from src.parser.lexer import myLex, myYacc, macros
+from src.parser.parser import myLex, myYacc, macros
 from src.pars_to_interp import *
 
 

@@ -4,11 +4,11 @@ from ply import yacc
 try:
     from src.interpreter.instruction import *
     from src.interpreter.interpreter import *
-    from src.parser.lexer import lex
+    from src.parser.parser import lex
 except:
     from interpreter.instruction import *
     from interpreter.interpreter import *
-    from parser.lexer import lex
+    from parser.parser import lex
 
 
 def list_intruction(list_instr):
