@@ -298,16 +298,11 @@ class MyGUI:
     def update_menu(self):
         sta1 = 'normal'
         sta2 = 'disabled'
-        if self.get_current_interpreter() == None:
-            self.menu_bar.menu_run.entryconfig(0, state=sta1)
-            self.menu_bar.menu_run.entryconfig(1, state=sta2)
-            self.menu_bar.entryconfig(3, state=sta2)
-            print(sta1, sta2, sta2)
-        else:
-            self.menu_bar.menu_run.entryconfig(0, state=sta2)
-            self.menu_bar.menu_run.entryconfig(1, state=sta1)
-            self.menu_bar.entryconfig(3, state=sta1)
-            print(sta2, sta1, sta1)
+        inter = self.get_current_interpreter() == None
+
+        self.menu_bar.menu_run.entryconfig(0, state=(sta1 if inter else sta2))
+        self.menu_bar.menu_run.entryconfig(1, state=(sta2 if inter else sta1))
+        self.menu_bar.entryconfig(3, state=(sta2 if inter else sta1))
 
     def create_extern_shortcut(self, element):
         element.bind('<Control-s>', lambda e: self.save_file())
