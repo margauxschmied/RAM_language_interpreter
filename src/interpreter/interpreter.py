@@ -4,10 +4,12 @@ try:
     from src.interpreter.instruction import *
     from src.interpreter.cantor_int import *
     from src.interpreter.interpreter import *
+    from src.interpreter.existing_macros import *
 except:
     from src.interpreter.instruction import *
     from interpreter.cantor_int import *
     from interpreter.interpreter import *
+    from interpreter.existing_macros import *
 
 
 class Interpreter:
@@ -19,7 +21,7 @@ class Interpreter:
         The RC is stored in current_instr
     """
 
-    def __init__(self, instr_list: List[RawInstruction], macros: Dict[str, Macro] = dict(), memory=RAM()) -> None:
+    def __init__(self, instr_list: List[RawInstruction], macros: Dict[str, Macro] = macros, memory=RAM()) -> None:
         self.instr_list = instr_list
         self.current_instr = Int(1)
         self.end = False

@@ -12,46 +12,46 @@ if __name__ == '__main__':
     interface.run_GUI()
 
     RAM_inst = (
-        "begin macro id(Rx, Ry)"
-        "Rx=Rx + 1"
-        "Rx=Rx - 1"
-        "R1000=R1000 + 1"
-        "IF Rx != 0 then gotob 2"
-        "R1000=R1000 - 1"
-        "Rx=Rx + 1"
-        "Ry=Ry + 1"
-        "IF R1000 != 0 then gotob 3"
-        "Rx=Rx - 1"
-        "Ry=Ry - 1"
-        "end macro;"
-        "begin macro add(Rx, Ry)"
-        "id(Rx, R100)"
-        "R100=R100 + 1"
-        "Ry=Ry + 1"
-        "R100=R100 - 1"
-        "IF R100 != 0 then gotob 2"
-        "Ry=Ry - 1"
-        "end macro;"
-        "begin macro add_in_z(Rx, Ry, Rz)"
-        "id(Rx, R100)"
-        "id(Ry, Rz)"
-        "R100=R100 + 1"
-        "R100=R100 - 1"
-        "Rz=Rz + 1"
-        "IF R100 != 0 then gotob 2"
-        "Rz=Rz - 1"
-        "end macro;"
-        "begin macro clear(Rx)"
-        "Rx=Rx - 1"
-        "IF Rx != 0 then gotob 1"
-        "end macro;"
-        "begin macro sum_0_to_n(Rx)"
-        "Rx=Rx + 1"
-        "Rx=Rx - 1"
-        "add(Rx, R1)"
-        "IF Rx != 0 then gotob 2"
-        "end macro;"
-        "sum_0_to_n(R0)"
+        """begin macro id(Rx, Ry)
+        Rx=Rx + 1
+        Rx=Rx - 1
+        R1000=R1000 + 1
+        IF Rx != 0 then gotob 2
+        R1000=R1000 - 1
+        Rx=Rx + 1
+        Ry=Ry + 1
+        IF R1000 != 0 then gotob 3
+        Rx=Rx - 1
+        Ry=Ry - 1
+        end macro;
+        begin macro add(Rx, Ry)
+        id(Rx, R100)
+        R100=R100 + 1
+        Ry=Ry + 1
+        R100=R100 - 1
+        IF R100 != 0 then gotob 2
+        Ry=Ry - 1
+        end macro;
+        begin macro add_in_z(Rx, Ry, Rz)
+        id(Rx, R100)
+        id(Ry, Rz)
+        R100=R100 + 1
+        R100=R100 - 1
+        Rz=Rz + 1
+        IF R100 != 0 then gotob 2
+        Rz=Rz - 1
+        end macro;
+        begin macro clear(Rx)
+        Rx=Rx - 1
+        IF Rx != 0 then gotob 1
+        end macro;
+        begin macro sum_0_to_n(Rx)
+        Rx=Rx + 1
+        Rx=Rx - 1
+        add(Rx, R1)
+        IF Rx != 0 then gotob 2
+        end macro;
+        sum_0_to_n(R0)"""
     )
 
     lexer = myLex()

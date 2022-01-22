@@ -1,14 +1,10 @@
-# Calc N * 2 
-
+begin macro times_two(Rx, Ry)
+Ry = Ry + 1
+Ry = Ry + 1
+Rx = Rx - 1
+end macro;
 R0 = R0 + 1
-
-R8 = R8 + 1
-R8 = R8 + 1
-R0 = R0 - 1
-if R0 != 0 then gotob 3
-
-R1 = R1 + 1
-R8 = R8 - 1
-if R8 != 0 then gotob 2
-
+times_two(R0, R1)
+IF R0 != 0 THEN GOTOB 1
+R1 = R1 - 1
 R1 = R1 - 1
