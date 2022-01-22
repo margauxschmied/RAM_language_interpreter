@@ -6,6 +6,7 @@ import src.GUI.widgets.texte as tx
 import src.GUI.widgets.menu as menu
 import src.GUI.widgets.popup as pop
 import src.GUI.widgets.toolbar as tb
+import src.GUI.widgets.windows as wi
 
 from tkinter import messagebox
 from tkinter import filedialog, ttk
@@ -83,16 +84,23 @@ class MyGUI:
 
         self.titles.append(tab_name)
         self.frames.append(tk.Frame(self.notebook))
-        text_editor = tx.Texte(self.frames[-1])
-        line_number = tx.Texte(self.frames[-1])
+
+        # text editor when we create or open file
+        text_editor = tx.texte(self.frames[-1])
+
+        # line number of the text editor
+        line_number = tx.texte(self.frames[-1])
         line_number.config(bg='white')
         self.line_numbers.append(line_number)
         self.create_intern_shortcut(text_editor)
         self.text_editors.append(text_editor)
 
+        # show line number only if the settings allow it
         if so.read()['show_line'] == '1':
             line_number.pack(side=tk.LEFT, fill=tk.BOTH)
         text_editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # listener over text editor
         text_editor.bind('<Button-3>', lambda e: self.popup(e))
 
         text_editor.bind('<KeyRelease>', lambda e: self.update_line())
@@ -112,59 +120,23 @@ class MyGUI:
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.scrollbars.append(scrollbar)
 
+        # for simultaneous scroll between line_number and text_editor
         scrollbar['command'] = self.on_scrollbar
         text_editor['yscrollcommand'] = self.on_textscroll
         line_number['yscrollcommand'] = self.on_textscroll
 
         self.interpreters.append(None)
 
-        code_window = tk.Toplevel(self.root)
-        code_window.title("Executed Code RAM")
-        code_window.geometry('400x400')
-        code_window.withdraw()
-        code_window.protocol("WM_DELETE_WINDOW",
-                             lambda: self.on_closing(code_window))
-        tree_scroll = tk.Scrollbar(code_window)
-        tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
-        executed_code = tx.Texte(code_window)
-        executed_code.pack(fill=tk.BOTH, expand=1)
-        executed_code.configure(state='disabled')
-        executed_code.tag_config(
-            'mark', foreground="white", background="green")
-        tree_scroll.config(command=executed_code.yview)
-        self.code_windows.append(code_window)
-        self.codes.append(executed_code)
-
-        table_window = tk.Toplevel(self.root)
-        table_window.geometry('250x250')
-        table_window.resizable(False, False)
-        table_window.title("Memory")
-        tree_scroll = tk.Scrollbar(table_window)
-        tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
-        table = ttk.Treeview(table_window, yscrollcommand=tree_scroll)
-        tree_scroll.config(command=table.yview)
-        table['columns'] = ('register', 'value')
-        table.column("#0", width=0,  stretch=tk.NO)
-        table.column("register", anchor=tk.CENTER, width=80)
-        table.column("value", anchor=tk.CENTER, width=80)
-
-        table.heading("#0", text="", anchor=tk.CENTER)
-        table.heading("register", text="Register", anchor=tk.CENTER)
-        table.heading("value", text="Value", anchor=tk.CENTER)
-
-        table.pack(fill=tk.BOTH, expand=1)
-
-        table_window.withdraw()
-        table_window.protocol("WM_DELETE_WINDOW",
-                              lambda: self.on_closing(table_window))
-        self.table_windows.append(table_window)
-        self.tables.append(table)
+        # creation of the two window (final code and registers)
+        wi.create_code_window(self)
+        wi.create_memory_window(self)
 
     def on_closing(self, table_window):
         table_window.withdraw()
         return 'break'
 
     def update_line(self):
+        """ We update the nmber of line of the current text editor when the user type a key. """
         number_lines = int(self.get_current_text_editor().index(
             tk.END).split('.')[0]) - 1
         number_lines = str(number_lines)
@@ -495,7 +467,7 @@ class MyGUI:
         else:
             current_text_editor.configure(state='disabled')
 
-    def execute_line(self, line_index=None):
+    def execute_line(self):
         """ Start the sequencial execution or execute the next instruction if started. """
 
         if self.s_var.get() == '1':

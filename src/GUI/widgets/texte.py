@@ -1,7 +1,7 @@
 import tkinter as tk
 
 
-class Texte(tk.Text):
+class texte(tk.Text):
     def __init__(self, parent):
         super().__init__(parent, width=20, height=10,
                          bg="lightgrey", wrap='word')
