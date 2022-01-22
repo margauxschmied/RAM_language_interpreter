@@ -5,6 +5,8 @@ import src.GUI.widgets.output_terminal as ot
 import src.GUI.widgets.texte as tx
 import src.GUI.widgets.menu as menu
 import src.GUI.widgets.popup as pop
+import src.GUI.widgets.toolbar as tb
+
 from tkinter import messagebox
 from tkinter import filedialog, ttk
 import tkinter as tk
@@ -52,6 +54,7 @@ class MyGUI:
         self.set_choices()
 
         self.create_menu(self.root)
+        self.create_toolbar(self.root)
         self.create_panel(self.root)
         self.create_notebook(self.root)
         self.create_output_terminal(self.root)
@@ -71,6 +74,9 @@ class MyGUI:
         """ Function wich creates the bar menu. """
         self.menu_bar = menu.menu_bar(parent, self)
         parent.config(menu=self.menu_bar)
+
+    def create_toolbar(self, parent):
+        self.toolbar = tb.toolbar(parent, self)
 
     def create_tab(self, tab_name):
         """ We create a new tab when : we open a file, we create new file. """
