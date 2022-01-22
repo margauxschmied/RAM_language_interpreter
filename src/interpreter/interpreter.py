@@ -46,7 +46,7 @@ class Interpreter:
             self.treat_one_instr()
         return self.memory
 
-    def get_otput(self):
+    def get_output(self):
         return self.memory[1]
 
     def init_zero(self, value):
@@ -187,6 +187,6 @@ if __name__ == '__main__':
     for i in range(150):
         interp.reset(i)
         interp.treat_all_instr()
-        print(f"The sum from 0 to {i} is {interp.get_otput()}")
+        print(f"The sum from 0 to {i} is {interp.get_output()}")
 
     print(str(interp))

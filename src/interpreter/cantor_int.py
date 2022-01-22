@@ -58,9 +58,7 @@ class Int(int):
 
     def int_to_couple(s):
         """ The couple (a1, (a2, ... (an, 0))) from an Int """
-        print('A')
         res = Int(s).cantor_inv()
-        print('B')
         return res if res[1] == 0 else (res[0], Int(res[1]).int_to_couple())
 
     def couple_to_int(s):

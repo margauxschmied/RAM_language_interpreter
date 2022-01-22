@@ -108,4 +108,4 @@ if __name__ == '__main__':
 # # interpreter
 # interp = Interpreter(l_inst, memory=RAM(N))
 # interp.treat_all_instr()
-# print("\n  Program output =", interp.get_otput())
+# print("\n  Program output =", interp.get_output())

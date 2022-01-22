@@ -534,7 +534,7 @@ class MyGUI:
             self.output.pretty_print(
                 "Sequential execution finished ("+self.get_current_tabname()+").\n", 'green')
             self.output.pretty_print(
-                "Result: " + str(self.get_current_interpreter().get_otput()) + '\n', 'blue')
+                "Result: " + str(self.get_current_interpreter().get_output()) + '\n', 'blue')
             self.set_current_interpreter(None)
             self.remove_mark(self.get_current_code())
             self.update_menu()
@@ -563,7 +563,7 @@ class MyGUI:
             self.output.pretty_print(
                 "Sequential execution stopped ("+self.get_current_tabname()+").", 'red')
             self.output.pretty_print(
-                "\nResult: " + str(self.get_current_interpreter().get_otput()) + '\n', 'blue')
+                "\nResult: " + str(self.get_current_interpreter().get_output()) + '\n', 'blue')
             self.clear_and_put(self.get_current_interpreter().memory)
             self.remove_mark(self.get_current_code())
             self.set_current_interpreter(None)
@@ -598,7 +598,7 @@ class MyGUI:
             self.get_current_code().add_clean(str(interp))
             self.get_current_code().configure(state='disabled')
             interp.treat_all_instr()
-            output = interp.get_otput()
+            output = interp.get_output()
             self.output.pretty_print("Result: " + str(output) + '\n', 'blue')
             self.clear_and_put(interp.memory)
         return 'break'
