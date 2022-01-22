@@ -95,14 +95,20 @@ class MyGUI:
         # The 'Run' contextual menu
         self.menu_run = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_run.add_command(
-            label="Start/Run Next Instruction", command=self.execute_line)
+            label="Start", command=self.execute_line)
+        self.menu_run.add_command(
+            label="Run Next Instruction", command=self.execute_line)
+        self.menu_run.add_separator()
         self.menu_run.add_command(
             label="Run File", command=self.execute_file)
         self.menu_bar.add_cascade(label="Run", menu=self.menu_run)
 
+        self.menu_run.entryconfig(1, state='disabled')
+
         # The 'Stop' button
         self.menu_bar.add_command(
             label="Stop", command=lambda: self.stop())
+        self.menu_bar.entryconfig(3, state='disabled')
 
         # The 'Option' button
         self.menu_bar.add_command(
@@ -567,8 +573,9 @@ class MyGUI:
             self.get_current_code().configure(state='normal')
             self.get_current_code().add_clean(str(inter))
             self.get_current_code().configure(state='disabled')
-            print(self.choice_automaticaly_code.get(),
-                  type(self.choice_automaticaly_code))
+            self.menu_run.entryconfig(0, state='disabled')
+            self.menu_run.entryconfig(1, state='normal')
+            self.menu_bar.entryconfig(3, state='normal')
             if self.choice_automaticaly_code.get() == 1:
                 self.get_current_code_window().deiconify()
             if self.choice_automaticaly_memory.get() == 1:
@@ -596,6 +603,8 @@ class MyGUI:
                 "Result: " + str(self.get_current_interpreter().get_otput()) + '\n', 'blue')
             self.set_current_interpreter(None)
             self.remove_mark(self.get_current_code())
+            self.menu_run.entryconfig(0, state='normal')
+            self.menu_run.entryconfig(1, state='disabled')
 
         return 'break'
 
@@ -625,6 +634,9 @@ class MyGUI:
             self.clear_and_put(self.get_current_interpreter().memory)
             self.remove_mark(self.get_current_code())
             self.set_current_interpreter(None)
+            self.menu_run.entryconfig(0, state='normal')
+            self.menu_run.entryconfig(1, state='disabled')
+            self.menu_bar.entryconfig(3, state='disabled')
 
     def execute_file(self):
         """ Execution of the whole file, we get the program, its type (RAM or Int) and its entry. """
