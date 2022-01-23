@@ -1,7 +1,8 @@
 import tkinter as tk
+from tkinter import ttk
 
 
-class toolbar(tk.Frame):
+class toolbar(ttk.Frame):
     def __init__(self, parent, my_gui):
         super().__init__(parent)
         self.parent = parent
@@ -22,13 +23,13 @@ class toolbar(tk.Frame):
         i3 = icon3.subsample(3, 3)
         i4 = icon4.subsample(3, 3)
 
-        self.run_button = tk.Button(
+        self.run_button = ttk.Button(
             self, image=i4, command=lambda: self.my_gui.execute_file())
-        self.stop_button = tk.Button(
+        self.stop_button = ttk.Button(
             self, image=i2, command=lambda: self.my_gui.stop())
-        self.save_button = tk.Button(
+        self.save_button = ttk.Button(
             self, image=i3, command=lambda: self.my_gui.save_file())
-        self.cover_button = tk.Button(
+        self.cover_button = ttk.Button(
             self, image=i1, command=lambda: self.my_gui.execute_line())
         self.run_button.image = i4
         self.stop_button.image = i2
@@ -36,7 +37,7 @@ class toolbar(tk.Frame):
         self.cover_button.image = i1
 
         self.pack(fill=tk.X)
-        self.save_button.grid(column=0, row=0)
-        self.run_button.grid(column=1, row=0, padx=5)
-        self.cover_button.grid(column=2, row=0)
-        self.stop_button.grid(column=3, row=0)
+        self.save_button.grid(column=0, row=0, pady=2)
+        self.run_button.grid(column=1, row=0, pady=2, padx=5)
+        self.cover_button.grid(column=2, row=0, pady=2)
+        self.stop_button.grid(column=3, row=0, pady=2)

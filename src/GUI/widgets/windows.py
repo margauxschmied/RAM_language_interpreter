@@ -1,8 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 
-import src.GUI.widgets.texte as tx
-
 
 def create_code_window(my_gui):
     """ Window in which the final code is. """
@@ -12,9 +10,9 @@ def create_code_window(my_gui):
     code_window.withdraw()
     code_window.protocol("WM_DELETE_WINDOW",
                          lambda: my_gui.on_closing(code_window))
-    tree_scroll = tk.Scrollbar(code_window)
+    tree_scroll = ttk.Scrollbar(code_window)
     tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
-    executed_code = tx.texte(code_window)
+    executed_code = tk.Text(code_window)
     executed_code.pack(fill=tk.BOTH, expand=1)
     executed_code.configure(state='disabled')
     executed_code.tag_config(
@@ -30,7 +28,7 @@ def create_memory_window(my_gui):
     table_window.geometry('250x250')
     table_window.resizable(False, False)
     table_window.title("Memory")
-    tree_scroll = tk.Scrollbar(table_window)
+    tree_scroll = ttk.Scrollbar(table_window)
     tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
     table = ttk.Treeview(table_window, yscrollcommand=tree_scroll)
     tree_scroll.config(command=table.yview)

@@ -83,7 +83,7 @@ class MyGUI:
         """ We create a new tab when : we open a file, we create new file. """
 
         self.titles.append(tab_name)
-        self.frames.append(tk.Frame(self.notebook))
+        self.frames.append(ttk.Frame(self.notebook))
 
         # text editor when we create or open file
         text_editor = tx.texte(self.frames[-1])
@@ -116,7 +116,7 @@ class MyGUI:
 
         self.notebook.add(self.frames[-1], text=self.titles[-1])
 
-        scrollbar = tk.Scrollbar(self.frames[-1])
+        scrollbar = ttk.Scrollbar(self.frames[-1])
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.scrollbars.append(scrollbar)
 
@@ -294,7 +294,7 @@ class MyGUI:
 
     def create_output_terminal(self, parent):
         """ The result or error message will appear here. """
-        self.frame = tk.Frame(parent)
+        self.frame = ttk.Frame(parent)
 
         self.output = ot.output_terminal(self.frame)
 
@@ -304,18 +304,19 @@ class MyGUI:
         self.s_var = tk.StringVar()
         self.s_var.set(vals[0])
 
-        self.radio_frame = tk.Frame(self.frame)
+        self.radio_frame = ttk.Frame(self.frame)
         self.radio_frame.pack()
         for i in range(2):
-            radio = tk.Radiobutton(self.radio_frame, variable=self.s_var,
-                                   text=etiqs[i], value=vals[i])
+            radio = ttk.Radiobutton(self.radio_frame, variable=self.s_var,
+                                    text=etiqs[i], value=vals[i])
             radio.grid(row=0, column=i+4)
 
-        self.output_label = tk.Label(self.frame, text="OUTPUT", bg='darkgray')
+        self.output_label = ttk.Label(
+            self.frame, text="OUTPUT", background='darkgray')
         self.default_font = tk.font.nametofont("TkDefaultFont")
 
         # The entry of the program (R0)
-        self.entry = tk.Entry(self.radio_frame)
+        self.entry = ttk.Entry(self.radio_frame)
         self.entry.bind("<FocusIn>", lambda e: self.set_default(False))
         self.entry.bind("<FocusOut>", lambda e: self.set_default(True))
         self.entry.insert(0, "Enter the R0 value")
@@ -325,16 +326,16 @@ class MyGUI:
 
         self.entry.grid(row=0, column=3)
 
-        self.output_label.pack(fill=tk.X)
+        self.output_label.pack()
         self.output.pack(fill=tk.BOTH, expand=True)
 
         self.panel.add(self.frame)
-        self.input_label = tk.Label(self.radio_frame, text="R0 = ")
+        self.input_label = ttk.Label(self.radio_frame, text="R0 = ")
         self.input_label.grid(row=0, column=2)
-        self.display_ram_code = tk.Button(
+        self.display_ram_code = ttk.Button(
             self.radio_frame, text="Display Executed Code", command=lambda: self.open_executed_code())
         self.display_ram_code.grid(row=0, column=0)
-        self.display_registers = tk.Button(
+        self.display_registers = ttk.Button(
             self.radio_frame, text="Display Memory", command=lambda: self.open_registers())
         self.display_registers.grid(row=0, column=1)
 
@@ -367,7 +368,7 @@ class MyGUI:
     def create_panel(self, parent):
         """ Panel wich contain the text_editor of the current tab and the output_terminal (with the entry) which allows us
         to resize it. """
-        self.panel = tk.PanedWindow(parent, orient=tk.VERTICAL)
+        self.panel = ttk.PanedWindow(parent, orient=tk.VERTICAL)
         self.panel.pack(fill=tk.BOTH, expand=True)
 
     def show_message(self, s):
@@ -441,7 +442,8 @@ class MyGUI:
 
         if not program:
             current_text_editor.configure(state='normal')
-        current_text_editor.clean()
+
+        current_text_editor.delete('1.0', tk.END)
         if MyGUI.idx_to_nb(index) != '1':
             current_text_editor.insert(
                 tk.END, copy.get(first[0], first[1]) + '\n')
@@ -459,7 +461,7 @@ class MyGUI:
         copy = pp.copy_text(current_text_editor, None)
         if not program:
             current_text_editor.configure(state='normal')
-        current_text_editor.clean()
+        current_text_editor.delete('1.0', tk.END)
         current_text_editor.insert(tk.END, copy.get('1.0', 'end-1c'))
         if program:
             current_text_editor.mark_set("insert", index)
@@ -485,7 +487,8 @@ class MyGUI:
                 return 'break'
             self.set_current_interpreter(inter)
             self.get_current_code().configure(state='normal')
-            self.get_current_code().add_clean(str(inter))
+            self.get_current_code().delete('1.0', tk.END)
+            self.get_current_code().insert(tk.END, str(inter))
             self.get_current_code().configure(state='disabled')
             self.update_menu()
             if self.choice_automaticaly_code.get() == 1:
@@ -573,7 +576,8 @@ class MyGUI:
         interp = self.parse_ram_program(program, entry)
         if interp != None:
             self.get_current_code().configure(state='normal')
-            self.get_current_code().add_clean(str(interp))
+            self.get_current_code().delete('1.0', tk.END)
+            self.get_current_code().insert(tk.END, str(interp))
             self.get_current_code().configure(state='disabled')
             interp.treat_all_instr()
             output = interp.get_output()
@@ -632,7 +636,14 @@ def run_GUI():
     root = tk.Tk()
     root.title("RAM_language_interpreter")
     root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
-    root.geometry("640x480")
+    # root.geometry("640x480")
+    root.update()
+    root.minsize(540, 350)
+    x_cordinate = int((root.winfo_screenwidth() / 2) -
+                      (root.winfo_width() / 2))
+    y_cordinate = int((root.winfo_screenheight() / 2) -
+                      (root.winfo_height() / 2))
+    root.geometry("+{}+{}".format(x_cordinate, y_cordinate-20))
 
     MyGUI(root)
 
