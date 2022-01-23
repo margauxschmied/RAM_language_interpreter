@@ -102,7 +102,9 @@ def t_error(t):
 
 
 macros = {}
-#registerUse = []
+
+
+# registerUse = []
 
 
 def p_program(p):
@@ -159,11 +161,13 @@ def p_expression_12(p):
     '''expression : R NUMBER EQ R NUMBER PLUS NUMBER
                     | R NUMBER EQ R NUMBER MINUS NUMBER'''
 
+    line = p.lineno(1)
+
     if p[2] != p[5]:
-        p_error(p)
+        p_error_verif(p, line)
 
     if p[7] != 1:
-        p_error(p)
+        p_error_verif(p, line)
 
     if p[6] == '+':
         # p[1] + str(p[2]) + p[3] + p[4] + str(p[5]) + "+" + str(p[7])
@@ -185,8 +189,10 @@ def p_expression_34(p):
     '''expression : IF R NUMBER NEQ NUMBER THEN GOTOB NUMBER
                     | IF R NUMBER NEQ NUMBER THEN GOTOF NUMBER'''
 
+    line = p.lineno(1)
+
     if p[5] != 0:
-        p_error(p)
+        p_error_verif(p, line)
 
     if p[7] == 'GOTOB' or p[7] == 'gotob':
         p[0] = Instruction(2, Register(p[3]),
@@ -210,13 +216,16 @@ def p_expression_callmacro(p):
 
 def p_callmacro(p):
     'callmacro : MACROID listRegister RPAREN'
-    p[0] = Instruction(p[1][:-1], p[2])  # p[1] + p[2] + p[3]
+    line = p.lineno(1)
 
     if p[1][:-1] not in macros.keys():
-        p_error(p)
+        p_error_verif(p, line)
 
     elif not macros[p[1][:-1]].good_number_of_register(p[2]):
-        p_error(p)
+        p_error_verif(p, line)
+
+    p[0] = Instruction(p[1][:-1], p[2])  # p[1] + p[2] + p[3]
+
 
 
 # macro returns [Instruction instruction]:
@@ -228,19 +237,12 @@ def p_macroDeclaration(p):
 
     macros[p[3][:-1]] = p[4]
 
-    # if not p[4].register_is_contain(registerUse):
-    #     p_error(p)
-
-    # print(p[6].getNext())
-    # print("next")
-    # if not p[6].verification_of_use_register():
-    #     p_error(p)
-
     macro = Macro(p[3][:-1], p[4], p[6])
     # p[1] + p[2] + p[3] + str(p[4]) + p[5] + "\n" + p[6] + p[7] + p[8] + p[9]
+    line = p.lineno(1)
 
     if not macro.verification_of_use_register():
-        p_error(p)
+        p_error_verif(p, line)
 
     p[0] = macro
 
@@ -315,11 +317,13 @@ def p_macroExpression_12(p):
     '''macroExpression : macroid EQ macroid PLUS NUMBER
                     | macroid EQ macroid MINUS NUMBER'''
 
+    line = p.lineno(1)
+
     if p[1] != p[3]:
-        p_error(p)
+        p_error_verif(p, line)
 
     if p[5] != 1:
-        p_error(p)
+        p_error_verif(p, line)
 
     if p[4] == '+':
         # p[1] + str(p[2]) + p[3] + p[4] + str(p[5])
@@ -341,8 +345,10 @@ def p_macroExpression_34(p):
     '''macroExpression : IF macroid NEQ NUMBER THEN GOTOB NUMBER
                     | IF macroid NEQ NUMBER THEN GOTOF NUMBER'''
 
+    line = p.lineno(1)
+
     if p[4] != 0:
-        p_error(p)
+        p_error_verif(p, line)
 
     if p[6] == 'GOTOB' or p[6] == 'gotob':
         # p[1] + p[2] + p[3] + str(p[4]) + p[5] + p[6] + str(p[7])
@@ -354,13 +360,16 @@ def p_macroExpression_34(p):
 
 def p_macroExpression_callmacro(p):
     'macroExpression : MACROID listMacroid RPAREN'
-    p[0] = Instruction(p[1][:-1], p[2])  # p[1] + p[2] + p[3]
+
+    line = p.lineno(1)
 
     if p[1][:-1] not in macros.keys():
-        p_error(p)
+        p_error_verif(p, line)
 
     elif not macros[p[1][:-1]].good_number_of_register(p[2]):
-        p_error(p)
+        p_error_verif(p, line)
+
+    p[0] = Instruction(p[1][:-1], p[2])  # p[1] + p[2] + p[3]
 
 
 def p_macroid(p):
@@ -368,7 +377,7 @@ def p_macroid(p):
                | R NUMBER'''
 
     if len(p) == 2:
-        #registerUse.append(p[1][1:])
+        # registerUse.append(p[1][1:])
         p[0] = p[1][1:]
     elif len(p) == 3:
         p[0] = p[2]
@@ -385,13 +394,15 @@ def p_listMacroid(p):
     else:
         p[0] = None
 
+
 # Error rule for syntax errors
 
 
-def p_error(p):
-    print("Syntax error in input! ")
-    # yacc.errok()
+def p_error_verif(p, line):
+    raise Exception(f"Syntax error: Unexpected line {line}")
 
+def p_error(p):
+    raise Exception(f"Syntax error: Unexpected line {p.lineno}")
 
 def myLex():
     return lex.lex()
@@ -403,7 +414,7 @@ def myYacc():
 
 if __name__ == '__main__':
     data = """begin MACRO a(Rx, Ry)
-    Ry = Ry + 1
+    Rx = Rx + 1
     R1 = R1 + 1
     Rx = Rx - 1
     IF Rx != 0 THEN GOTOB 2
