@@ -1,3 +1,4 @@
+from importlib_metadata import sys
 from ply import lex
 from ply import yacc
 
@@ -13,6 +14,7 @@ except:
 
 
 def list_intruction(list_instr):
+    print(sys.path)
     list = []
     dic = {}
     c_instr = list_instr

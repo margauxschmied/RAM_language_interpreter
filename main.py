@@ -1,5 +1,5 @@
 import tkinter.font as tkf
-from src.help_panel.help_panel import main1
+from src.help_panel.help_panel import main as hp_main
 import src.preprocessing as pp
 from tkinter import messagebox
 from tkinter import filedialog, ttk
@@ -109,7 +109,7 @@ class Frame:
         # The 'Help' contextual menu
         self.menu_help = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_help.add_command(
-            label="Get Started", command=lambda: main1())
+            label="Get Started", command=lambda: hp_main(self.root))
         self.menu_help.add_command(
             label="RAM Instructions", command=lambda: self.output.pretty_print("TODO: RAM\n", 'blue'))
         self.menu_help.add_command(
