@@ -138,13 +138,13 @@ def p_code_simple(p):
 def p_expression_push(p):
     #     PUSH R r1=INT {$instruction= Instruction(4, Register($r1.text))}
     'expression : PUSH R NUMBER'
-    p[0] = Macro("PUSH", Register(p[3]))  # "PUSH R" + str(p[3])
+    p[0] = Instruction("push", Register(p[3]))  # "PUSH R" + str(p[3])
 
 
 def p_expression_pop(p):
     #     | POP R r1=INT {$instruction= Instruction(5, Register($r1.text))}
     'expression : POP R NUMBER'
-    p[0] = Macro("POP", Register(p[3]))  # "POP R" + str(p[3])
+    p[0] = Instruction("pop", Register(p[3]))  # "POP R" + str(p[3])
 
 
 def p_expression_12(p):
@@ -227,7 +227,6 @@ def p_callmacro(p):
     p[0] = Instruction(p[1][:-1], p[2])  # p[1] + p[2] + p[3]
 
 
-
 # macro returns [Instruction instruction]:
 #     BEGIN MACRO name=MACROIDENTIFIER  macro_list_register ')' NEWLINE code NEWLINE END MACRO ';'  {$instruction=Macro($name.text, macro_list_register.register, $code.instruction)}
 # ;
@@ -294,13 +293,13 @@ def p_macroCode_simple(p):
 def p_macroExpression_push(p):
     #     PUSH R r1=INT {$instruction= Instruction(4, Register($r1.text))}
     'macroExpression : PUSH macroid'
-    p[0] = Macro("PUSH", Register(p[2]))  # p[1] + p[2]
+    p[0] = Instruction("push", Register(p[2]))  # p[1] + p[2]
 
 
 def p_macroExpression_pop(p):
     #     | POP R r1=INT {$instruction= Instruction(5, Register($r1.text))}
     'macroExpression : POP macroid'
-    p[0] = Macro("POP", Register(p[2]))  # p[1] + p[2]
+    p[0] = Instruction("pop", Register(p[2]))  # p[1] + p[2]
 
 
 def p_macroExpression_12(p):
@@ -401,8 +400,10 @@ def p_listMacroid(p):
 def p_error_verif(p, line):
     raise Exception(f"Syntax error: Unexpected line {line}")
 
+
 def p_error(p):
     raise Exception(f"Syntax error: Unexpected line {p.lineno}")
+
 
 def myLex():
     return lex.lex()

@@ -21,12 +21,14 @@ class Interpreter:
         The RC is stored in current_instr
     """
 
-    def __init__(self, instr_list: List[RawInstruction], macros: Dict[str, Macro] = macros, memory=RAM()) -> None:
+    def __init__(self, instr_list: List[RawInstruction], macro: Dict[str, Macro], memory=RAM()) -> None:
         self.instr_list = instr_list
         self.current_instr = Int(1)
         self.end = False
         self.memory = memory
-        self.macros = macros
+        self.macros = {'push': macros['push'], 'pop': macros['pop']}
+        for key, value in macro.items():
+            self.macros[key] = value
         self.remove_macros()
 
     def update_current_instr(self, n: int):
