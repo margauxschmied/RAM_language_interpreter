@@ -469,9 +469,10 @@ class MyGUI:
         else:
             current_text_editor.configure(state='disabled')
 
-    def execute_line(self):
+    def execute_line(self, index=None):
         """ Start the sequencial execution or execute the next instruction if started. """
-
+        if index != None:
+            self.notebook.select(index)
         if self.s_var.get() == '1':
             self.output.pretty_print(
                 "Warning: Convert this Int program into RAM program to allow sequential execution.\n(Right-click -> Convert Into RAM in New File)\n", 'orange')
@@ -486,36 +487,37 @@ class MyGUI:
             if inter == None:
                 return 'break'
             self.set_current_interpreter(inter)
-            self.get_current_code().configure(state='normal')
-            self.get_current_code().delete('1.0', tk.END)
-            self.get_current_code().insert(tk.END, str(inter))
-            self.get_current_code().configure(state='disabled')
+            current_code = self.get_current_code()
+            current_code.configure(state='normal')
+            current_code.delete('1.0', tk.END)
+            current_code.insert(tk.END, str(inter))
+            current_code.configure(state='disabled')
             self.update_menu()
             if self.choice_automaticaly_code.get() == 1:
                 self.get_current_code_window().deiconify()
             if self.choice_automaticaly_memory.get() == 1:
                 self.get_current_table_window().deiconify()
             self.output.pretty_print(
-                "Sequential execution started ("+self.get_current_tabname()+").\n", 'green')
+                "Sequential execution started ({})\n".format(self.get_current_tabname()), 'green')
 
         try:
-            current_inst = self.get_current_interpreter().instr_list[self.get_current_interpreter(
-            ).current_instr - 1]
+            current_interp = self.get_current_interpreter()
+            current_inst = current_interp.instr_list[current_interp.current_instr - 1]
             self.output.pretty_print(
-                "Execution of: " + current_inst.__str__() + ' (' + str(self.get_current_interpreter().current_instr) + ')\n', 'blue')
+                "Execution of: {} ({})\n".format(current_inst.__str__(), str(current_interp.current_instr)), 'blue')
 
             self.highlight_line(self.get_current_code(),
-                                self.get_current_interpreter().current_instr)
-            self.get_current_interpreter().treat_one_instr()
-            self.clear_and_put(self.get_current_interpreter().memory)
+                                current_interp.current_instr)
+            current_interp.treat_one_instr()
+            self.clear_and_put(current_interp.memory)
         except IndexError:
             self.get_current_interpreter().treat_one_instr()
 
         if self.get_current_interpreter().end:
             self.output.pretty_print(
-                "Sequential execution finished ("+self.get_current_tabname()+").\n", 'green')
+                "Sequential execution finished ({})\n".format(self.get_current_tabname()), 'green')
             self.output.pretty_print(
-                "Result: " + str(self.get_current_interpreter().get_output()) + '\n', 'blue')
+                "Result: {}\n".format(str(self.get_current_interpreter().get_output())), 'blue')
             self.set_current_interpreter(None)
             self.remove_mark(self.get_current_code())
             self.update_menu()
@@ -542,9 +544,9 @@ class MyGUI:
         if self.get_current_interpreter() != None:
             self.get_current_interpreter().treat_all_instr()
             self.output.pretty_print(
-                "Sequential execution stopped ("+self.get_current_tabname()+").", 'red')
+                "Sequential execution stopped ({})\n".format(self.get_current_tabname()), 'red')
             self.output.pretty_print(
-                "\nResult: " + str(self.get_current_interpreter().get_output()) + '\n', 'blue')
+                "Result: {}\n".format(str(self.get_current_interpreter().get_output())), 'blue')
             self.clear_and_put(self.get_current_interpreter().memory)
             self.remove_mark(self.get_current_code())
             self.set_current_interpreter(None)
@@ -553,7 +555,7 @@ class MyGUI:
     def execute_file(self):
         """ Execution of the whole file, we get the program, its type (RAM or Int) and its entry. """
         self.output.pretty_print(
-            'Execution (' + self.get_current_tabname() + ')\n', 'blue')
+            'Execution ({})\n'.format(self.get_current_tabname()), 'blue')
 
         program = self.get_program()
         entry = self.get_entry()
@@ -574,25 +576,35 @@ class MyGUI:
                     "Warning: Program is not an int\n", 'orange')
                 pass
         interp = self.parse_ram_program(program, entry)
+
+        # if the program is right, we can execute all instructions
         if interp != None:
-            self.get_current_code().configure(state='normal')
-            self.get_current_code().delete('1.0', tk.END)
-            self.get_current_code().insert(tk.END, str(interp))
-            self.get_current_code().configure(state='disabled')
+            current_code = self.get_current_code()
+            current_code.configure(state='normal')
+            current_code.delete('1.0', tk.END)
+            current_code.insert(tk.END, str(interp))
+            current_code.configure(state='disabled')
             interp.treat_all_instr()
             output = interp.get_output()
-            self.output.pretty_print("Result: " + str(output) + '\n', 'blue')
+            self.output.pretty_print(
+                "Result: {}\n".format(str(output)), 'blue')
             self.clear_and_put(interp.memory)
         return 'break'
 
     def parse_ram_program(self, ram_program, entry):
+        """ Parsing of the RAM program (after preprocessing instructions). Return an interpreter. """
         lexer = myLex()
         lexer.input(ram_program)
         parser = myYacc()
-        result = parser.parse(ram_program)
-        interp = make_interpreter(result)
-        interp.reset(entry)
-        return interp
+        try:
+            result = parser.parse(ram_program)
+            interp = make_interpreter(result)
+            interp.reset(entry)
+            return interp
+        except AttributeError:
+            self.output.pretty_print(
+                "Error: Compilation failed. The programm may be wrong.\n", 'red')
+            return None
 
     def get_program(self, apply_preprocessing=True):
         """ Return the program in which we have do the preprocessing instructions (#define, #include). """

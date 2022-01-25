@@ -5,7 +5,8 @@ from tkinter import ttk
 def create_code_window(my_gui):
     """ Window in which the final code is. """
     code_window = tk.Toplevel(my_gui.root)
-    code_window.title("Executed Code RAM")
+    code_window.title(
+        "Executed Code RAM ({})".format(str(len(my_gui.code_windows) + 1)))
     code_window.geometry('400x400')
     code_window.withdraw()
     code_window.protocol("WM_DELETE_WINDOW",
@@ -21,13 +22,17 @@ def create_code_window(my_gui):
     my_gui.code_windows.append(code_window)
     my_gui.codes.append(executed_code)
 
+    code_window.bind(
+        '<Control-Return>', lambda e: my_gui.execute_line(index=my_gui.code_windows.index(code_window)))
+
 
 def create_memory_window(my_gui):
     """ Memory in which all used registers are. """
     table_window = tk.Toplevel(my_gui.root)
     table_window.geometry('250x250')
     table_window.resizable(False, False)
-    table_window.title("Memory")
+    table_window.title("Memory ({})".format(
+        str(len(my_gui.table_windows) + 1)))
     tree_scroll = ttk.Scrollbar(table_window)
     tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
     table = ttk.Treeview(table_window, yscrollcommand=tree_scroll)

@@ -37,13 +37,13 @@ def file_includes(text_editor, end_line, output):
 
             except FileNotFoundError:
                 output.pretty_print(
-                    '[' + line + '] (line ' + interface.MyGUI.idx_to_nb(index) + '): ', 'blue')
+                    '[{}] (line {}): '.format(line, interface.MyGUI.idx_to_nb(index)), 'blue')
                 output.pretty_print(" File not found\n", 'red')
                 continue
 
             except PermissionError:
                 output.pretty_print(
-                    '[' + line + '] (line ' + interface.MyGUI.idx_to_nb(index) + '): ', 'blue')
+                    '[{}] (line {}): '.format(line, interface.MyGUI.idx_to_nb(index)), 'blue')
                 output.pretty_print(" Permission denied\n", 'red')
                 continue
 
@@ -91,9 +91,9 @@ def user_defines(text_editor, output):
             words = line.split(' ')
             if len(words) != 3:
                 output.pretty_print(
-                    '[' + line + '] (line ' + interface.MyGUI.idx_to_nb(index) + '): ', 'blue')
+                    '[{}] (line {}): '.format(line, interface.MyGUI.idx_to_nb(index)), 'blue')
                 output.pretty_print(
-                    " 2 parameters expected (found " + str(len(words) - 1) + ')\n', 'red')
+                    " 2 parameters expected (found {})\n".format(str(len(words) - 1)), 'red')
                 continue
             word = words[1]
             replace = words[2]

@@ -17,22 +17,22 @@ class menu_bar(tk.Menu):
         self.menu_file.add_command(
             label="Open File", command=lambda: self.my_gui.open_file())
         self.menu_file.add_command(
-            label="Save", command=lambda: self.my_gui.save_file())
+            label="Save", command=lambda: self.my_gui.save_file(), accelerator="Ctrl+S")
 
         self.menu_file.add_separator()
         self.menu_file.add_command(
-            label="Exit", command=lambda: self.my_gui.root.destroy())
+            label="Exit", command=lambda: self.my_gui.root.destroy(), accelerator="Esc")
         self.add_cascade(label="File", menu=self.menu_file)
 
         # The 'Run' contextual menu
         self.menu_run = tk.Menu(self, tearoff=0)
         self.menu_run.add_command(
-            label="Start", command=self.my_gui.execute_line)
+            label="Start", command=self.my_gui.execute_line, accelerator="Ctrl+Enter")
         self.menu_run.add_command(
-            label="Run Next Instruction", command=self.my_gui.execute_line)
+            label="Run Next Instruction", command=self.my_gui.execute_line, accelerator="Ctrl+Enter")
         self.menu_run.add_separator()
         self.menu_run.add_command(
-            label="Run File", command=self.my_gui.execute_file)
+            label="Run File", command=self.my_gui.execute_file, accelerator="Ctrl+Shit+Enter")
         self.add_cascade(label="Run", menu=self.menu_run)
 
         self.menu_run.entryconfig(1, state='disabled')
