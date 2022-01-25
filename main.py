@@ -1,4 +1,5 @@
 import tkinter.font as tkf
+from src.help_panel.help_panel import main1
 import src.preprocessing as pp
 from tkinter import messagebox
 from tkinter import filedialog, ttk
@@ -11,6 +12,7 @@ from src.interpreter.decode_int import *
 from src.interpreter.interpreter import *
 from src.parser.lexer import myLex, myYacc
 from src.pars_to_interp import *
+from src.help_panel import *
 
 
 class Texte(tk.Text):
@@ -107,7 +109,7 @@ class Frame:
         # The 'Help' contextual menu
         self.menu_help = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_help.add_command(
-            label="Get Started", command=lambda: self.output.pretty_print("TODO: User Manual\n", 'blue'))
+            label="Get Started", command=lambda: main1())
         self.menu_help.add_command(
             label="RAM Instructions", command=lambda: self.output.pretty_print("TODO: RAM\n", 'blue'))
         self.menu_help.add_command(
@@ -673,14 +675,14 @@ def main(root):
 
 
 if __name__ == '__main__':
-    # root = tk.Tk()
-    # root.title("RAM_language_interpreter")
-    # root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
-    # root.geometry("640x480")
+    root = tk.Tk()
+    root.title("RAM_language_interpreter")
+    root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
+    root.geometry("640x480")
 
-    # main(root)
+    main(root)
 
-    # root.mainloop()
+    root.mainloop()
     RAM_inst = (
         "begin macro id(Rx, Ry)"
         "Rx=Rx + 1"
