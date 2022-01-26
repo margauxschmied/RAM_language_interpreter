@@ -7,14 +7,14 @@ class Panel_Cantor(PanedWindow):
     def __init__(self, master) -> None:
         super().__init__(master)
         self.values: Dict[str, Entry] = dict()
-        self.e1 = self.create_button('Enter first int :')
-        self.e2 = self.create_button('Enter second int :')
+        self.e1 = self.create_line('Enter first int :')
+        self.e2 = self.create_line('Enter second int :')
         self.send_button()
         self.res_lab = self.result()
 
-    def create_button(self, text):
+    def create_line(self, text):
         pw = PanedWindow(self)
-        label = Label(pw, text=text)
+        label = Label(pw, text=text, justify='center')
         entry = Entry(pw)
         pw.pack()
         label.pack()
