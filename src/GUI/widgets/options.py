@@ -19,7 +19,7 @@ class option_window(tk.Toplevel):
         self.title("Options")
         self.grab_set()
         self.focus()
-        self.geometry("285x210")
+        self.geometry("285x280")
         self.resizable(False, False)
         self.protocol("WM_DELETE_WINDOW",
                       lambda: self.my_gui.reset_destroy(self))
@@ -43,11 +43,20 @@ class option_window(tk.Toplevel):
         check3.grid(column=0, row=6, sticky='W')
 
         ttk.Separator(self, orient=tk.HORIZONTAL).grid(
-            row=7, column=0, ipadx=130, padx=10, pady=10, sticky='W')
+            row=7, column=0, ipadx=110, padx=30, pady=15, sticky='W')
+        label3 = ttk.Label(
+            self, text="Default Input")
+        label3.grid(column=0, row=8)
+        check4 = ttk.Checkbutton(
+            self, text='Set Input to 0 If No Entry', variable=self.my_gui.choice_automaticaly_default, onvalue=1, offvalue=0)
+        check4.grid(column=0, row=9, sticky='W')
+
+        ttk.Separator(self, orient=tk.HORIZONTAL).grid(
+            row=10, column=0, ipadx=130, padx=10, pady=10, sticky='W')
 
         valid = ttk.Button(self, text="Confirm",
                            command=lambda: self.my_gui.save_destroy(self))
-        valid.grid(column=0, row=8)
+        valid.grid(column=0, row=11)
 
 
 def save(data):
@@ -66,4 +75,4 @@ def read():
         with open(file_path, 'r') as f:
             return json.load(f)
     else:
-        return {'show_line': '1', 'open_code': '1', 'open_memory': '1'}
+        return {'show_line': '1', 'open_code': '1', 'open_memory': '1', 'default_entry': '1'}

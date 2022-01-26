@@ -73,6 +73,8 @@ class MyGUI:
             value=int(user_options['open_code']))
         self.choice_automaticaly_memory = tk.IntVar(
             value=int(user_options['open_memory']))
+        self.choice_automaticaly_default = tk.IntVar(
+            value=int(user_options['default_entry']))
 
     def create_menu(self, parent):
         """ Function wich creates the bar menu. """
@@ -356,7 +358,7 @@ class MyGUI:
     def open_registers(self):
         self.get_current_table_window().deiconify()
 
-    def set_default(self, b):
+    def set_default(self, b, default=""):
         """ Display italic hint text 'Enter the R0' if entry field is empty and not selected """
         if b:
             if self.entry.get() == '':
@@ -368,7 +370,7 @@ class MyGUI:
         else:
             if self.entry.get() == "Enter the R0 value" and self.get_current_font().cget('slant') == 'italic':
                 self.entry.delete(0, "end")
-                self.entry.insert(0, "")
+                self.entry.insert(0, default)
 
             self.entry.configure(font=self.default_font)
             self.entry.config({"foreground": "Black"})
@@ -425,7 +427,7 @@ class MyGUI:
     def save_destroy(self, window):
         """ When the user confirm options, we save and apply them. """
         so.save({'show_line': str(self.choice_show_line_numbers.get()), 'open_code': str(
-            self.choice_automaticaly_code.get()), 'open_memory': str(self.choice_automaticaly_memory.get())})
+            self.choice_automaticaly_code.get()), 'open_memory': str(self.choice_automaticaly_memory.get()), 'default_entry': str(self.choice_automaticaly_default.get())})
         self.manage_line_numbers(self.choice_show_line_numbers.get())
         window.destroy()
 
@@ -506,12 +508,13 @@ class MyGUI:
     def stop(self):
         """ We stop sequential execution by running it until the end. """
         if self.get_current_interpreter() != None:
-            self.get_current_interpreter().treat_all_instr()
+            # self.get_current_interpreter().treat_all_instr()
             self.output.pretty_print(
                 "Sequential execution stopped ({})\n".format(self.get_current_tabname()), 'red')
-            self.output.pretty_print(
-                "Result: {}\n".format(str(self.get_current_interpreter().get_output())), 'blue')
-            self.clear_and_put(self.get_current_interpreter().memory)
+            # self.output.pretty_print(
+            #     "Result: {}\n".format(str(self.get_current_interpreter().get_output())), 'blue')
+            # self.clear_and_put(self.get_current_interpreter().memory)
+            self.clear()
             self.remove_mark(self.get_current_code())
             self.set_current_interpreter(None)
             self.update_menu()
@@ -665,6 +668,9 @@ class MyGUI:
     def get_entry(self):
         """ Return the entry of the program. """
         if self.get_current_font().cget('slant') == 'italic':
+            if self.choice_automaticaly_default.get() == 1:
+                self.set_default(False, 0)
+                return int(self.entry.get())
             self.output.pretty_print("Error: Enter R0 value\n", 'red')
             return None
         else:
