@@ -35,11 +35,11 @@ class option_window(tk.Toplevel):
         label2 = ttk.Label(self, text="Displayers")
         label2.grid(column=0, row=4)
         check2 = ttk.Checkbutton(
-            self, text='Automaticaly Open Executed Code Window', variable=self.my_gui.choice_automaticaly_code, onvalue=1, offvalue=0)
+            self, text='Automatically Open Executed Code Window', variable=self.my_gui.choice_automaticaly_code, onvalue=1, offvalue=0)
         check2.grid(column=0, row=5, sticky='W')
 
         check3 = ttk.Checkbutton(
-            self, text='Automaticaly Open Memory Window', variable=self.my_gui.choice_automaticaly_memory, onvalue=1, offvalue=0)
+            self, text='Automatically Open Memory Window', variable=self.my_gui.choice_automaticaly_memory, onvalue=1, offvalue=0)
         check3.grid(column=0, row=6, sticky='W')
 
         ttk.Separator(self, orient=tk.HORIZONTAL).grid(
