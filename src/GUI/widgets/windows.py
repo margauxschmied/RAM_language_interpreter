@@ -32,7 +32,6 @@ def create_memory_window(my_gui):
     """ Memory in which all used registers are. """
     table_window = tk.Toplevel(my_gui.root)
     table_window.geometry('250x250')
-    table_window.resizable(False, False)
     table_window.title("Memory ({})".format(
         str(len(my_gui.table_windows) + 1)))
     tree_scroll = ttk.Scrollbar(table_window)

@@ -1,5 +1,3 @@
-from importlib_metadata import sys
-from ply import lex
 from ply import yacc
 
 try:

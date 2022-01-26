@@ -1,1 +1,2 @@
-PySide6~=6.2.1
+tkhtmlview~=0.1.0.post1
+ply~=3.11
