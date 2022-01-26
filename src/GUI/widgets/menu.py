@@ -55,6 +55,9 @@ class menu_bar(tk.Menu):
         # The 'Utility Tools'
         self.menu_tools = tk.Menu(self, tearoff=0)
         self.menu_tools.add_command(
+            label='Apply Preprocessing', command=lambda: self.my_gui.apply_preprocessing())
+        self.menu_tools.add_separator()
+        self.menu_tools.add_command(
             label='Cantor Encode', command=lambda: create_cantor_panel(self.master, True))
         self.menu_tools.add_command(
             label='Cantor Decode', command=lambda: create_cantor_panel(self.master, False))

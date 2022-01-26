@@ -637,6 +637,10 @@ class MyGUI:
             self.output.pretty_print(
                 "Error: Compilation failed. The programm may be wrong.\n", 'red')
             return None
+        except Exception as e:
+            self.output.pretty_print(
+                "Exception: {} (preprocessed file)\n".format(e), 'red')
+            return None
 
     def get_program(self, apply_preprocessing=True):
         """ Return the program in which we have do the preprocessing instructions (#define, #include). """
@@ -650,6 +654,13 @@ class MyGUI:
             program = pp.delete_preprocessing(
                 self.get_current_text_editor()).get('1.0', 'end-1c')
         return program
+
+    def apply_preprocessing(self):
+        all_program = self.get_program(True)
+        text_editor = self.get_current_text_editor()
+        text_editor.delete('1.0', tk.END)
+        text_editor.insert(tk.END, all_program)
+        self.update_line()
 
     def get_entry(self):
         """ Return the entry of the program. """
