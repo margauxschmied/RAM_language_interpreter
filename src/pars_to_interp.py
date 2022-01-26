@@ -11,7 +11,7 @@ except:
     from parser.parser import lex
 
 
-def list_intruction(list_instr):
+def parser_instr_to_interp_list(list_instr):
     list = []
     dic = {}
     c_instr = list_instr
@@ -19,7 +19,7 @@ def list_intruction(list_instr):
         if c_instr.is_macro:
             dic[c_instr.num_instr] = Macro(c_instr.num_instr,
                                            c_instr.register.list_register(),
-                                           list_intruction(c_instr.instruction)[0])
+                                           parser_instr_to_interp_list(c_instr.instruction)[0])
         elif isinstance(c_instr.num_instr, str):
             list.append(RawInstruction(
                 c_instr.num_instr,
@@ -36,7 +36,7 @@ def list_intruction(list_instr):
 
 
 def make_interpreter(listr_instr):
-    return Interpreter(*list_intruction(listr_instr))
+    return Interpreter(*parser_instr_to_interp_list(listr_instr))
 
 
 if __name__ == '__main__':
