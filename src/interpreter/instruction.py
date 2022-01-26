@@ -64,8 +64,8 @@ class Instruction(RawInstruction):
                       self.sub_instr,
                       self.jumpb_instr,
                       self.jumpf_instr,
-                      self.push_instr,
-                      self.pop_instr][num_instr]
+                      self.right_part,
+                      self.left_part][num_instr]
 
     def add_instr(self, dico, interp):
         dico[self.register] += 1
@@ -81,16 +81,16 @@ class Instruction(RawInstruction):
     def jumpf_instr(self, dico, interp):
         interp.update_current_instr(self.n if dico[self.register] != 0 else 1)
 
+    def right_part(self, dico, interp):
+        dico[self.register] = Int(self.n).right()
+        interp.update_current_instr(1)
+
+    def left_part(self, dico, interp):
+        dico[self.register] = Int(self.n).left()
+        interp.update_current_instr(1)
+
     def execute(self, dico, interp):
         self.instr(dico, interp)
-
-    def push_instr(self, dico, interp):
-        dico['Monster'] = dico[self.register]
-        interp.update_current_instr(1)
-
-    def pop_instr(self, dico, interp):
-        dico[self.register] = dico['Monster']
-        interp.update_current_instr(1)
 
 
 class Macro:
