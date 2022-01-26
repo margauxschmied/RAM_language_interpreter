@@ -28,7 +28,11 @@ class menu_bar(tk.Menu):
             label="Exit", command=lambda: self.my_gui.root.destroy(), accelerator="Esc")
 
         self.menu_file.add_command(
-            label='Cantor calculator', command=lambda: create_cantor_panel(self.master))
+            label='Cantor encode', command=lambda: create_cantor_panel(self.master, True))
+
+        self.menu_file.add_command(
+            label='Cantor decode', command=lambda: create_cantor_panel(self.master, False))
+
         self.add_cascade(label="File", menu=self.menu_file)
 
         # The 'Run' contextual menu

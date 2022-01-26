@@ -3,12 +3,22 @@ from typing import Dict
 from src.interpreter.cantor_int import *
 
 
-class Panel_Cantor(PanedWindow):
+def create_line(self, text):
+    pw = PanedWindow(self)
+    label = Label(pw, text=text, justify='center')
+    entry = Entry(pw, justify='center')
+    pw.pack()
+    label.pack()
+    entry.pack()
+    return entry
+
+
+class Panel_Cantor_Encode(PanedWindow):
     def __init__(self, master) -> None:
         super().__init__(master)
         self.values: Dict[str, Entry] = dict()
-        self.e1 = self.create_line('Enter first int :')
-        self.e2 = self.create_line('Enter second int :')
+        self.e1 = create_line(self, 'Enter first int :')
+        self.e2 = create_line(self, 'Enter second int :')
         self.send_button()
         self.res_lab = self.result()
 
@@ -34,7 +44,29 @@ class Panel_Cantor(PanedWindow):
         return l
 
 
-def create_cantor_panel(parent):
+class Panel_Cantor_Decode(PanedWindow):
+    def __init__(self, master) -> None:
+        super().__init__(master)
+        self.values: Dict[str, Entry] = dict()
+        self.e1 = create_line(self, 'Enter int to decode')
+        self.send_button()
+        self.res_lab = self.result()
+
+    def send_button(self):
+        def send():
+            self.res_lab['text'] = f"Result = <{Int(self.e1.get()).left()}, {Int(self.e1.get()).right()}>"
+            return
+        b = Button(self, text='Send', command=send)
+        b.pack()
+
+    def result(self):
+        l = Label(self)
+        l.pack()
+        return l
+
+
+def create_cantor_panel(parent, is_encode):
     t = Toplevel(parent)
-    Panel_Cantor(t).pack()
+    Panel_Cantor_Encode(
+        t).pack() if is_encode else Panel_Cantor_Decode(t).pack()
     t.mainloop()
