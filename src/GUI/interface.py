@@ -499,8 +499,10 @@ class MyGUI:
 
         # if the current interpreter is null, it means that he started a sequential instruction
         if self.get_current_interpreter() == None:
+            res = messagebox.askyesno(
+                title="Confirmation", message='Run the sequential instruction?')
             inter = self.parse_ram_program(program, entry)
-            if inter == None:
+            if inter == None or not res:
                 return 'break'
             self.set_current_interpreter(inter)
             current_code = self.get_current_code()
@@ -520,7 +522,7 @@ class MyGUI:
             current_interp = self.get_current_interpreter()
             current_inst = current_interp.instr_list[current_interp.current_instr - 1]
             self.output.pretty_print(
-                "Execution of: {} ({})\n".format(current_inst.__str__(), str(current_interp.current_instr)), 'blue')
+                "Execution of: {} (line {})\n".format(current_inst.__str__(), str(current_interp.current_instr)), 'blue')
 
             self.highlight_line(self.get_current_code(),
                                 current_interp.current_instr)
