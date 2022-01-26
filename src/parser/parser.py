@@ -38,15 +38,15 @@ tokens = (
 # Regular expression rules for simple tokens
 
 t_R = 'R'
-t_IF = r'(if)'
-t_THEN = r'(then)'
-t_GOTOB = r'(gotob)'
-t_GOTOF = r'(gotof)'
-t_BEGIN = r'(begin)'
-t_END = r'(end)'
-t_MACRO = r'(macro)'
-t_PUSH = r'(push)'
-t_POP = r'(pop)'
+t_IF = r'if'
+t_THEN = r'then'
+t_GOTOB = r'gotob'
+t_GOTOF = r'gotof'
+t_BEGIN = r'begin'
+t_END = r'end'
+t_MACRO = r'macro'
+t_PUSH = r'push'
+t_POP = r'pop'
 t_RPAREN = r'\)'
 t_EQ = r'\='
 t_NEQ = r'\!='
@@ -96,8 +96,7 @@ t_ignore = ' \t'
 
 # Error handling rule
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
-    t.lexer.skip(1)
+    raise Exception(f"Illegal character {t.value[0]}: line {t.lineno}")
 
 
 macros = {}
@@ -356,16 +355,7 @@ def myYacc():
 
 
 if __name__ == '__main__':
-    data = """begin macro raze(Rx, Ry)
-    Rx = Rx + 1
-    R1 = R1 + 1
-    Rx = Rx - 1
-    if Rx != 0 then gotob 2
-    Rx = Rx - 1
-    end macro;
-    raze(R1, R1)
-    rp(R10, R12)
-    lp(R10, R12)
+    data = """ffff
 """
 
     lexer = lex.lex()
