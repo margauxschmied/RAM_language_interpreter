@@ -54,6 +54,7 @@ class Int(int):
 
     def cantor(x, y):
         """ The standard Cantor's function """
+        x, y = Int(x), Int(y)
         return (x+y+1)*(x+y)//2+y+1
 
     def int_to_couple(s):

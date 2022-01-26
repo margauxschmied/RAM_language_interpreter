@@ -1,0 +1,11 @@
+begin macro add_in_x(Ry, Rx)
+Ry = Ry + 1
+Rx = Rx + 1
+Ry = Ry - 1
+if Ry != 0 then gotob 2
+Rx = Rx - 1
+end macro;
+rp(R0, R2)
+lp(R0, R3)
+add_in_x(R2, R1)
+add_in_x(R3, R1)

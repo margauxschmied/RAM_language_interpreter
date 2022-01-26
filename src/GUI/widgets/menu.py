@@ -1,5 +1,7 @@
 import tkinter as tk
 
+from src.GUI.widgets.cantor_top_level import create_cantor_panel
+
 
 class menu_bar(tk.Menu):
     """ This class represents the bar menu (File, Run, Stop, etc.). """
@@ -24,6 +26,9 @@ class menu_bar(tk.Menu):
         self.menu_file.add_separator()
         self.menu_file.add_command(
             label="Exit", command=lambda: self.my_gui.root.destroy(), accelerator="Esc")
+
+        self.menu_file.add_command(
+            label='Cantor calculator', command=lambda: create_cantor_panel(self.master))
         self.add_cascade(label="File", menu=self.menu_file)
 
         # The 'Run' contextual menu
