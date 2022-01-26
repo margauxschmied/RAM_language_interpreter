@@ -1,5 +1,5 @@
 import tkinter as tk
-from main import Frame
+import src.GUI.interface as interface
 inc = '#include '
 de = '#define '
 
@@ -24,7 +24,7 @@ def file_includes(text_editor, end_line, output):
         index = text_editor_temp.search(inc, '1.0', stopindex=tk.END)
 
         if index != '':
-            index_end = Frame.idx_to_nb(index) + '.end'
+            index_end = interface.MyGUI.idx_to_nb(index) + '.end'
             line = text_editor_temp.get(index, index_end)
             path = line[len(inc):]
 
@@ -37,8 +37,14 @@ def file_includes(text_editor, end_line, output):
 
             except FileNotFoundError:
                 output.pretty_print(
-                    '[' + line + '] (line ' + Frame.idx_to_nb(index) + '): ', 'blue')
+                    '[{}] (line {}): '.format(line, interface.MyGUI.idx_to_nb(index)), 'blue')
                 output.pretty_print(" File not found\n", 'red')
+                continue
+
+            except PermissionError:
+                output.pretty_print(
+                    '[{}] (line {}): '.format(line, interface.MyGUI.idx_to_nb(index)), 'blue')
+                output.pretty_print(" Permission denied\n", 'red')
                 continue
 
     return text_editor_temp
@@ -61,11 +67,11 @@ def delete_preprocessing(text_editor):
         index = text_editor_temp.search(inc, '1.0', stopindex=tk.END)
         index2 = text_editor_temp.search(de, '1.0', stopindex=tk.END)
         if index != '':
-            index_end = main_class.idx_to_nb(index) + '.end'
+            index_end = interface.MyGUI.idx_to_nb(index) + '.end'
             text_editor_temp.delete(index, index_end)
 
         if index2 != '':
-            index_end = main_class.idx_to_nb(index2) + '.end'
+            index_end = interface.MyGUI.idx_to_nb(index2) + '.end'
             text_editor_temp.delete(index2, index_end)
     return text_editor_temp
 
@@ -79,15 +85,15 @@ def user_defines(text_editor, output):
     while index:
         index = text_editor_temp.search(de, '1.0', stopindex=tk.END)
         if index != '':
-            index_end = Frame.idx_to_nb(index) + '.end'
+            index_end = interface.MyGUI.idx_to_nb(index) + '.end'
             line = text_editor_temp.get(index, index_end)
             text_editor_temp.delete(index, index_end)
             words = line.split(' ')
             if len(words) != 3:
                 output.pretty_print(
-                    '[' + line + '] (line ' + Frame.idx_to_nb(index) + '): ', 'blue')
+                    '[{}] (line {}): '.format(line, interface.MyGUI.idx_to_nb(index)), 'blue')
                 output.pretty_print(
-                    " 2 parameters expected (found " + str(len(words) - 1) + ')\n', 'red')
+                    " 2 parameters expected (found {})\n".format(str(len(words) - 1)), 'red')
                 continue
             word = words[1]
             replace = words[2]

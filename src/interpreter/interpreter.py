@@ -4,10 +4,12 @@ try:
     from src.interpreter.instruction import *
     from src.interpreter.cantor_int import *
     from src.interpreter.interpreter import *
+    from src.interpreter.existing_macros import *
 except:
-    from interpreter.instruction import *
+    from src.interpreter.instruction import *
     from interpreter.cantor_int import *
     from interpreter.interpreter import *
+    from interpreter.existing_macros import *
 
 
 class Interpreter:
@@ -19,14 +21,14 @@ class Interpreter:
         The RC is stored in current_instr
     """
 
-    def __init__(self, instr_list: List[RawInstruction], macros: Dict[str, Macro] = dict(), memory=RAM()) -> None:
+    def __init__(self, instr_list: List[RawInstruction], macro: Dict[str, Macro], memory=RAM()) -> None:
         self.instr_list = instr_list
         self.current_instr = Int(1)
         self.end = False
         self.memory = memory
-        self.macros = macros
-        print(macros)
-        print(instr_list)
+        self.macros = {'push': macros['push'], 'pop': macros['pop']}
+        for key, value in macro.items():
+            self.macros[key] = value
         self.remove_macros()
 
     def update_current_instr(self, n: int):
@@ -48,7 +50,7 @@ class Interpreter:
             self.treat_one_instr()
         return self.memory
 
-    def get_otput(self):
+    def get_output(self):
         return self.memory[1]
 
     def init_zero(self, value):
@@ -76,12 +78,6 @@ class Interpreter:
 
     def __str__(self) -> str:
         res = []
-        # for name, content in self.macros.items():
-        #     res.append("begin macro {}({})".format(
-        #         name, ",".join(content.params)))
-        #     for instr in content.instr_list:
-        #         res.append(" " + str(instr))
-        #     res.append('end macro;')
         for instr in self.instr_list:
             res.append(str(instr))
         return "\n".join(res)
@@ -189,6 +185,6 @@ if __name__ == '__main__':
     for i in range(150):
         interp.reset(i)
         interp.treat_all_instr()
-        print(f"The sum from 0 to {i} is {interp.get_otput()}")
+        print(f"The sum from 0 to {i} is {interp.get_output()}")
 
     print(str(interp))

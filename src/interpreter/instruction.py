@@ -1,5 +1,5 @@
 try:
-    from src.parser.register import *
+    from src.parser.instruction.register import *
     from src.interpreter.cantor_int import *
 except:
     from interpreter.cantor_int import *
@@ -9,7 +9,7 @@ from typing import List
 
 class RawInstruction:
     def __init__(self, num_instr, register, n=None, is_macro=False, next=None):
-        self.is_macro = is_macro
+        self.is_macro = is_macro or type(num_instr) == str
         self.numInstr = num_instr
         self.register = register
         self.n = n
@@ -48,8 +48,12 @@ class RawInstruction:
             return f"IF R{self.register} != 0 then gotob {self.n}"
         elif self.numInstr == 3:
             return f"IF R{self.register} != 0 then gotof {self.n}"
+        elif self.numInstr == 4:
+            return f"rp(R{self.register}, R{self.n})"
+        elif self.numInstr == 5:
+            return f"rl(R{self.register}, R{self.n})"
         else:
-            return "{}({})".format(self.numInstr, ",".join(map(str, self.register)))
+            return "{}({})".format(self.numInstr, ",".join(map(lambda x: f"R{x}", self.register)))
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -64,8 +68,8 @@ class Instruction(RawInstruction):
                       self.sub_instr,
                       self.jumpb_instr,
                       self.jumpf_instr,
-                      self.push_instr,
-                      self.pop_instr][num_instr]
+                      self.right_part,
+                      self.left_part][num_instr]
 
     def add_instr(self, dico, interp):
         dico[self.register] += 1
@@ -81,16 +85,16 @@ class Instruction(RawInstruction):
     def jumpf_instr(self, dico, interp):
         interp.update_current_instr(self.n if dico[self.register] != 0 else 1)
 
+    def right_part(self, dico, interp):
+        dico[self.n] = Int(dico[self.register]).right()
+        interp.update_current_instr(1)
+
+    def left_part(self, dico, interp):
+        dico[self.n] = Int(dico[self.register]).left()
+        interp.update_current_instr(1)
+
     def execute(self, dico, interp):
         self.instr(dico, interp)
-
-    def push_instr(self, dico, interp):
-        dico['Monster'] = dico[self.register]
-        interp.update_current_instr(1)
-
-    def pop_instr(self, dico, interp):
-        dico[self.register] = dico['Monster']
-        interp.update_current_instr(1)
 
 
 class Macro:
@@ -130,6 +134,12 @@ class Macro:
             else:
                 acc += 1
         return acc
+
+    def __str__(self) -> str:
+        return f"{self.nom} ({self.params}) {self.instr_list};"
+
+    def __repr__(self) -> str:
+        return str(self)
 
 
 class RAM(dict):

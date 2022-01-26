@@ -36,3 +36,15 @@ class Register():
             currentRegister = currentRegister.next
 
         return list
+
+    def list_register_str(self):
+        list = []
+        currentRegister = self
+        while currentRegister != None:
+            list.append(str(currentRegister.register))
+            currentRegister = currentRegister.next
+
+        return list
+
+    def __str__(self) -> str:
+        return str(self.register)

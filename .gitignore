@@ -130,3 +130,5 @@ dmypy.json
 rep*/**
 !rep*/*.tex
 !rep*/*.pdf
+src/parser/parser.out
+src/parser/parsetab.py
