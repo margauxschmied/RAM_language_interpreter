@@ -5,6 +5,7 @@ from tkinter import messagebox
 from tkinter import filedialog, ttk
 from tkinter.scrolledtext import ScrolledText
 import tkinter as tk
+from tkhtmlview import HTMLLabel
 
 from src.interpreter.cantor_int import *
 from src.interpreter.instruction import *
@@ -13,6 +14,9 @@ from src.interpreter.interpreter import *
 from src.parser.lexer import myLex, myYacc
 from src.pars_to_interp import *
 from src.help_panel import *
+from src.ram_instructions import *
+from src.ram_instructions.ram_instr import open_ram_instr
+from src.about.about import open_about
 
 
 class Texte(tk.Text):
@@ -111,9 +115,9 @@ class Frame:
         self.menu_help.add_command(
             label="Get Started", command=lambda: hp_main(self.root))
         self.menu_help.add_command(
-            label="RAM Instructions", command=lambda: self.output.pretty_print("TODO: RAM\n", 'blue'))
+            label="RAM Instructions", command=lambda: open_ram_instr(self))
         self.menu_help.add_command(
-            label="About", command=lambda: self.output.pretty_print("TODO: About\n", 'blue'))
+            label="About", command=lambda: open_about(self))
 
         self.menu_bar.add_cascade(label="Help", menu=self.menu_help)
 
@@ -443,6 +447,8 @@ class Frame:
                 self.m.grab_release()
             else:
                 self.m2.grab_release()
+        
+    
 
     def open_option(self):
         """ New window for options is created and has the focus. """
@@ -593,6 +599,7 @@ class Frame:
             output = interp.get_otput()
             self.output.pretty_print("Result: " + str(output) + '\n', 'blue')
             self.clear_and_put(interp.memory)
+
 
     def parse_ram_program(self, ram_program, entry):
         # data = InputStream(ram_program)

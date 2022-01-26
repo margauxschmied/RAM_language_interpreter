@@ -16,8 +16,7 @@ button_properties = {
 
 file_path_list = [
     ('File', 'text_file.html'),
-    ('Run', 'text_run.html'),
-    ('Stop', 'text_stop.html'),
+    ('Run/Stop', 'text_run/stop.html'),
     ('Options', 'text_options.html'),
     ('Shortcuts', 'text_shortcuts.html'),
     ('Icons', 'text_icons.html'),
