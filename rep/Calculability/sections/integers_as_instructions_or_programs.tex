@@ -1,0 +1,105 @@
+\section{Integers as instructions or programs}
+
+\subsection{Integer representation}
+When we deal with RAM program, as said in Section~\ref{sec:RAM_intro}, we do not treat subtraction as if we were in $\mathbb{Z}$ or other set of number including $\mathbb{Z}$, we are supposed to be in the natural number world. 
+
+In a RAM program subtraction is represented by the $\dotminus$ symbol giving us an expression of the type $A \dotminus B = max(0, A - B)$ therefore the we created the \textit{Int} class that extends the \textit{int} class and overrides the \textit{\_\_sub\_\_} function as shown in Listing \ref{listing:int_class_sub} .
+
+\begin{lstlisting}[
+    caption={The Int class}, 
+    label={listing:int_class_sub},
+    language=Python,
+    backgroundcolor=\color{gray!10},
+    frame=lines,
+    ]
+class Int(int):
+    def __sub__(self, x: int):
+        return Int(max(int(self) - x, 0))
+    ...
+\end{lstlisting}
+
+
+\subsection{Gödelisation function}
+As seen in course every instruction can be represented as an integer, thanks to Gödel bijective function (look at listing~\ref{god_enc}).
+
+\begin{lstlisting}[
+    caption={Gödel encoding function}, 
+    label={god_enc},
+    mathescape, 
+    frame=lines,
+    backgroundcolor=\color{gray!10}, breaklines=true
+    ]
+    $Rk =  Rk + 1 \rightsquigarrow 3 \times  k$ 
+    $Rk =  Rk - 1 \rightsquigarrow 3 \times  k + 1$
+    $IF\;Rk \neq  0\;THEN\;GOTOB\;n\;\rightsquigarrow 3 \times  [k, [1, [n, 0]]] + 2$ 
+    $IF\;Rk \neq  0\;THEN\;GOTOF\;n \rightsquigarrow 3 \times  [k, [0, [n, 0]]] + 2$
+ Where : 
+    - k is the register number
+    - is the number of jump to do inside a if
+\end{lstlisting}
+
+\newpage
+\subsection{Gödel inverse function}
+When we are given an integer and we know that it is an instruction, we can easily decode it with modulo operations (look at listing~\ref{god_dec}).
+\begin{lstlisting}[
+    caption={Gödel decoding function}, 
+    label={god_dec},
+    mathescape, 
+    frame=lines,
+    backgroundcolor=\color{gray!10},
+    ]
+if $X \equiv 0 \mod 3 \rightsquigarrow$ we have a $Rk = Rk + 1$ instruction
+if $X \equiv 1 \mod 3 \rightsquigarrow$ we have a $Rk = Rk - 1$ instruction
+  in both cases, k is equal to $\lfloor X/3 \rfloor$
+if $X \equiv 2 \mod 3 \rightsquigarrow$ we have a jump instruction
+  where $X' =  \lfloor X/3 \rfloor$ and we can decode $X$ in $[k, [j, [n, 0]]]$ 
+  with Cantor inverse function (see next paragraph)
+\end{lstlisting}
+Decoding an instruction like can be done by the \textit{decode\_int\_instr} in \textit{decode\_int.py} file.
+
+\subsection{Cantor pairing function}
+\label{sec:cant_pair_func}
+Now, we know how to code an instruction, we can so code a program, that is a list of instruction, thanks to Cantor function (look at listing~\ref{cant_enc})
+
+\begin{lstlisting}[
+    caption={Cantor encoding function}, 
+    label={cant_enc},
+    mathescape, 
+    frame=lines,
+    backgroundcolor=\color{gray!10},
+    ]
+    $[x, y] = \frac{(x + y) \times (x+y+1)}{2} + y + 1 = n$
+    if b is a couple, we encode it at first,
+    and that recursively until the last tuple
+\end{lstlisting}
+
+The encoding of two integer to a Cantor's int is made by the \textit{cantor} method of the \textit{Int} class.
+
+\subsection{Cantor inverse function}
+The Cantor inverse function is not as simple as computing the Gödel inverse one. The Cantor Pairing function is a \textit{Diophantine equation} (voir definition at ...) and finding back the two variables $x$ and $y$ from $n$ ask to iterate from 0 the n to find an intermediate $n'$.  
+
+Since $n$ may be very big, (it is the case if we encode multiple instructions) this task may become very slow, therefore, to speed it, we make a \textit{binary search} to have an answer in a logarithmic time instead of a linear one. 
+
+The decoding function of a Cantor's int to a couple of the form $(x_1, (x_2, (..., (x_n, 0))))$ is made by the \textit{Int} class with the \textit{int\_to\_couple} method.
+\newpage
+\begin{lstlisting}[
+    caption={Cantor decoding function}, 
+    label={cant_dec},
+    frame=lines,
+    backgroundcolor=\color{gray!10},
+    language=Python
+    ]
+class Int(int):
+    ...
+    def cantor_inv(self):
+        tmp = self.aux()
+        r = self - ((tmp - 1) * tmp / 2 + 1)
+        l = tmp - r - 1
+        return l, r
+    
+    def int_to_couple(s):
+        res = Int(s).cantor_inv()
+        return res if res[1] == 0 
+               else (res[0], Int(res[1]).int_to_couple())
+    ...
+\end{lstlisting}

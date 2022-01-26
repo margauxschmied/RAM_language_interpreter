@@ -1,0 +1,60 @@
+\section{Introduction}
+For the calculability course, we had to realize a project. This project is a RAM language interpreter. The RAM language is a pseudo code discussed in class with 4 instructions. This project is divided in 3 parts: the parser, the interpreter and the graphics.
+
+\section{About RAM program}
+\label{sec:RAM_intro}
+A \textit{RAM} program is a program made by :
+\begin{itemize}
+    \item a potentially infinity memory with three main registers
+    \begin{itemize}
+        \item the \textit{memory counter ($R_C$)} which allows to know at each moment what is the current instruction to be executed. If $R_C$ is $0$ or a integer bigger then the number of instructions of the code, the program execution will stop 
+        \item \textit{$R_0$} the first register of the memory representing the input of the program
+        \item \textit{$R_1$} the second register which can be seen as the case of the memory containing the output of our program
+    \end{itemize}
+    \item 4 instructions :
+    \begin{itemize}
+        \item $R_k = R_k + 1$ which increases the value stock in the register $k$ by one
+        \item $R_k = R_k \dotminus{} 1$, same as previous instruction, but the value is decreased by one (NB : if the value in $R_k$ is equal to 0, we have that $0 \dotminus{} 1 = 0$ since RAM machines work in $\mathbb{N}$ number set
+        \item $IF \; R_k \neq 0 \; THEN \; GOTOB \; n$ means that if the register $k$ does not equal $0$ then $R_C = R_C \dotminus{} n$ (here, as before the subtraction is done as follow $A \dotminus{} B = max(0, A - B)$
+        \item $IF \; R_k \neq 0 \; THEN \; GOTOF \; n$ which makes the following operation : $R_C = R_C + n$
+    \end{itemize}
+\end{itemize}
+
+With a RAM program, as demonstrated in course, it is possible to code all the programs we usually code with any other programming language such as \textit{Python, C, Java, etc.} 
+
+Another important aspect of RAM program we should consider is that, thanks to its infinite registers and the fact that efficiency time of programs is not taken, this program model can be reused and adapted to every new programming language.
+
+Finally working only in $\mathbb{N}$ does not restrict RAM programs, since in fact $\mathbb{Z}$, $\mathbb{Q}$ and  $\mathbb{R}$ can be seen as an extensions of $\mathbb{N}$.
+
+\newpage
+We can also introduce some predefined and useful macros, such as, \textit{rp} and \textit{lp} (resp. for \textit{right\_part} and \textit{left\_part}), allowing to treat the value of a register as a \textit{Cantor's couple} (see \ref{sec:cant_pair_func}), this let you pass a variable number of parameters.\\
+For example, if you have a program that calculate the sum of $x$ and $y$ then you will put $n$ that is $cantor(x,y)$ in $R_0$.
+\\Other two macros are \textit{push} and \textit{pop} which respectively push and pop the value from a register $k$ to a very big register that normally should not be used by the program (we have chosen the $2^{64}$ register).
+
+
+\section{Design choices}
+
+\subsection{Choice of tools}
+
+\begin{itemize}
+\item Technologies : \textbf{Python3.9.9}\\
+To realize this project we used the following libraries:
+    \begin{itemize}
+        \item ply==3.11 (For the parser)
+        \item tkhtmlview==0.1.0 (For the help)
+    \end{itemize}
+\end{itemize}
+
+\subsection{Installation}
+
+You can use the file \textbf{install.sh}
+
+\begin{verbatim}
+$ chmod u+x install.sh
+$ ./install.sh
+\end{verbatim}
+Or
+
+\begin{verbatim}
+$ python3 -m pip install -r requirements.txt
+\end{verbatim}
