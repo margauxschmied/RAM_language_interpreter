@@ -1,17 +1,17 @@
 from tkinter import *
 from tkhtmlview import HTMLLabel
-from main import *
 import sys
 
-def open_ram_instr(self):
-        window_instr = tk.Toplevel(self.panel)
-        window_instr.title("About")
- 
-    # Set Geometry
-        window_instr.geometry("600x600")
- 
-    # Add label
-        my_label = HTMLLabel(window_instr, html="""
+
+def open_ram_instr(parent):
+    window_instr = Toplevel(parent)
+    window_instr.title("About")
+
+# Set Geometry
+    window_instr.geometry("600x600")
+
+# Add label
+    my_label = HTMLLabel(window_instr, html="""
             <i><h2 style="color: red;">RAM INSTRUCTION</h2></i>
             <i>A <b>RAM program</b> is made by 4 instructions:
             <ul>
@@ -27,5 +27,5 @@ def open_ram_instr(self):
             </i>
 
             """)
-        my_label.pack(pady=20, padx=20)
-        window_instr.mainloop()
+    my_label.pack(pady=20, padx=20)
+    window_instr.mainloop()
