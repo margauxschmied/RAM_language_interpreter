@@ -19,7 +19,7 @@ class menu_bar(tk.Menu):
         self.menu_file.add_command(
             label="New File", command=lambda: self.my_gui.new_file(), accelerator="Ctrl+N")
         self.menu_file.add_command(
-            label="Open File", command=lambda: self.my_gui.open_file())
+            label="Open File", command=lambda: self.my_gui.open_file(), accelerator="Ctrl+O")
         self.menu_file.add_command(
             label="Save", command=lambda: self.my_gui.save_file(), accelerator="Ctrl+S")
 

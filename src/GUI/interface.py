@@ -294,6 +294,7 @@ class MyGUI:
         element.bind('<Escape>', lambda e: self.show_message(
             "Do you want to quit?"))
         element.bind('<Control-n>', lambda e: self.new_file())
+        element.bind('<Control-o>', lambda e: self.open_file())
 
     def create_intern_shortcut(self, element):
         element.bind('<Control-Return>', lambda e: self.execute_line())
@@ -484,6 +485,37 @@ class MyGUI:
         else:
             current_text_editor.configure(state='disabled')
 
+    def highlight_line(self, current_code, line):
+        self.mark_line(current_code, line)
+
+    def clear(self):
+        """ Clear memory. """
+        table = self.get_current_table()
+        table.delete(*table.get_children())
+
+    def clear_and_put(self, dict):
+        """ Refresh memory. """
+        table = self.get_current_table()
+        self.clear()
+        acc = 0
+        for r, v in dict.items():
+            table.insert(parent='', index='end',
+                         iid=acc, text='', values=('R'+str(r), v))
+            acc += 1
+
+    def stop(self):
+        """ We stop sequential execution by running it until the end. """
+        if self.get_current_interpreter() != None:
+            self.get_current_interpreter().treat_all_instr()
+            self.output.pretty_print(
+                "Sequential execution stopped ({})\n".format(self.get_current_tabname()), 'red')
+            self.output.pretty_print(
+                "Result: {}\n".format(str(self.get_current_interpreter().get_output())), 'blue')
+            self.clear_and_put(self.get_current_interpreter().memory)
+            self.remove_mark(self.get_current_code())
+            self.set_current_interpreter(None)
+            self.update_menu()
+
     def execute_line(self, index=None, all=False):
         """ Start the sequencial execution or execute the next instruction if started. """
         if index != None:
@@ -551,37 +583,6 @@ class MyGUI:
             self.update_menu()
 
         return 'break'
-
-    def highlight_line(self, current_code, line):
-        self.mark_line(current_code, line)
-
-    def clear(self):
-        """ Clear memory. """
-        table = self.get_current_table()
-        table.delete(*table.get_children())
-
-    def clear_and_put(self, dict):
-        """ Refresh memory. """
-        table = self.get_current_table()
-        self.clear()
-        acc = 0
-        for r, v in dict.items():
-            table.insert(parent='', index='end',
-                         iid=acc, text='', values=('R'+str(r), v))
-            acc += 1
-
-    def stop(self):
-        """ We stop sequential execution by running it until the end. """
-        if self.get_current_interpreter() != None:
-            self.get_current_interpreter().treat_all_instr()
-            self.output.pretty_print(
-                "Sequential execution stopped ({})\n".format(self.get_current_tabname()), 'red')
-            self.output.pretty_print(
-                "Result: {}\n".format(str(self.get_current_interpreter().get_output())), 'blue')
-            self.clear_and_put(self.get_current_interpreter().memory)
-            self.remove_mark(self.get_current_code())
-            self.set_current_interpreter(None)
-            self.update_menu()
 
     def execute_file(self):
         """ Execution of the whole file, we get the program, its type (RAM or Int) and its entry. """
