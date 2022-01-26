@@ -37,8 +37,8 @@ def decode_int_instr(n: int):
             rpart = current.right()
             type_saut = rpart.left()
             saut = rpart.right()
-        saut_letter = 'F' if type_saut != 1 else 'B'
-        res.append(f'if R{k}!=0 THEN GOTO{saut_letter} {saut}')
+        saut_letter = 'f' if type_saut != 1 else 'b'
+        res.append(f'if R{k}!=0 then goto{saut_letter} {saut}')
     return '\n'.join(res)
 
 
