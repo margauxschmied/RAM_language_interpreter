@@ -21,11 +21,10 @@ end macro;
 
 
 begin macro mult_x_y_in_ouput(Ry, Rx)
-if Rx != 0 then gotof 2
-Rx = Rx + 1
-if Rx != 0 then gotof 5
+if Rx != 0 then gotob 1000
 end macro;
 
-mult_x_y_in_ouput(R0, R2)
-clear(R1)
+add_in_x(R1, R5)
+if R10 != 0 then gotof 1000
+add_in_x(R1, R5)
 

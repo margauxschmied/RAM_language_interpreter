@@ -32,7 +32,7 @@ class Interpreter:
         self.remove_macros()
 
     def update_current_instr(self, n: int):
-        self.current_instr += n
+        self.current_instr = int(Int(self.current_instr) + n)
 
     def translate_macro(self, instr):
         return self.macros[instr.num_instr].clone_instr(instr.register)
@@ -93,7 +93,8 @@ class Interpreter:
                 if i.numInstr == 2:
                     i.n = Int(i.n) + count_macro(Int(pos) - Int(i.n), Int(pos))
                 if i.numInstr == 3:
-                    i.n = Int(i.n) + count_macro(Int(pos), Int(pos) + Int(i.n))
+                    i.n = Int(i.n) + count_macro(Int(pos), min(
+                        Int(pos) + Int(i.n), len(self.instr_list)))
             for i in self.instr_list:
                 if i.is_macro:
                     sub_interp = Interpreter(
