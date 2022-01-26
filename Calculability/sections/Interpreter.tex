@@ -1,0 +1,154 @@
+\section{Interpreter}
+\label{sec:interpreter}
+The phase of interpretation is made after the parsing. 
+An interpreter is made of an (hypothetical) infinite memory, a set of macros definitions and a list of instruction and three special registers:
+\begin{itemize}
+    \item $R_C$ $\rightsquigarrow$ the register counter that indicates the current instruction
+    \item $R_0$ $\rightsquigarrow$ the input register
+    \item $R_1$ $\rightsquigarrow$ the output register
+\end{itemize}
+
+\subsection{Internal representation of the memory}
+The memory of the interpreter is represented by the \textit{RAM} class witch a class which extends the \textit{dict} class of Python.
+This class redefines :
+\begin{itemize}
+    \item the \textit{getitem} method : if we try to access a not existing key of the \textit{dict}, it is firstly created with the $0$ value and then $0$ is returned. 
+    \item the setitem method : which casts the value associated to the key as an \textit{Int}
+\end{itemize}
+
+\subsection{How the interpreter treats macros}
+When the interpreter receives a list of instructions to be interpreted, it tries at first to remove every instruction that is a macro call. 
+For example if we have a code like the following :
+\begin{lstlisting}[
+    caption={RAM code with macro representing the $\times 2$ operation}, 
+    label={code_macro_times_two},
+    mathescape, 
+    frame=lines,
+    backgroundcolor=\color{gray!10},
+    ]
+    begin macro times_two(Rx, Ry)
+    Ry = Ry + 1
+    Ry = Ry + 1
+    Rx = Rx - 1
+    end macro;
+    R0 = R0 + 1
+    times_two(R0, R1)
+    if R0 $\neq$ 0 then gotob 1
+    R1 = R1 - 1
+    R1 = R1 - 1
+\end{lstlisting}
+\newpage
+The interpreter will receive :
+\begin{itemize}
+    \item The macro name \textit{times\_two} which put $R0 \times 2$ in $R1$
+    \item The list of 5 instruction :
+    \begin{itemize}
+        \item R0 = R0 + 1
+        \item add\_reg(R0, R1)
+        \item if R0 $\neq$ 0 then gotob 1
+        \item R1 = R1 - 1
+        \item R1 = R1 - 1
+    \end{itemize}
+\end{itemize}
+
+At first, the interpreter reads every instruction and when it detects the 
+\[\textit{times\_two(R0, R1)}\] 
+macro call, it replaces that line by the body of the macro definition, where parameters of body of the the macro has been replaced by the macro call arguments.
+
+It is important to note, that if we only perform this substitution, our code will be broken, since the jump inside \textit{IF} statements will not work as expected. 
+
+In fact, when we make a macro-call replacement, we should always keep attention on the number of step to do and actually modify them.
+
+The code of Listing \ref{code_macro_times_two} will be so replaced by the following one :
+
+\begin{lstlisting}[
+    caption={RAM code without macro representing the $\times 2$ operation}, 
+    label={code_macro_times_two_no_macro},
+    mathescape, 
+    frame=lines,
+    backgroundcolor=\color{gray!10},
+    ]
+    R0 = R0 + 1
+    R1 = R1 + 1
+    R1 = R1 + 1
+    R0 = R0 - 1
+    if R0 $\neq$ 0 then gotob 3
+    R1 = R1 - 1
+    R1 = R1 - 1
+\end{lstlisting}
+
+\subsection{A bug we still have in jump}
+
+The code is able to correct the jump in \textit{IF} statements in the case where the \textit{IF}
+\begin{itemize}
+    \item is not inside a macro
+    \item is inside a macro but it does not \textit{go out} from the macro body
+\end{itemize}
+\newpage
+Let's look Listing \ref{listing:macro_bug}.
+
+\begin{lstlisting}[
+    caption={RAM code causing a bug}, 
+    label={listing:macro_bug},
+    mathescape, 
+    frame=lines,
+    backgroundcolor=\color{gray!10},
+    ]
+    begin macro macro_little_jump(Rx)
+    if Rx != 0 then gotob 1
+    end macro;
+    macro_with_1000_lines(R10)
+    macro_little_jump(R0)
+\end{lstlisting}
+
+In this example, we should notice that the jump inside the macro \textit{macro\_little\_jump} should be replaced by an \textit{IF} with a jump of $1000 + 1$ lines (the number of lines of \textit{macro\_with\_1000\_lines} + the original jump = $1$), but in reality the jump is not modified.
+
+The macro with an \textit{IF} statement, in fact, only consider its own body definition.
+
+Notwithstanding this, a code like in Listing \ref{listing:macro_working}, will work, since the \textit{IF} jump remains inside the macro scope and it will be corrected to a jump of $1001$ steps.
+
+\begin{lstlisting}[
+    caption={RAM code causing a bug}, 
+    label={listing:macro_working},
+    mathescape, 
+    frame=lines,
+    backgroundcolor=\color{gray!10},
+    ]
+    begin macro macro_little_jump(Rx)
+    macro_with_1000_lines(R10)
+    if Rx != 0 then gotob 1
+    end macro;
+    macro_little_jump(R0)
+\end{lstlisting}
+
+\subsection{Interpretation of instructions}
+Once we have ended the macro substitution process, we can finally compute our instructions one by one or the whole program till
+
+\[ R_C = 0\; \lor\; R_C> |instructions| \]
+
+via the \textit{execute} method on every \textit{Instruction}.
+
+We are allowed to get the state of the memory of our program at every moment via the \textit{memory} attribute of the \textit{Interpreter} or get the output (that is $R_1$) thanks the \textit{get\_output} method.
+\newpage
+\subsection{Predefined macros}
+
+The interpreter knows some predefined macros :
+\begin{itemize}
+    \item \textit{push $R_k$} which pushes the the content of $R_k$ in a very big register ($2^{64}$)
+    \item \textit{pop $R_k$} which takes the value from register $2^{64}$ and puts it in $R_k$
+    \item \textit{rp($R_x$, $R_y$)} which takes the \textit{right part} of $R_x$ and put it in $R_y$
+    \item \textit{lp($R_x$, $R_y$)} which take the \textit{left part} of $R_x$ and put it in $R_y$
+\end{itemize}
+
+\subsection{Parsed object to Interpreter one}
+
+In Sections \ref{sec:parser} we have said that parser needs chained lists to create step by step the object that will be returned after the parsing. On the other hand, for reason of time complexity, the interpreter must work with normal list since accessing the \textit{i-th} element should be as fast as possible. We know that getting the last element of a chained list takes a linear time, whereas in a \textit{Python} list the time needed should be almost constant.
+
+Therefore, after the parsing phase, it is necessary to operate this transformation so that the interpreter can work.
+
+The \textit{parser\_instr\_to\_interp\_list} function in \textit{pars\_to\_interp.py} file does exactly this task.
+
+We create a \textit{list} $L$ of instruction and a \textit{dictionary} $D$ of macros and then we go through the chained list. So, if we find a \textit{macro} definition we add it to the $D$ and if we find an \textit{instruction} then we will append it into $L$.
+
+
+

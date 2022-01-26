@@ -1,0 +1,12 @@
+\section{Pre-processing}
+\subsection{Include}
+You have the possibility to include a file. Like the C language, just
+write \textit{\#include filename} where '\textit{filename}' is the path of the file you want embedded.
+At the pre-processing phase, each line which contain such this instruction will be replace by the content of the precise filename. If the path doesn't exist, an error
+(that will not interrupt the execution) will be raised.
+
+\subsection{Define}
+This interpreter also offered the possibility of using the \textit{\#define name thing} instruction. Therefore, all '\textit{name}' will be replaced by '\textit{thing}' in the file
+
+\subsection{Some precisions}
+When you go to execute the file, you will not see your file modified by the preprocessing instructions, they will be done internally. However, you always have the option to do it manually to see it in \textbf{Tools} -> \textbf{Apply Preprocessing}. The current file will then be modified.

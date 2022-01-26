@@ -1,0 +1,67 @@
+\appendix
+
+\begin{appendices}
+\addtocontents{toc}{\protect\setcounter{tocdepth}{0}}
+
+\section{Grammar}
+\label{grammar}
+
+program ::= code
+ 
+code ::= \\
+\tab expression code \\
+\tab | expression \
+
+
+expression ::= \\
+\tab "R" number "=" "R" number "+" number \\
+\tab | "R" number "=" "R" number "-" number \\
+\tab | "if" "R" number "!=" number "then" "gotob" number \\
+\tab | "if" "R" number "!=" number "then" "gotof" number \\
+\tab | "push" "R" number \\
+\tab | "pop" "R" number \\
+\tab | "rp" "(" listRegister ")" \\
+\tab | "lp" "(" listRegister ")" \\
+\tab | name "(" listRegister ")" \\
+\tab | "begin" "macro" name "(" macroListRegister ")" macroCode "end" "macro"";" 
+
+listRegister ::= \\
+\tab "R" NUMBER "," listRegister \\
+\tab | "R" NUMBER \\
+\tab | 
+
+macroListRegister ::= \\
+\tab "R" name "," macroListRegister \\
+\tab | "R" name \\
+\tab | 
+
+macroCode ::= \\
+\tab macroExpression macroCode \\
+\tab | macroExpression 
+
+macroExpression ::= \\
+\tab macroId "=" macroId "+" number \\
+\tab | macroId "=" macroId "-" number \\
+\tab | "if" macroId "!=" number "then" "gotob" number \\
+\tab | "if" macroId "!=" number "then" "gotof" number \\
+\tab | "push" macroId \\
+\tab | "pop" macroId \\
+\tab | "rp" "(" listMacroId ")" \\
+\tab | "lp" "(" listMacroId ")" \\
+\tab | name "(" listMacroId ")" \\
+\tab | "begin" "macro" name "(" macroListRegister ")" macroCode "end" "macro"";" 
+
+macroid ::= \\
+\tab "R" name \\
+\tab | "R" NUMBER 
+
+listMacroId ::= \\
+\tab macroId "," listMacroId \\
+\tab | macroId \\
+\tab | 
+
+name ::= \\
+\tab STRING ( NUMBER | STING )*
+
+
+\end{appendices}
