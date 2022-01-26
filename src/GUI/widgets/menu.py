@@ -2,6 +2,8 @@ import tkinter as tk
 
 
 class menu_bar(tk.Menu):
+    """ This class represents the bar menu (File, Run, Stop, etc.). """
+
     def __init__(self, parent, my_gui):
         super().__init__(parent)
         self.parent = parent

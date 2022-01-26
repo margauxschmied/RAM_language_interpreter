@@ -3,6 +3,8 @@ from tkinter import ttk
 
 
 class toolbar(ttk.Frame):
+    """ The icon bar which appear just below the menu bar. """
+
     def __init__(self, parent, my_gui):
         super().__init__(parent)
         self.parent = parent

@@ -15,7 +15,7 @@ class option_window(tk.Toplevel):
         self.initialize()
 
     def initialize(self):
-
+        """ Creation of all options' widgets. """
         self.title("Options")
         self.grab_set()
         self.focus()
@@ -51,6 +51,7 @@ class option_window(tk.Toplevel):
 
 
 def save(data):
+    """ Saving of user settings. """
     if not os.path.isdir(dir_path):
         os.mkdir(dir_path)
     file = Path(file_path)
@@ -60,6 +61,7 @@ def save(data):
 
 
 def read():
+    """ Setting of user's saved options. """
     if os.path.isfile(file_path):
         with open(file_path, 'r') as f:
             return json.load(f)

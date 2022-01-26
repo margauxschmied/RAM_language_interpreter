@@ -65,6 +65,7 @@ class MyGUI:
         self.create_extern_shortcut(self.root)
 
     def set_choices(self):
+        """ Set of user's saved options. """
         user_options = so.read()
         self.choice_show_line_numbers = tk.IntVar(
             value=int(user_options['show_line']))
@@ -79,6 +80,7 @@ class MyGUI:
         parent.config(menu=self.menu_bar)
 
     def create_toolbar(self, parent):
+        """ Creation of the icon bar, below menu bar. """
         self.toolbar = tb.toolbar(parent, self)
 
     def create_tab(self, tab_name):
@@ -266,16 +268,13 @@ class MyGUI:
         self.notebook.bind("<<NotebookTabChanged>>",
                            lambda e: self.update_line_menu())
 
-    """
-        Difference between extern and intern shortcut : first one is binding on the window whereas the intern
-        is inside the text_editor.
-    """
-
     def update_line_menu(self):
+        """ Used when the user change tab, we actualize line number if necessary and the bar menu (disable or not Start/Stop). """
         self.update_line()
         self.update_menu()
 
     def update_menu(self):
+        """ When we start/stop sequential execution, we have to desactivate/activate the 'Stat' command, and activate/desactivate 'Next/All Instruction(s)'. """
         sta1 = 'normal'
         sta2 = 'disabled'
         inter = self.get_current_interpreter() == None
@@ -284,6 +283,11 @@ class MyGUI:
         self.menu_bar.menu_run.entryconfig(1, state=(sta2 if inter else sta1))
         self.menu_bar.menu_run.entryconfig(2, state=(sta2 if inter else sta1))
         self.menu_bar.entryconfig(3, state=(sta2 if inter else sta1))
+
+    """
+        Difference between extern and intern shortcut : first one is binding on the window whereas the intern
+        is inside the text_editor.
+    """
 
     def create_extern_shortcut(self, element):
         element.bind('<Control-s>', lambda e: self.save_file())
@@ -378,6 +382,7 @@ class MyGUI:
         self.panel.pack(fill=tk.BOTH, expand=True)
 
     def show_message(self, s):
+        """ When 'Esc' key is pressed. """
         res = messagebox.askokcancel("Quit", s)
         if res:
             self.root.destroy()
@@ -388,6 +393,7 @@ class MyGUI:
         self.m2 = pop.popup2(parent, self)
 
     def convert_int_new_file(self):
+        """ Convert an int into RAM program which will be open in a new tab. """
         try:
             code_int = int(self.get_program())
             program = decode_int_program(code_int)
@@ -399,6 +405,7 @@ class MyGUI:
             pass
 
     def popup(self, event):
+        """ Display the corresponding contextual menu at right-click in the text editor. """
         try:
             if self.s_var.get() == '0':
                 self.m.tk_popup(event.x_root, event.y_root)
@@ -415,12 +422,14 @@ class MyGUI:
         so.option_window(self.panel, self)
 
     def save_destroy(self, window):
+        """ When the user confirm options, we save and apply them. """
         so.save({'show_line': str(self.choice_show_line_numbers.get()), 'open_code': str(
             self.choice_automaticaly_code.get()), 'open_memory': str(self.choice_automaticaly_memory.get())})
         self.manage_line_numbers(self.choice_show_line_numbers.get())
         window.destroy()
 
     def reset_destroy(self, window):
+        """ If user quit options, we do not save them. """
         self.set_choices()
         window.destroy()
 
@@ -488,6 +497,7 @@ class MyGUI:
         if entry == None:
             return 'break'
 
+        # if the current interpreter is null, it means that he started a sequential instruction
         if self.get_current_interpreter() == None:
             inter = self.parse_ram_program(program, entry)
             if inter == None:
@@ -516,14 +526,19 @@ class MyGUI:
                                 current_interp.current_instr)
             current_interp.treat_one_instr()
             self.clear_and_put(current_interp.memory)
+
+            # if user click 'Run All Instructions', we recursively loop until the end
             if all:
                 time.sleep(0.1)
                 self.root.update_idletasks()
                 self.execute_line(all=True)
                 return 'break'
+
+        # if IndexError, it means the end has been reached
         except IndexError:
             self.get_current_interpreter().treat_one_instr()
 
+        # if interpreter have reached the end, it means that all instruction have benn executed
         if self.get_current_interpreter().end:
             self.output.pretty_print(
                 "Sequential execution finished ({})\n".format(self.get_current_tabname()), 'green')
@@ -539,10 +554,12 @@ class MyGUI:
         self.mark_line(current_code, line)
 
     def clear(self):
+        """ Clear memory. """
         table = self.get_current_table()
         table.delete(*table.get_children())
 
     def clear_and_put(self, dict):
+        """ Refresh memory. """
         table = self.get_current_table()
         self.clear()
         acc = 0
@@ -552,6 +569,7 @@ class MyGUI:
             acc += 1
 
     def stop(self):
+        """ We stop sequential execution by running it until the end. """
         if self.get_current_interpreter() != None:
             self.get_current_interpreter().treat_all_instr()
             self.output.pretty_print(
@@ -656,17 +674,13 @@ class MyGUI:
 
 
 def run_GUI():
+    """ Creation of the GUI. """
     root = tk.Tk()
     root.title("RAM_language_interpreter")
     root.iconphoto(False, tk.PhotoImage(file='./ressources/img/ramen.png'))
-    # root.geometry("640x480")
+    root.geometry("640x480")
     root.update()
     root.minsize(540, 350)
-    x_cordinate = int((root.winfo_screenwidth() / 2) -
-                      (root.winfo_width() / 2))
-    y_cordinate = int((root.winfo_screenheight() / 2) -
-                      (root.winfo_height() / 2))
-    root.geometry("+{}+{}".format(x_cordinate, y_cordinate-20))
 
     MyGUI(root)
 

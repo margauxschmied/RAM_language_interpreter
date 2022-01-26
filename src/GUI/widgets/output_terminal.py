@@ -2,6 +2,8 @@ from tkinter.scrolledtext import ScrolledText
 
 
 class output_terminal(ScrolledText):
+    """ This class aims to pretty print all the outputs. """
+
     def __init__(self, parent):
         super().__init__(parent, bg="white", wrap='word')
 

@@ -2,6 +2,8 @@ import tkinter as tk
 
 
 class texte(tk.Text):
+    """ This class is for the text entry. """
+
     def __init__(self, parent):
         super().__init__(parent, width=20, height=10,
                          bg="lightgrey", wrap='word')
