@@ -13,7 +13,7 @@ class menu_bar(tk.Menu):
         # The 'File' contextual menu
         self.menu_file = tk.Menu(self, tearoff=0)
         self.menu_file.add_command(
-            label="New File", command=lambda: self.my_gui.new_file())
+            label="New File", command=lambda: self.my_gui.new_file(), accelerator="Ctrl+N")
         self.menu_file.add_command(
             label="Open File", command=lambda: self.my_gui.open_file())
         self.menu_file.add_command(
@@ -30,6 +30,8 @@ class menu_bar(tk.Menu):
             label="Start", command=self.my_gui.execute_line, accelerator="Ctrl+Enter")
         self.menu_run.add_command(
             label="Run Next Instruction", command=self.my_gui.execute_line, accelerator="Ctrl+Enter")
+        self.menu_run.add_command(
+            label="Run All Instructions", command=lambda: self.my_gui.execute_line(all=True), accelerator="Ctrl+M")
         self.menu_run.add_separator()
         self.menu_run.add_command(
             label="Run File", command=self.my_gui.execute_file, accelerator="Ctrl+Shit+Enter")

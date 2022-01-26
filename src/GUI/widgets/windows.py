@@ -24,6 +24,8 @@ def create_code_window(my_gui):
 
     code_window.bind(
         '<Control-Return>', lambda e: my_gui.execute_line(index=my_gui.code_windows.index(code_window)))
+    code_window.bind(
+        '<Control-m>', lambda e: my_gui.execute_line(index=my_gui.code_windows.index(code_window), all=True))
 
 
 def create_memory_window(my_gui):

@@ -19,6 +19,8 @@ from src.interpreter.interpreter import *
 from src.parser.parser import myLex, myYacc, macros
 from src.pars_to_interp import *
 
+import time
+
 
 class MyGUI:
     """ This class aims to manage all frames. Here we create the menu bar, the file tabs or the shortcuts. """
@@ -265,7 +267,7 @@ class MyGUI:
                            lambda e: self.update_line_menu())
 
     """
-        Difference between extern and intern shorcut : first one is binding on the window whereas the intern
+        Difference between extern and intern shortcut : first one is binding on the window whereas the intern
         is inside the text_editor.
     """
 
@@ -280,17 +282,21 @@ class MyGUI:
 
         self.menu_bar.menu_run.entryconfig(0, state=(sta1 if inter else sta2))
         self.menu_bar.menu_run.entryconfig(1, state=(sta2 if inter else sta1))
+        self.menu_bar.menu_run.entryconfig(2, state=(sta2 if inter else sta1))
         self.menu_bar.entryconfig(3, state=(sta2 if inter else sta1))
 
     def create_extern_shortcut(self, element):
         element.bind('<Control-s>', lambda e: self.save_file())
         element.bind('<Escape>', lambda e: self.show_message(
             "Do you want to quit?"))
+        element.bind('<Control-n>', lambda e: self.new_file())
 
     def create_intern_shortcut(self, element):
         element.bind('<Control-Return>', lambda e: self.execute_line())
         element.bind('<Control-Shift-Return>',
                      lambda e: self.execute_file())
+        element.bind('<Control-m>',
+                     lambda e: 'break' if self.get_current_interpreter() == None else self.execute_line(all=True))
 
     def create_output_terminal(self, parent):
         """ The result or error message will appear here. """
@@ -469,7 +475,7 @@ class MyGUI:
         else:
             current_text_editor.configure(state='disabled')
 
-    def execute_line(self, index=None):
+    def execute_line(self, index=None, all=False):
         """ Start the sequencial execution or execute the next instruction if started. """
         if index != None:
             self.notebook.select(index)
@@ -510,6 +516,11 @@ class MyGUI:
                                 current_interp.current_instr)
             current_interp.treat_one_instr()
             self.clear_and_put(current_interp.memory)
+            if all:
+                time.sleep(0.1)
+                self.root.update_idletasks()
+                self.execute_line(all=True)
+                return 'break'
         except IndexError:
             self.get_current_interpreter().treat_one_instr()
 

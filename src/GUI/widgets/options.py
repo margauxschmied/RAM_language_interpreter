@@ -19,24 +19,35 @@ class option_window(tk.Toplevel):
         self.title("Options")
         self.grab_set()
         self.focus()
-        self.geometry("285x90")
+        self.geometry("285x210")
         self.resizable(False, False)
         self.protocol("WM_DELETE_WINDOW",
                       lambda: self.my_gui.reset_destroy(self))
+        ttk.Separator(self, orient=tk.HORIZONTAL).grid(
+            row=0, column=0, ipadx=130, padx=10, pady=10, sticky='W')
+        label1 = ttk.Label(self, text="Line Numbers")
+        label1.grid(column=0, row=1)
         check1 = ttk.Checkbutton(self, text='Show Line Numbers',
                                  variable=self.my_gui.choice_show_line_numbers, onvalue=1, offvalue=0)
-        check1.grid(column=0, row=0, sticky='W')
+        check1.grid(column=0, row=2, sticky='W')
+        ttk.Separator(self, orient=tk.HORIZONTAL).grid(
+            row=3, column=0, ipadx=110, padx=30, pady=15, sticky='W')
+        label2 = ttk.Label(self, text="Displayers")
+        label2.grid(column=0, row=4)
         check2 = ttk.Checkbutton(
             self, text='Automaticaly Open Executed Code Window', variable=self.my_gui.choice_automaticaly_code, onvalue=1, offvalue=0)
-        check2.grid(column=0, row=1, sticky='W')
+        check2.grid(column=0, row=5, sticky='W')
 
         check3 = ttk.Checkbutton(
             self, text='Automaticaly Open Memory Window', variable=self.my_gui.choice_automaticaly_memory, onvalue=1, offvalue=0)
-        check3.grid(column=0, row=2, sticky='W')
+        check3.grid(column=0, row=6, sticky='W')
+
+        ttk.Separator(self, orient=tk.HORIZONTAL).grid(
+            row=7, column=0, ipadx=130, padx=10, pady=10, sticky='W')
 
         valid = ttk.Button(self, text="Confirm",
                            command=lambda: self.my_gui.save_destroy(self))
-        valid.grid(column=0, row=3)
+        valid.grid(column=0, row=8)
 
 
 def save(data):
