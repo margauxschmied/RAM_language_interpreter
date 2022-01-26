@@ -65,10 +65,6 @@ RIdentifier = r'(R(' + nondigit + r'(' + digit + r'|' + nondigit + r')*))'
 macroIdentifier = r'(' + nondigit + r'(' + digit + r'|' + nondigit + r')*\()'
 
 
-
-
-
-
 # A regular expression rule with some action code
 def t_NUMBER(t):
     r'\d+'
@@ -132,6 +128,7 @@ def p_expression_pop(p):
     'expression : POP R NUMBER'
     p[0] = Instruction("pop", Register(p[3]))
 
+
 def p_callmacro(p):
     'callmacro : MACROID listRegister RPAREN'
     line = p.lineno(1)
@@ -153,7 +150,9 @@ def p_callmacro(p):
     elif not macros[p[1][:-1]].good_number_of_register(register):
         error_verif(p, line)
 
-    p[0] = Instruction(p[1][:-1], register)
+    else:
+        p[0] = Instruction(p[1][:-1], register)
+
 
 def p_expression_12(p):
     '''expression : R NUMBER EQ R NUMBER PLUS NUMBER
@@ -189,16 +188,13 @@ def p_expression_34(p):
 
 
 def p_expression_5(p):
-
     'expression : macroDeclaration'
     p[0] = p[1]
-
 
 
 def p_expression_callmacro(p):
     'expression : callmacro'
     p[0] = p[1]
-
 
 
 def p_macroDeclaration(p):
@@ -227,7 +223,6 @@ def p_listRegister(p):
         p[0] = None
 
 
-
 def p_macroListRegister(p):
     '''macroListRegister : RID VIRGULE macroListRegister
                             | RID
@@ -249,7 +244,6 @@ def p_macroCode_list(p):
 def p_macroCode_simple(p):
     'macroCode : macroExpression'
     p[0] = p[1]
-
 
 
 def p_macroExpression_push(p):

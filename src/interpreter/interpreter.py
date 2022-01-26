@@ -78,12 +78,6 @@ class Interpreter:
 
     def __str__(self) -> str:
         res = []
-        # for name, content in self.macros.items():
-        #     res.append("begin macro {}({})".format(
-        #         name, ",".join(content.params)))
-        #     for instr in content.instr_list:
-        #         res.append(" " + str(instr))
-        #     res.append('end macro;')
         for instr in self.instr_list:
             res.append(str(instr))
         return "\n".join(res)

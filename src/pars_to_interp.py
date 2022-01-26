@@ -25,6 +25,12 @@ def parser_instr_to_interp_list(list_instr):
                 c_instr.num_instr,
                 c_instr.register.list_register(),
                 c_instr.n))
+        elif c_instr.num_instr == 4 or c_instr.num_instr == 5:
+            list.append(
+                RawInstruction(
+                    c_instr.num_instr,
+                    c_instr.register.register,
+                    c_instr.register.next.register,))
         else:
             list.append(
                 RawInstruction(

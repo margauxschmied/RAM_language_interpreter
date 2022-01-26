@@ -48,6 +48,10 @@ class RawInstruction:
             return f"IF R{self.register} != 0 then gotob {self.n}"
         elif self.numInstr == 3:
             return f"IF R{self.register} != 0 then gotof {self.n}"
+        elif self.numInstr == 4:
+            return f"rp(R{self.register}, R{self.n})"
+        elif self.numInstr == 5:
+            return f"rl(R{self.register}, R{self.n})"
         else:
             return "{}({})".format(self.numInstr, ",".join(map(lambda x: f"R{x}", self.register)))
 
@@ -82,11 +86,11 @@ class Instruction(RawInstruction):
         interp.update_current_instr(self.n if dico[self.register] != 0 else 1)
 
     def right_part(self, dico, interp):
-        dico[self.register] = Int(self.n).right()
+        dico[self.n] = Int(dico[self.register]).right()
         interp.update_current_instr(1)
 
     def left_part(self, dico, interp):
-        dico[self.register] = Int(self.n).left()
+        dico[self.n] = Int(dico[self.register]).left()
         interp.update_current_instr(1)
 
     def execute(self, dico, interp):
