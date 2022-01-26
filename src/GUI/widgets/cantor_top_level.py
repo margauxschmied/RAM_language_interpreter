@@ -15,7 +15,7 @@ class Panel_Cantor(PanedWindow):
     def create_line(self, text):
         pw = PanedWindow(self)
         label = Label(pw, text=text, justify='center')
-        entry = Entry(pw)
+        entry = Entry(pw, justify='center')
         pw.pack()
         label.pack()
         entry.pack()
