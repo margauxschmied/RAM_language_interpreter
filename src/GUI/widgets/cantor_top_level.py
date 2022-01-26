@@ -67,6 +67,7 @@ class Panel_Cantor_Decode(PanedWindow):
 
 def create_cantor_panel(parent, is_encode):
     t = Toplevel(parent)
+    t.title("Encode" if is_encode else "Decode")
     Panel_Cantor_Encode(
         t).pack() if is_encode else Panel_Cantor_Decode(t).pack()
     t.mainloop()

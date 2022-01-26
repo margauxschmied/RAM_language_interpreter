@@ -27,12 +27,6 @@ class menu_bar(tk.Menu):
         self.menu_file.add_command(
             label="Exit", command=lambda: self.my_gui.root.destroy(), accelerator="Esc")
 
-        self.menu_file.add_command(
-            label='Cantor encode', command=lambda: create_cantor_panel(self.master, True))
-
-        self.menu_file.add_command(
-            label='Cantor decode', command=lambda: create_cantor_panel(self.master, False))
-
         self.add_cascade(label="File", menu=self.menu_file)
 
         # The 'Run' contextual menu
@@ -54,6 +48,14 @@ class menu_bar(tk.Menu):
         self.add_command(
             label="Stop", command=lambda: self.my_gui.stop())
         self.entryconfig(3, state='disabled')
+
+        # The 'Utility Tools'
+        self.menu_tools = tk.Menu(self, tearoff=0)
+        self.menu_tools.add_command(
+            label='Cantor Encode', command=lambda: create_cantor_panel(self.master, True))
+        self.menu_tools.add_command(
+            label='Cantor Decode', command=lambda: create_cantor_panel(self.master, False))
+        self.add_cascade(label="Tools", menu=self.menu_tools)
 
         # The 'Option' button
         self.add_command(
