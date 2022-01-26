@@ -1,11 +1,14 @@
 import src.GUI.interface as interface
-
 from src.interpreter.cantor_int import *
 from src.interpreter.instruction import *
 from src.interpreter.decode_int import *
 from src.interpreter.interpreter import *
 from src.parser.parser import myLex, myYacc, macros
 from src.pars_to_interp import *
+from src.help_panel import *
+from src.ram_instructions import *
+from src.ram_instructions.ram_instr import open_ram_instr
+from src.about.about import open_about
 
 
 if __name__ == '__main__':

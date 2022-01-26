@@ -1,6 +1,9 @@
 import tkinter as tk
 
 from src.GUI.widgets.cantor_top_level import create_cantor_panel
+from src.help_panel import help_panel
+from src.ram_instructions import ram_instr
+from src.about import about
 
 
 class menu_bar(tk.Menu):
@@ -64,10 +67,10 @@ class menu_bar(tk.Menu):
         # The 'Help' contextual menu
         self.menu_help = tk.Menu(self, tearoff=0)
         self.menu_help.add_command(
-            label="Get Started", command=lambda: self.my_gui.output.pretty_print("TODO: User Manual\n", 'blue'))
+            label="Get Started", command=lambda: help_panel.main(self.master))
         self.menu_help.add_command(
-            label="RAM Instructions", command=lambda: self.my_gui.output.pretty_print("TODO: RAM\n", 'blue'))
+            label="RAM Instructions", command=lambda: ram_instr.open_ram_instr(self.master))
         self.menu_help.add_command(
-            label="About", command=lambda: self.my_gui.output.pretty_print("TODO: About\n", 'blue'))
+            label="About", command=lambda: about.open_about(self.master))
 
         self.add_cascade(label="Help", menu=self.menu_help)
